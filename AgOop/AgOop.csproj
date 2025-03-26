@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>AgOop</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+    <RuntimeIdentifier>osx-x64</RuntimeIdentifier> -->
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- <PackageReference Include="icecream" Version="3.2.0" /> -->
+    <PackageReference Include="Sayers.SDL2.Core" Version="1.0.11" />
+    <Resource Include="res\ag.ico" />
+  </ItemGroup>
+
+</Project>

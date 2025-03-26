@@ -1,0 +1,38 @@
+To refactor the existing code into a more object-oriented design, we can identify logical groupings of methods and properties that can be encapsulated into classes. Here are some potential classes and their responsibilities:
+
+Game: This class would encapsulate the overall game logic and state management.
+Properties: totalScore, score, answersSought, answersGot, gotBigWord, bigWordLen, updateTheScore, gamePaused, winGame, quitGame, gameStart, gameTime, stopTheClock, etc.
+Methods: NewGame, GameLoop, InitLocale, InitLocalePrefix, LoadConfig, IsValidLocale, etc.
+
+SoundManager: This class would handle all audio-related functionalities.
+Properties: soundCache, audio_enabled, etc.
+Methods: GetSound, PushSound, BufferSounds, ClearSoundBuffer.
+
+[x] SpriteManager: This class would manage the sprite-related operations.
+Properties: letterBank, smallLetterBank, numberBank, clockSprite, scoreSprite, etc.
+Methods: MoveSprites, DestroyLetters, BuildLetters, AddClock, AddScore, UpdateScore, UpdateTime, etc.
+
+UIManager: This class would handle user interface interactions, including keyboard and mouse events.
+Methods: HandleKeyboardEvent, ClickDetect, IsInside, DisplayAnswerBoxes, etc.
+
+AnagramManager: This class would manage the anagram-related logic.
+Properties: rootword, updateAnswers, etc.
+Methods: SolveIt, CheckGuess, NextBlankPosition, ShuffleWord, ShuffleAvailableLetters, ClearWord, etc.
+
+[x] Configuration: This class would handle configuration-related functionalities.
+Methods: ConfigBox, LoadConfig.
+
+[x] LocaleManager: This class would manage locale-specific operations.
+Properties: language, userPath, basePath, etc.
+Methods: InitLocale, InitLocalePrefix, GetUserPath, GetBasePath.
+
+[x] Box: This class would represent the hotboxes used in the game.
+Properties: x, y, width, height, etc.
+
+[x] Node: This class would represent a node in the linked list of anagrams.
+Properties: anagram, found, guessed, length, next, etc.
+
+[x] Sprite: This class would represent a sprite in the game.
+Properties: sprite, numSpr, letter, x, y, w, h, toX, toY, next, box, index, etc.
+
+By organizing the code into these classes, you can achieve better encapsulation, modularity, and maintainability. Each class would be responsible for a specific aspect of the game, making it easier to manage and extend the codebase.
