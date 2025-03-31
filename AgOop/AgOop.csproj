@@ -1,3 +1,4 @@
+
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -5,17 +6,70 @@
     <RootNamespace>AgOop</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
-    <!-- <RuntimeIdentifier>win-x64</RuntimeIdentifier> -->
-    <!-- <RuntimeIdentifier>linux-x64</RuntimeIdentifier> -->
-    <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <Nullable>enable</Nullable>
+
+    <!-- Prevent issues with multiple assemblies (AgOop and tools/AgOopDictCleaner)-->
     <DefaultItemExcludes>$(DefaultItemExcludes);tools/*.cs*</DefaultItemExcludes>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>    
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    
+    <!-- Set the application icon for Windows only -->
+    <ApplicationIcon>res\ag.ico</ApplicationIcon>
+
+    <!-- Use RuntimeIdentifiers (plural) to support multiple platforms -->
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+
+    <!-- Single file publishing settings -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <!-- <SelfContained>true</SelfContained> -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
+
+  <!-- Internationalization files -->
   <ItemGroup>
+    <Content Include="i18n\**\*.*">
+      <!-- Always copy to output directory for all build types -->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <!-- Also ensure files are included in publish -->
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Audio files -->
+  <ItemGroup>
+    <Content Include="audio\**\*.*">
+      <!-- Always copy to output directory for all build types -->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <!-- Also ensure files are included in publish -->
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Icon file -->
+  <ItemGroup>
+    <Content Include="res\ag.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Platform-specific resources (if needed) -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86'">
+    <!-- Windows-specific resources would go here -->
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+    <!-- Linux-specific resources would go here -->
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64'">
+    <!-- macOS-specific resources would go here -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Uncomment if you need this package -->
     <!-- <PackageReference Include="icecream" Version="3.2.0" /> -->
     <PackageReference Include="Sayers.SDL2.Core" Version="1.0.11" />
-    <Resource Include="res/ag.ico" />
   </ItemGroup>
 </Project>
