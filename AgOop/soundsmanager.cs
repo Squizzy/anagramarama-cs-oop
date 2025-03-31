@@ -116,7 +116,8 @@ namespace AgOop
         internal static void PushSound(ref Sound? soundCache, string name, string filename)
         {
 
-            string soundFilename = new string(LocaleManager.basePath) + LocaleManager.audioSubPath;
+            // string soundFilename = new string(LocaleManager.basePath) + LocaleManager.audioSubPath;
+            string soundFilename = LocaleManager.audioSubPath;
 
             if ((soundFilename[0] != 0) && (soundFilename[soundFilename.Length - 1] != LocaleManager.DIR_SEP))
             {
