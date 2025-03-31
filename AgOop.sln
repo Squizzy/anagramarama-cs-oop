@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgOop", "AgOop\AgOop.csproj", "{84598B52-4B7F-4FD1-BA34-48B74783751D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AgOop", "AgOop", "{AFEA31FA-1158-4391-BB7B-B22BBE526BA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgDictCleaner", "AgOop\tools\AgDictCleaner.csproj", "{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{84598B52-4B7F-4FD1-BA34-48B74783751D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84598B52-4B7F-4FD1-BA34-48B74783751D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84598B52-4B7F-4FD1-BA34-48B74783751D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{84598B52-4B7F-4FD1-BA34-48B74783751D} = {AFEA31FA-1158-4391-BB7B-B22BBE526BA5}
+		{BCAABEA2-B64A-42BF-A45A-B45271A45DB8} = {AFEA31FA-1158-4391-BB7B-B22BBE526BA5}
 	EndGlobalSection
 EndGlobal
