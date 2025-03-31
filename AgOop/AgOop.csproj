@@ -6,6 +6,7 @@
     <RootNamespace>AgOop</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
+    <!-- <PublishAot>true</PublishAot> -->
     <Nullable>enable</Nullable>
 
     <!-- Prevent issues with multiple assemblies (AgOop and tools/AgOopDictCleaner)-->
@@ -20,7 +21,7 @@
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
 
     <!-- Single file publishing settings -->
-    <PublishSingleFile>true</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>    
     <!-- <SelfContained>true</SelfContained> -->
     <PublishTrimmed>true</PublishTrimmed>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
