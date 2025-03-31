@@ -7,7 +7,7 @@ namespace AgOpp
         /// <summary>Constructor for the wordlist</summary
         internal WordsList(ref Dlb_node? dlbHeadNode,  string wordlist)
         {
-            Console.WriteLine("loading dictionary" + wordlist);
+            Console.WriteLine("loading dictionary: " + wordlist);
             
             if (!DlbCreate(ref dlbHeadNode, wordlist))
             {
