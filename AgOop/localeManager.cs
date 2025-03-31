@@ -96,12 +96,16 @@ namespace AgOop
 
             // last resort: use the default locale
             language = prefix;
-            if ((language[0] != 0) && (language[language.Length - 1] != DIR_SEP))
+            if (language == "")
             {
-                // TODO: check if this is the most portable way to do this
-                // language += '/';
                 language += DIR_SEP;
             }
+            else if ((language[0] != 0) && (language[language.Length - 1] != DIR_SEP))
+                {
+                    // TODO: check if this is the most portable way to do this
+                    // language += '/';
+                    language += DIR_SEP;
+                }
             language += DEFAULT_LOCALE_PATH;
 
             return IsValidLocale(language);
