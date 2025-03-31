@@ -5,12 +5,13 @@ namespace AgOop
 
     internal class LocaleManager
     {
+        /// <summary>Directory separator for the OS used </summary>
+        // internal static char DIR_SEP = Path.DirectorySeparatorChar;
+        internal readonly static char DIR_SEP = Path.DirectorySeparatorChar;
+
         /// <summary>Path to the locale dictionary </summary>
         // public const string DEFAULT_LOCALE_PATH = "i18n/en_GB";
-        internal static string DEFAULT_LOCALE_PATH = "i18n" + DIR_SEP + "en_GB" + DIR_SEP;
-
-        /// <summary>Directory separator for the OS used </summary>
-        internal static char DIR_SEP = Path.DirectorySeparatorChar;
+        internal static string DEFAULT_LOCALE_PATH = "i18n" + DIR_SEP + "en-GB" + DIR_SEP;
 
         /// <summary>Subdirectory where the audio is stored</summary>
         internal static string audioSubPath = "audio" + DIR_SEP;
@@ -46,69 +47,19 @@ namespace AgOop
             }
         }
 
-        /// <summary>Get the current language string from the environment. 
-        ///  This is used to location the wordlist and other localized resources.
-        ///  Sets the global variable 'language' 
-        ///  defaults to the default value
-        /// </summary>
-        /// <param name="prefix">a path prefix</param>
-        /// <returns>true if language was set to a value that had valid "wordslist.txt" else false</returns>
-        internal static bool InitLocalePrefix(string prefix)
+
+        /// <summary> not used.</summary>
+        /// <returns>Nothing</returns>
+        internal static void GetBasePath()
         {
-            // prefix is the local folder where the language specifics are stored (ie in addition to "i18n/")
-            CultureInfo currentCulture = CultureInfo.CurrentCulture;
-            string culture = currentCulture.Name; // eg en-GB
-            localePath = culture + DIR_SEP;
-
-            language = prefix;
-
-            language += basePath + "i18n" + DIR_SEP + culture;
-            if (IsValidLocale(language))
+            string? env = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            if (env == null)
             {
-                return true;
+                // env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/";
+                env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + DIR_SEP + ".local" + DIR_SEP + "share" + DIR_SEP;
             }
 
-            int lastIndexOfDot = culture.LastIndexOf('.');
-            if (lastIndexOfDot != -1)
-            {
-                culture = culture[..lastIndexOfDot];
-                language += basePath + "i18n" + DIR_SEP + culture;
-                if (IsValidLocale(language))
-                {
-                    localePath = culture + DIR_SEP;
-                    return true;
-                }
-            }
-
-            int lastIndexOfUnderscore = culture.LastIndexOf('_');
-            if (lastIndexOfUnderscore != -1)
-            {
-                culture = culture[..lastIndexOfUnderscore];
-                language += basePath + "i18n" + DIR_SEP + culture;
-                if (IsValidLocale(language))
-                {
-                    localePath = culture + DIR_SEP;
-                    return true;
-                }
-            }
-
-            // TODO: If there is a problem with windows, check the windows specific implementation in the original C app
-
-            // last resort: use the default locale
-            language = prefix;
-            if (language == "")
-            {
-                language += DIR_SEP;
-            }
-            else if ((language[0] != 0) && (language[language.Length - 1] != DIR_SEP))
-                {
-                    // TODO: check if this is the most portable way to do this
-                    // language += '/';
-                    language += DIR_SEP;
-                }
-            language += DEFAULT_LOCALE_PATH;
-
-            return IsValidLocale(language);
+            basePath = env + DIR_SEP + "anagramarama" + DIR_SEP;
         }
 
 
@@ -169,6 +120,80 @@ namespace AgOop
         }
 
 
+        /// <summary>Get the current language string from the environment. 
+        ///  This is used to location the wordlist and other localized resources.
+        ///  Sets the global variable 'language' 
+        ///  defaults to the default value
+        /// </summary>
+        /// <param name="prefix">a path prefix</param>
+        /// <returns>true if language was set to a value that had valid "wordslist.txt" else false</returns>
+        internal static bool InitLocalePrefix(string prefix)
+        {
+            // prefix is the local folder where the language specifics are stored (ie in addition to "i18n/")
+            CultureInfo currentCulture = CultureInfo.CurrentCulture;
+            string culture = currentCulture.Name; // eg en-GB
+            localePath = culture + DIR_SEP;
+
+            language = prefix;
+
+            language += basePath + "i18n" + DIR_SEP + culture;
+            if (IsValidLocale(language))
+            {
+                return true;
+            }
+
+            int lastIndexOfDot = culture.LastIndexOf('.');
+            if (lastIndexOfDot != -1)
+            {
+                culture = culture[..lastIndexOfDot];
+                language += basePath + "i18n" + DIR_SEP + culture;
+                if (IsValidLocale(language))
+                {
+                    localePath = culture + DIR_SEP;
+                    return true;
+                }
+            }
+
+            int lastIndexOfUnderscore = culture.LastIndexOf('_');
+            if (lastIndexOfUnderscore != -1)
+            {
+                culture = culture[..lastIndexOfUnderscore];
+                language += basePath + "i18n" + DIR_SEP + culture;
+                if (IsValidLocale(language))
+                {
+                    localePath = culture + DIR_SEP;
+                    return true;
+                }
+            }
+
+            // TODO: If there is a problem with windows, check the windows specific implementation in the original C app
+
+            // last resort: use the default locale
+            language = prefix;
+            if (language == "")
+            {
+                // language += DIR_SEP;
+            }
+            else if ((language[0] != 0) && (language[language.Length - 1] != DIR_SEP))
+                {
+                    // TODO: check if this is the most portable way to do this
+                    // language += '/';
+                    language += DIR_SEP;
+                }
+
+            language += DEFAULT_LOCALE_PATH;
+
+            if (!IsValidLocale(language))
+            {
+                Console.WriteLine($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
+                // TODO: Terminate better?
+                Environment.Exit(1);
+            }
+
+            return IsValidLocale(language);
+        }
+
+
         /// <summary> not used. Used for Gamerzilla, which is not implemented here</summary>
         /// <returns>Nothing</returns>
         internal static void GetUserPath()
@@ -180,21 +205,6 @@ namespace AgOop
             }
 
             userPath = env + env + DIR_SEP + "anagramarama" + DIR_SEP;
-        }
-
-
-        /// <summary> not used.</summary>
-        /// <returns>Nothing</returns>
-        internal static void GetBasePath()
-        {
-            string? env = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            if (env == null)
-            {
-                // env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/";
-                env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + DIR_SEP + ".local" + DIR_SEP + "share" + DIR_SEP;
-            }
-
-            basePath = env + DIR_SEP + "anagramarama" + DIR_SEP;
         }
 
 
