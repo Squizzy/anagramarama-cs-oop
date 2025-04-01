@@ -25,6 +25,9 @@
     <!-- <SelfContained>true</SelfContained> -->
     <PublishTrimmed>true</PublishTrimmed>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+         
+    <!-- Ensure native libraries are included -->
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
   <!-- Internationalization files -->
@@ -55,17 +58,24 @@
     </Content>
   </ItemGroup>
 
-  <!-- Platform-specific resources (if needed) -->
+  <!-- Platform-specific resources and dependencies (if needed) -->
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == 'win-x86'">
     <!-- Windows-specific resources would go here -->
+    <!-- <PackageReference Include="SDL2.runtime.win-x64" Version="2.28.5" />
+    <PackageReference Include="SDL2_image.runtime.win-x64" Version="2.6.3" /> -->
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
     <!-- Linux-specific resources would go here -->
+    <!-- <PackageReference Include="SDL2.runtime.linux-x64" Version="2.28.5" />
+    <PackageReference Include="SDL2_image.runtime.linux-x64" Version="2.6.3" /> -->
+
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64'">
     <!-- macOS-specific resources would go here -->
+    <!-- <PackageReference Include="SDL2.runtime.osx-x64" Version="2.28.5" />
+    <PackageReference Include="SDL2_image.runtime.osx-x64" Version="2.6.3" /> -->
   </ItemGroup>
 
   <ItemGroup>
