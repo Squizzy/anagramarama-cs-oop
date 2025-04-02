@@ -66,6 +66,10 @@ namespace AgOop
         internal static Sprite scoreSprite = new Sprite(5);
 
 
+        /// <summary>The time for which the last tick sound of the clock was requested</summary>
+        internal static int _lastClockTick;
+
+
         /// <summary> Scaling factors related to the new dimensions of a resized window from 600x800 </summary>
         static double scalew = 1;
         static double scaleh = 1;
@@ -164,6 +168,8 @@ namespace AgOop
             numberBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, numberSurf);
             SDL.SDL_FreeSurface(numberSurf);
             
+            _lastClockTick = 11;
+
             Console.WriteLine("SpriteManager Constructor DONE");
         }
 
@@ -946,7 +952,12 @@ namespace AgOop
             // tick out the last 10 seconds
             if (thisTime <= 10 && thisTime > 0)
             {
-                SoundManager.PlaySound("clock-tick");
+                if (thisTime < _lastClockTick)
+                {
+                    GameManager.TickClock = true;
+                    _lastClockTick = thisTime;
+                }
+                // SoundManager.PlaySound("clock-tick");
             }
 
         }
