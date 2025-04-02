@@ -79,7 +79,12 @@ namespace AgOop
                                 current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                                 current.toY = BoxConstants.SHUFFLE_BOX_Y;
                                 current.box = BoxConstants.SHUFFLE;
-                                SoundManager.PlaySound("click-answer");
+                                // SoundManager.PlaySound("click-answer");
+                               // TODO: Fix using a proper queue system
+                                using (SoundManager sm = new SoundManager())
+                                {
+                                    sm.PlaySound("click-answer");
+                                }
                                 break;
                             }
                             current = current.next;
@@ -94,7 +99,12 @@ namespace AgOop
                     // SPACE key pressed: Shuffle the SHUFFLE box
                     case SDL.SDL_Keycode.SDLK_SPACE:
                         GameManager.shuffleRemaining = true;
-                        SoundManager.PlaySound("shuffle");
+                        // SoundManager.PlaySound("shuffle");
+                        // TODO: Fix using a proper queue system
+                        using (SoundManager sm = new SoundManager())
+                        {
+                            sm.PlaySound("shuffle");
+                        }
                         break;
 
                     // Other key pressed: if it is a letter from the SHUFFLE box, move it to the ANSWER box
@@ -108,7 +118,12 @@ namespace AgOop
                                     current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                                     current.toY = BoxConstants.ANSWER_BOX_Y;
                                     current.box = BoxConstants.ANSWER;
-                                    SoundManager.PlaySound("click-shuffle");
+                                    // SoundManager.PlaySound("click-shuffle");
+                                    // TODO: Fix using a proper queue system
+                                    using (SoundManager sm = new SoundManager())
+                                    {
+                                        sm.PlaySound("click-shuffle");
+                                    }
                                     break;
                                 }
                             }
@@ -162,14 +177,24 @@ namespace AgOop
                             current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                             current.toY = BoxConstants.ANSWER_BOX_Y;
                             current.box = BoxConstants.ANSWER;
-                            SoundManager.PlaySound("click-shuffle");
+                            // SoundManager.PlaySound("click-shuffle");
+                            // TODO: Fix using a proper queue system
+                            using (SoundManager sm = new SoundManager())
+                            {
+                                sm.PlaySound("click-shuffle");
+                            }
                         }
                         else
                         {
                             current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                             current.toY = BoxConstants.SHUFFLE_BOX_Y;
                             current.box = BoxConstants.SHUFFLE;
-                            SoundManager.PlaySound("click-answer");
+                            // SoundManager.PlaySound("click-answer");
+                            // TODO: Fix using a proper queue system
+                            using (SoundManager sm = new SoundManager())
+                            {
+                                sm.PlaySound("click-answer");
+                            }
                         }
                         break;
                     }
@@ -198,7 +223,12 @@ namespace AgOop
                 if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
                 {
                     GameManager.shuffleRemaining = true;
-                    SoundManager.PlaySound("shuffle");
+                    // SoundManager.PlaySound("shuffle");
+                    // TODO: Fix using a proper queue system
+                    using (SoundManager sm = new SoundManager())
+                    {
+                        sm.PlaySound("click-answer");
+                    }
                 }
             }
 
