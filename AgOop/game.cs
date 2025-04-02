@@ -642,6 +642,16 @@ namespace AgOop
                     SpriteManager.UpdateScore(screen);
                 }
 
+                if (TickClock)
+                {
+                    // TODO: Fix using a proper queue system
+                    using (SoundManager sm = new SoundManager())
+                    {
+                        sm.PlaySound("clock-tick");
+                    }
+                    TickClock = false;
+                }
+
                 if (clearGuess)
                 {
                     // clear the guess
