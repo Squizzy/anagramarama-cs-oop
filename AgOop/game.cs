@@ -74,6 +74,9 @@ namespace AgOop
         /// <summary>Flag to indicate to stop the clock</summary>
         internal static bool stopTheClock = false;
 
+        /// <summary>Flag to indicate to play the clock ticking sound</summary>
+        internal static bool TickClock = false;
+
 
         // Score info
         /// <summary>The information to the final score (if all words found, score x2</summary>
@@ -186,12 +189,22 @@ namespace AgOop
                         if (len == bigWordLen)
                         {
                             gotBigWord = true;
-                            SoundManager.PlaySound("foundbig");
+                            // SoundManager.PlaySound("foundbig");
+                            // TODO: Fix using a proper queue system
+                            using (SoundManager sm = new SoundManager())
+                            {
+                                sm.PlaySound("foundbig");
+                            }
                         }
                         else
                         {
                             // just a normal word
-                            SoundManager.PlaySound("found");
+                            // SoundManager.PlaySound("found");
+                            // TODO: Fix using a proper queue system
+                            using (SoundManager sm = new SoundManager())
+                            {
+                                sm.PlaySound("found");
+                            }
                         }
 
 
@@ -208,7 +221,12 @@ namespace AgOop
                     else
                     {
                         foundDuplicate = true;
-                        SoundManager.PlaySound("duplicate");
+                        // SoundManager.PlaySound("duplicate");
+                        // TODO: Fix using a proper queue system
+                        using (SoundManager sm = new SoundManager())
+                        {
+                            sm.PlaySound("duplicate");
+                        }                        
 
                     }
                     updateAnswers = true;
@@ -230,7 +248,12 @@ namespace AgOop
 
             if (!foundWord)
             {
-                SoundManager.PlaySound("badword");
+                // SoundManager.PlaySound("badword");
+                // TODO: Fix using a proper queue system
+                using (SoundManager sm = new SoundManager())
+                        {
+                            sm.PlaySound("badword");
+                        }
             }
         }
 
@@ -625,7 +648,12 @@ namespace AgOop
                     if (ClearWord(letters) > 0)
                     {
                         clearGuess = false;
-                        SoundManager.PlaySound("clear");
+                        // TODO: Fix using a proper queue system
+                        // SoundManager.PlaySound("clear");
+                        using (SoundManager sm = new SoundManager())
+                        {
+                            sm.PlaySound("clear");
+                        }
                     }
                 }
 
@@ -688,7 +716,7 @@ namespace AgOop
 
             // As we don't know if the garbace collector will run the destructors, do this manually.
             // not really needed but done for the sake of keeping with the original code
-            SoundManager.SoundManagerExit();
+            // SoundManager.SoundManagerExit();
             WordsList.WordsListExit(ref dlbHeadNode);
             AnagramsManager.AnagramsManagerExit(ref letters, ref headNode);
             SpriteManager.SpriteManagerExit();
