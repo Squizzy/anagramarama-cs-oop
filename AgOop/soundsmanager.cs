@@ -1,3 +1,6 @@
+using System.Collections;
+using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 using SDL2;
 
 namespace AgOop
@@ -77,6 +80,39 @@ namespace AgOop
 
         /// <summary>The cache with all the sounds</summary>
         private Sound? _soundCache;
+
+        #region Singleton Implementation
+        
+        /// <summary>Singleton instance of the SoundManager</summary>
+        private static SoundManager? _instance;
+        
+        /// <summary>Lock object for thread safety</summary>
+        private static readonly object _lock = new object();
+        
+        /// <summary>
+        /// Gets the singleton instance of the SoundManager
+        /// </summary>
+        public static SoundManager Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new SoundManager();
+                    }
+                    return _instance;
+                }
+            }
+        }
+        
+        #endregion
+
+        /// <summary> sound queue of the sounds to be played </summary>
+        internal static Queue<string> _soundQueue = new Queue<string>();
+
+        internal static bool _isPlaying;
 
 
         /// <summary>Constructor - initialises the sound setup </summary>
@@ -171,7 +207,6 @@ namespace AgOop
 
 
         /// <summary> push a sound onto the soundCache </summary>
-//        /// <param name="soundCache">pointer to the head of the soundCache</param>
         /// <param name="name">unique id string for the sound</param>
         /// <param name="filename">the filename of the WAV file</param>
         /// <returns>Nothing</returns>
@@ -220,53 +255,6 @@ namespace AgOop
             // }
 
         }
-
-
-        // internal static void SoundManagerExit()
-        // {
-        //     Console.WriteLine("SoundManager Destructor");
-            
-        //     if (_audio_enabled)
-        //     {
-        //         SDL_mixer.Mix_CloseAudio();
-        //         ClearSoundBuffer();
-        //     }
-        // }
-
-
-        // internal static bool audio_enabled = true;
-
-        // /// <summary>audio_len</summary>
-        // internal static uint audio_len;
-
-        // /// <summary>audio_pos</summary>
-        // internal static IntPtr audio_pos;
-
-        /// <summary> defines the Sound class </summary>
-        /// <remarks> Constructor</remarks>
-        /// <param name="name">Name of the sound</param>
-        // /// <param name="audioChunk">pointer to the audio chunk</param>
-        // internal class Sound
-        // {
-        //     /// <value> Property <c>Name</c> name of the sound </value>
-        //     internal string Name = "";
-        //     /// <value> Property <c>audio_chunk</c> audio chunk </value>
-        //     internal IntPtr Audio_chunk = IntPtr.Zero;
-        //     /// <value> Property <c>Next</c> next sound </value>
-        //     internal Sound? Next;
-
-        //     internal Sound(string name, IntPtr audioChunk)
-        //     {
-        //         Name = name;
-        //         Audio_chunk = audioChunk;
-        //     }
-        // }
-
-
-        // public static Sound? soundCache = new(null, IntPtr.Zero);
-
-
-        // SKIPPED the Error and Debug functions of the original C as this is handled differently in C#
 
 
         /// <summary> Return the audio chunk (data) for the sound requested
@@ -324,6 +312,72 @@ namespace AgOop
         }
 
 
+        /// <summary> Enqueue the name of the sounds to be played </summary>
+        /// <param name="name">name of the sound</param>
+        internal void EnqueueSound(string name)
+        {
+            try
+            {
+                ValidateSoundName(name);
+                _soundQueue.Enqueue(name);
+
+                if (!_isPlaying)
+                {
+                    ProcessSoundQueue();
+                }
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine($"QueueSound error: {Ex.Message}");
+            }
+        }
+
+        public static void QueueSound(string name)
+        {
+            Instance.EnqueueSound(name);
+        }
+
+        public static void ProcessSoundQueue()
+        {
+            Instance.ProcessCurrentSoundQueue();
+        }
+
+        internal void ProcessCurrentSoundQueue()
+        {
+            if (_soundQueue.Count == 0)
+            {
+                _isPlaying = false;
+                return;
+            }
+
+            if (!_isPlaying)
+            {
+                string name = _soundQueue.Dequeue();
+                _isPlaying = true;
+                PlaySound(name);
+            }
+        }
+
+
+        internal void PlaySoundWithCallback(string name)
+        {
+            try
+            {
+                ValidateSoundName(name);
+                SDL_mixer.Mix_ChannelFinished(MixChannelFinishedCallaback);
+                PlaySound(name);
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
+            }
+        }
+
+        internal void MixChannelFinishedCallaback(int Channel)
+        {
+            _isPlaying = false;
+        }
+
         /// <summary> Attempts to play the requested sound </summary>
         /// <param name="name">The sound to be played</param>
         /// <exception cref="InvalidOperationException">Error related to acquiring, or playing the sound</exception>
@@ -361,7 +415,7 @@ namespace AgOop
         /// <param name="name">the sound to be played</param>
         /// <exception cref="InvalidOperationException">no sound specified</exception>
         /// <exception cref="ArgumentException">Invalid sound specified</exception>
-        internal static void ValidateSoundName(string? name)
+        internal void ValidateSoundName(string? name)
         {
             // Check if the name is defined at all
             if (string.IsNullOrEmpty(name))
