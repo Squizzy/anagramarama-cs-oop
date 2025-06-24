@@ -327,7 +327,7 @@ namespace AgOop
                 ShowSprite(screen, current);
                 current = current.next;
             }
-            SDL.SDL_RenderPresent(screen);
+            // SDL.SDL_RenderPresent(screen);
 
         }
 
