@@ -205,7 +205,7 @@ namespace AgOop
         private static string GetTemplatedMessage()
         {
             String consoleTime = "{Timestamp:ddMMyyyy HH:mm:ss}"; // the timestamp format
-            String consoleLevel = "{Level:u}"; // Uppercase 4 characters for level
+            String consoleLevel = "{Level:u4}"; // Uppercase 4 characters for level
             String consoleSourceContext = "{SourceContext}"; // Context of the log
             String consoleMessage = "{Message:lj}"; // Long message
             String consoleException = "{Exception}"; // Exception details
