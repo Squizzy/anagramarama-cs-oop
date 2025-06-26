@@ -12,6 +12,24 @@ added F2 to start a new game (F1 still here to switch between full screen or win
 # How to name it work
  - VSCode is sufficient  
  - Install DotNet (and the relevant extensions for vscode if wanted)  
+ - logging, three options: 
+ 1. Microsoft:
+ - install logging:  
+```dotnet add package Microsoft.Extensions.Logging```
+ - install logging output to console:  
+ ```dotnet add package Microsoft.Extensions.Logging.Console```
+2. Serilog:
+ - install Serilog logging output to file:  
+ ```dotnet add package serilog.Extensions.Logging```
+ - install Serilog logging output to console:  
+ ```dotnet add package serilog.Sinks.Console```
+ - install Serilog logging output to file:  
+ ```dotnet add package serilog.Sinks.File```
+
+3. to VSCode
+ - install debug output to vscode:  
+```dotnet add package Microsoft.Extensions.Logging.Debug```
+
  - Install SDL2 (this was developed using [Jeremy Sayers](https://jsayers.dev/tutorials/)' SDL2 adaptation for C# - not tested with others)  
  - Clone this repository  
  - The "i18n" and the "audio" folders needs to be copied into the correct folder for the OS (to be improved!)  
