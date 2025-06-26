@@ -40,12 +40,19 @@ namespace AgOop
                     SDL.SDL_SetWindowFullscreen(GameManagerVariables.window, 0);
                 }
                 fullscreen = !fullscreen;
+                // TODO: trigger a rescaling of all the sprites
             }
 
             // F2 key pressed: Start new game
             else if (keyedLetter == SDL.SDL_Keycode.SDLK_F2)
             {
                 GameManager.startNewGame = true;
+            }
+
+            // F5 key pressed: quit the game
+            else if (keyedLetter == SDL.SDL_Keycode.SDLK_F5)
+            {
+                GameManager.quitGame = true;
             }
 
             else if (!GameManager.gamePaused)
