@@ -3,61 +3,20 @@ using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Options;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Principal;
+
 
 // Adjust to AaOop if I want to use this logger
-namespace AgOop
-// namespace AgOopMSLogging
+// namespace AgOop
+namespace AgOopMSLogging
 {
 
     public class AgOopLogger
     {
-        /// <summary>
-        /// The logger instance used for logging messages.
+        /// <summary> The logger instance used for logging messages.
         /// </summary>
         private ILogger _logger { get; set; }
 
-        // readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-        // {
-
-        //     // builder.AddSimpleConsole(options =>
-        //     //     {
-        //     //         options.SingleLine = true; // use single line output for console logs
-        //     //         options.IncludeScopes = false; // Include scopes in console output
-        //     //         options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-        //     //     });
-
-        //     // builder.AddJsonConsole(options =>
-        //     //     {
-        //     //         // options.SingleLine = true; // use single line output for console logs
-        //     //         options.IncludeScopes = false; // Include scopes in console output
-        //     //         options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-        //     //     });
-
-        //     // builder.AddCustomConsole(options =>
-        //     // {
-        //     //     options.CustomPrefix = $"[AgOop]{DateTime.UtcNow}:"; // Set a custom prefix for all log messages
-        //     //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-        //     // });
-
-        //     // Add console logger provider
-        //     // builder.AddConsole(options =>
-        //     //     {
-        //     //         options.FormatterName = "customName"; // Set a custom formatter name
-        //     //     }
-        //     // );  // Add debug logger provider
-        //     //     // config.AddDebug();  // Add debug logger provider
-        //     //     // config.AddCustomFormatter(options =>
-        //     //     //     {
-        //     //     //         options.CustomPrefix = "AgOop"; // Set a custom prefix for all log messages
-
-        //     //     //     });
-        // });
-
-
-        /// <summary>
-        /// Creates a logger factory with a console logger provider.
+        /// <summary> Creates a logger factory with a console logger provider.
         /// </summary>
         /// <remarks>
         /// This logger factory is used to create loggers for different categories.
@@ -65,18 +24,19 @@ namespace AgOop
         /// MS Logging also cannot write to file
         /// If multiple handing or writing to file, use Serilog for example
         /// if multiple builder options are selected below, the logger will be built by the last one in the list
-
         readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
         {
+            // // DO NOT REMOVE THE BELOW COMMENTED LINES, 
+            // // THEY GET UNCOMMENDED DEPENDING ON THE LOGGER REQUESTED
 
-            // // old console logger, output on two lines
+            // // NOTE: old console logger, output on two lines
             // builder.AddConsole(options =>
             // {
             //     // options.FormatterName = "customName"; // Set a custom formatter name
             //     options.FormatterName = "simple"; // Set a custom formatter name
             // });
 
-            // // new simple console logger, output on one line
+            // // NOTE: new simple console logger, output on one line
             // builder.AddSimpleConsole(options =>
             // {
             //     options.SingleLine = true; // use single line output for console logs
@@ -84,77 +44,44 @@ namespace AgOop
             //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
             // });
 
-            // // console logger outputting JSON
+            // // NOTE: console logger outputting JSON
             // builder.AddJsonConsole(options =>
             // {
             //     options.IncludeScopes = false; // Include scopes in console output
             //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
             // });
 
-            // // console logger outputting using a custom prefix, output on one line
+            // // NOTE: console logger outputting using a custom prefix, output on one line
             builder.AddCustomConsole(options =>
             {
-                // options.CustomPrefix = $"[{DateTime.UtcNow:ddMMyyyy HH:mm:ss}] "; // Set a custom prefix for all log messages
                 options.CustomPrefix = GetColouredDate($"{DateTime.UtcNow:ddMMyyyy HH:mm:ss}"); // Set a custom prefix for all log messages
                 options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
             });
 
-            // // vscode debut output logger - displays in vscode debug output window
+            // // NOTE: vscode debut output logger - displays in vscode debug output window
             // // Use when running debug using the vscode debug button
             // builder.AddDebug();
         });
 
-
-
-
+        /// <summary> Creates a new instance of the AgOopLogger class.
+        /// </summary>
+        /// <param name="categoryName">The category name for the logger.</param>
+        /// <remarks>
+        /// This constructor initializes the logger with the specified category name.
+        /// It uses the logger factory to create a logger instance for the given category.
+        /// </remarks>
         public AgOopLogger(string categoryName)
         {
             // Create a logger for the specified category
-            // _logger = loggerFactory.CreateLogger(categoryName);
-
-            // // using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-            // // {
-
-            // //     // // original console logger, output on two lines
-            // //     // builder.AddConsole(options =>
-            // //     // {
-            // //     //     // options.FormatterName = "customName"; // Set a custom formatter name
-            // //     //     options.FormatterName = "simple"; // Set a custom formatter name
-            // //     // });
-
-            // //     // // simple console logger, output on one line
-            // //     builder.AddSimpleConsole(options =>
-            // //     {
-            // //         options.SingleLine = true; // use single line output for console logs
-            // //         options.IncludeScopes = false; // Include scopes in console output
-            // //         options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-            // //     });
-
-            // //     // console logger outputting JSON
-            // //     builder.AddJsonConsole(options =>
-            // //     {
-            // //         options.IncludeScopes = false; // Include scopes in console output
-            // //         options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-            // //     });
-
-            // //     // // custom console logger, output on one line with custom prefix
-            // //     builder.AddCustomConsole(options =>
-            // //     {
-            // //         options.CustomPrefix = $"[AgOop]{DateTime.UtcNow}:"; // Set a custom prefix for all log messages
-            // //         options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-
-            // //     });
-
-            //     // // provide debug in vscode debug output
-            //     builder.AddDebug();
-
-
-            // });
-
-
             _logger = loggerFactory.CreateLogger(categoryName);
         }
 
+        /// <summary> Overrides the default logger to include line number, file path, and member name.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="lineNumber"></param>
+        /// <param name="filePath"></param>
+        /// <param name="memberName"></param>
         public void LogTrace(string message,
             [CallerLineNumber] int lineNumber = 0,
             [CallerFilePath] string filePath = "",
@@ -165,9 +92,9 @@ namespace AgOop
         public void LogDebug(string message,
             [CallerLineNumber] int lineNumber = 0,
             [CallerFilePath] string filePath = "",
-            [CallerMemberName] string memberName = "") 
-                => 
-                    // _logger.LogDebug($"[{memberName}]:{lineNumber} - {message}");
+            [CallerMemberName] string memberName = "")
+                =>
+                // _logger.LogDebug($"[{memberName}]:{lineNumber} - {message}");
                 _logger.LogDebug($"{GetPostfixMessage(LogLevel.Debug, message, memberName, lineNumber, 4)}"); // [{memberName}]:{lineNumber} - {GetColouredMessage(message)}");
 
         public void LogInformation(string message,
@@ -177,8 +104,8 @@ namespace AgOop
                 =>
                 // Log(LogLevel.Information, $"[{memberName}]:{lineNumber} - {message}");
                 _logger.LogInformation($"{GetPostfixMessage(LogLevel.Information, message, memberName, lineNumber, 4)}"); // [{memberName}]:{lineNumber} - {GetColouredMessage(message)}");
-            // Log(LogLevel.Information, $"[{memberName}]:{lineNumber} - {message}");
-        // _logger.LogInformation($"[{memberName}]:{lineNumber} - {message}");
+                                                                                                                          // Log(LogLevel.Information, $"[{memberName}]:{lineNumber} - {message}");
+                                                                                                                          // _logger.LogInformation($"[{memberName}]:{lineNumber} - {message}");
 
         public void LogWarning(string message,
             [CallerLineNumber] int lineNumber = 0,
@@ -213,6 +140,11 @@ namespace AgOop
         // }
 
 
+        /// <summary> Gets a coloured string representation of the log level.
+        /// </summary>
+        /// <param name="logLevel">The log level to get the string representation for.</param>
+        /// <param name="numberOfChars">The number of characters to include in the string representation.</param>
+        /// <returns>A coloured string representation of the log level.</returns>
         public static String GetColouredLogLevelString(LogLevel logLevel, int numberOfChars = 4)
         {
             String msg = logLevel.ToString().Length > numberOfChars
@@ -235,6 +167,12 @@ namespace AgOop
             return $"{colour}{msg.PadRight(numberOfChars)}{colourReset}"; // Reset color after the message
         }
 
+        /// <summary> Change the colour of the message.
+        /// </summary>
+        /// <param name="message">The message to colour.</param>
+        /// <returns>A coloured string representation of the message.</returns>
+        /// remarks>
+        /// This method wraps the message in ANSI escape codes to change its color.
         public static String GetColouredMessage(String message)
         {
             String colour = "\x1b[36m"; // Cyan
@@ -243,6 +181,13 @@ namespace AgOop
             return $"{colour}{message}{colourReset}";
         }
 
+        /// <summary> Change the colour of the location (which method/line number).
+        /// </summary>
+        /// <param name="memberName">The name of the member (method or property).</param>
+        /// <param name="lineNumber">The line number where the log was called.</param>
+        /// <returns>A coloured string representation of the location.</returns>
+        /// remarks>
+        /// This method wraps the member name and line number in ANSI escape codes to change their color.
         public static String GetColouredLocation(String memberName, int lineNumber)
         {
             String colour = "\x1b[90m"; // Magenta
@@ -252,14 +197,31 @@ namespace AgOop
             return $"{colour}{memberName}:{lineNumber}{colourReset}";
         }
 
+        /// <summary> Change the colour of the date (used in prefix).
+        /// </summary>
+        /// <param name="date">The date to colour.</param>
+        /// <returns>A coloured string representation of the date.</returns>
+        /// remarks>
+        /// This method wraps the date in ANSI escape codes to change its color.
         public static String GetColouredDate(String date)
         {
             String colour = "\x1b[90m"; // Dark Gray
             String colourReset = "\x1b[0m";
 
-            return $"{colour}{date}{colourReset}";  
+            return $"{colour}{date}{colourReset}";
         }
 
+        /// <summary> Gets a formatted message with log level, location, and message.
+        /// </summary>
+        /// <param name="logLevel">The log level of the message.</param>
+        /// <param name="message">The message to log.</param>
+        /// <param name="memberName">The name of the member (method or property) where the log was called.</param>
+        /// <param name="lineNumber">The line number where the log was called.</param>
+        /// <param name="numberOfLogLevelChars">The number of characters to include in the log level string representation.</param>
+        /// <returns>A formatted string containing the log level, location, and message.</returns>
+        /// remarks>
+        /// This method constructs a formatted string that includes the log level, 
+        /// location (member name and line number), and the message.
         public static String GetPostfixMessage(
             LogLevel logLevel,
             String message,
@@ -272,86 +234,44 @@ namespace AgOop
         }
 
     }
-        // {
 
-        // /// <summary>
-        // /// set the interface defining the logging level and methods for the logger
-        // /// </summary>
-        // interface ILogger
-        // {
-        //     bool IsEnabled(LogLevel logLevel);
-        //     IDisposable BeginScope<TState>(TState state);
+    /// <summary> Custom options for the custom console logger.
+    /// </summary>
+    /// <remarks>
+    /// This class extends ConsoleFormatterOptions to allow for custom configuration options.
+    /// </remarks>
+    public sealed class CustomOptions : ConsoleFormatterOptions
+    {
+        public string? CustomPrefix { get; set; }
+    }
 
-        //     void Log(LogLevel logLevel, string message);
-        //     void LogTrace(string message);
-        //     void LogDebug(string message);
-        //     void LogInformation(string message);
-        //     void LogWarning(string message);
-        //     void LogError(string message);
-        //     void LogCritical(string message);
-        // }
+    /// <summary> Extensions for adding a custom console logger to the logging builder.
+    /// </summary>
+    /// <remarks>
+    /// This class provides an extension method to add a custom console logger with specific options.
+    /// </remarks>
+    public static class ConsoleLoggerExtensions
+    {
+        public static ILoggingBuilder AddCustomConsole(
+            this ILoggingBuilder builder,
+            Action<CustomOptions> configure) =>
+            builder.AddConsole(options =>
+                    options.FormatterName = "customName")
+                .AddConsoleFormatter<CustomConsole, CustomOptions>(configure);
+    }
 
-        // /// <summary>
-        // /// Set the interface needed to create a logger provider
-        // /// </summary> 
-        // interface ILoggerProvider : IDisposable
-        // {
-        //     ILoggerProvider CreateLogger(string categoryName);
-        // }
-
-        // /// <summary>
-        // /// set the interface needed to create a logger factory
-        // /// </summary>
-        // interface ILoggerFactory : IDisposable
-        // {
-        //     ILogger CreateLogger(string categoryName);
-        //     void AddProvider(ILoggerProvider provider);
-        // }
-
-        // /// <summary>
-        // /// create a logger factory with a console logger provider
-        // /// </summary>
-        // readonly ILoggerFactory loggerFactory = LoggerFactory.Create(config =>
-        // {
-        //     config.AddConsole(); // Add console logger provider
-        //     config.AddDebug();  // Add debug logger provider
-        // });
-
-        // ILogger logger = loggerFactory.CreateLogger("Category.Medium");
-
-        public sealed class CustomOptions : ConsoleFormatterOptions
-        {
-            public string? CustomPrefix { get; set; }
-        }
-
-        public static class ConsoleLoggerExtensions
-        {
-            public static ILoggingBuilder AddCustomConsole(
-                this ILoggingBuilder builder,
-                Action<CustomOptions> configure) =>
-                builder.AddConsole(options =>
-                        options.FormatterName = "customName")
-                    // options.FormatterName = "simple")
-                    .AddConsoleFormatter<CustomConsole, CustomOptions>(configure);
-
-
-
-            // public static ILoggingBuilder AddCustomFormatter(
-            //     this ILoggingBuilder builder,
-            //     Action<CustomOptions> configure) =>
-            //     builder.AddConsole(options =>
-            //         options.FormatterName = "customName")
-            //         .AddConsoleFormatter<CustomFormatter, CustomOptions>(configure);
-        }
-
-
+    /// <summary> Custom console logger that formats log entries with a custom prefix.
+    /// </summary>
+    /// <remarks>
+    /// This class extends ConsoleFormatter to provide custom formatting for log entries.
+    /// It uses the CustomOptions class to allow for custom configuration options.
+    /// </remarks>
     public sealed class CustomConsole : ConsoleFormatter, IDisposable
     {
         private readonly IDisposable? _optionsReloadToken;
         private CustomOptions _formatterOptions;
 
-        /// <summary>
-        /// Constructor for CustomConsole.
+        /// <summary> Constructor for CustomConsole.
         /// </summary>
         /// <param name="options"></param>
         public CustomConsole(IOptionsMonitor<CustomOptions> options)
@@ -360,17 +280,13 @@ namespace AgOop
             (_optionsReloadToken, _formatterOptions) =
                 (options.OnChange(ReloadLoggerOptions), options.CurrentValue);
 
-
-        /// <summary>
-        /// Reloads the logger options.
+        /// <summary> Reloads the logger options.
         /// </summary>
         /// <param name="options"></param>
         private void ReloadLoggerOptions(CustomOptions options) =>
             _formatterOptions = options;
 
-
-        /// <summary>
-        /// Writes a log entry to the console.
+        /// <summary> Writes a log entry to the console.
         /// </summary>
         /// <typeparam name="TState">The type of the state.</typeparam>
         /// <param name="logEntry">The log entry to write.</param>
@@ -382,7 +298,6 @@ namespace AgOop
         /// and then writes the formatted message to the text writer.
         /// If the formatted message is null, it does nothing.
         /// /// </remarks>
-
         public override void Write<TState>(
             in LogEntry<TState> logEntry,
             IExternalScopeProvider? scopeProvider,
@@ -401,21 +316,18 @@ namespace AgOop
             textWriter.WriteLine(message);
         }
 
-
-        /// <summary>
-        /// Writes custom logic to the text writer.
-        /// /// </summary>
-        /// /// <param name="textWriter">The text writer to write to.</param>
-        /// /// <remarks>
+        /// <summary> Writes custom logic to the text writer.
+        /// </summary>
+        /// <param name="textWriter">The text writer to write to.</param>
+        /// <remarks>
         /// This method writes a custom prefix to the text writer.
-        /// /// </remarks>
+        /// </remarks>
         private void CustomLogicGoesHere(TextWriter textWriter)
         {
             textWriter.Write(_formatterOptions.CustomPrefix);
         }
 
-        /// <summary>
-        /// Disposes the CustomConsole instance.
+        /// <summary> Disposes the CustomConsole instance.
         /// </summary>
         /// <remarks>
         /// This method disposes of the options reload token if it is not null.
@@ -424,5 +336,4 @@ namespace AgOop
 
     }
 }
-// }
 
