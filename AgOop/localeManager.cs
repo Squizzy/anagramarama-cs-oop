@@ -13,15 +13,17 @@ namespace AgOop
         // internal static char DIR_SEP = Path.DirectorySeparatorChar;
         internal readonly static char DIR_SEP = Path.DirectorySeparatorChar;
 
+        internal readonly static string RESOURCES_PATH = "res";
+
         /// <summary>Path to the locale dictionary </summary>
         // public const string DEFAULT_LOCALE_PATH = "i18n/en_GB";
-        internal static string DEFAULT_LOCALE_PATH = "i18n" + DIR_SEP + "en-GB" + DIR_SEP;
+        internal static string DEFAULT_LOCALE_PATH = RESOURCES_PATH + DIR_SEP + "i18n" + DIR_SEP + "en-GB" + DIR_SEP;
 
         /// <summary>Subdirectory where the audio is stored</summary>
-        internal static string audioSubPath = "audio" + DIR_SEP;
+        internal static string audioSubPath = RESOURCES_PATH + DIR_SEP + "audio" + DIR_SEP;
 
         /// <summary>Subdirectory for internationalised content</summary>
-        internal static string i18nPath = "i18n" + DIR_SEP;
+        internal static string i18nPath = RESOURCES_PATH + DIR_SEP + "i18n" + DIR_SEP;
 
         /// <summary>Subdirectory where the audio is stored</summary>
         internal static string imagesSubPath = "images" + DIR_SEP;
@@ -144,7 +146,8 @@ namespace AgOop
 
             language = prefix;
 
-            language += basePath + "i18n" + DIR_SEP + culture;
+            // language += basePath + "i18n" + DIR_SEP + culture;
+            language += i18nPath + DIR_SEP + culture;
             if (IsValidLocale(language))
             {
                 return true;
@@ -154,7 +157,8 @@ namespace AgOop
             if (lastIndexOfDot != -1)
             {
                 culture = culture[..lastIndexOfDot];
-                language += basePath + "i18n" + DIR_SEP + culture;
+                language += i18nPath + DIR_SEP + culture;
+                // language += basePath + "i18n" + DIR_SEP + culture;
                 if (IsValidLocale(language))
                 {
                     localePath = culture + DIR_SEP;
@@ -166,7 +170,8 @@ namespace AgOop
             if (lastIndexOfUnderscore != -1)
             {
                 culture = culture[..lastIndexOfUnderscore];
-                language += basePath + "i18n" + DIR_SEP + culture;
+                // language += basePath + "i18n" + DIR_SEP + culture;
+                language += i18nPath + DIR_SEP + culture;
                 if (IsValidLocale(language))
                 {
                     localePath = culture + DIR_SEP;
