@@ -5,6 +5,10 @@ namespace AgOop
 
     internal class LocaleManager
     {
+
+        // private static readonly AgOopLogger logger;
+        private static readonly AgOopLogger logger = new AgOopLogger("LocaleManager");
+
         /// <summary>Directory separator for the OS used </summary>
         // internal static char DIR_SEP = Path.DirectorySeparatorChar;
         internal readonly static char DIR_SEP = Path.DirectorySeparatorChar;
@@ -80,17 +84,20 @@ namespace AgOop
                     {
                         case "-h":
                         case "--help":
-                            Console.WriteLine(GameConstants.HELP);
+                            // Console.WriteLine(GameConstants.HELP);
+                            logger.LogInformation(GameConstants.HELP);
                             Environment.Exit(0);
                             break;
                         case "-v":
                         case "--version":
-                            Console.WriteLine(GameConstants.VERSION);
+                            // Console.WriteLine(GameConstants.VERSION);
+                            logger.LogInformation(GameConstants.VERSION);
                             Environment.Exit(0);
                             break;
                         case "-l":
                         case "--locale":
-                            Console.WriteLine("here " +  args[i] + " " + args[i + 1]);
+                            // Console.WriteLine("here " +  args[i] + " " + args[i + 1]);
+                            logger.LogInformation("here " +  args[i] + " " + args[i + 1]);
                             if (args[i + 1] != null && GameConstants.AllowedLanguages.Contains(args[i + 1]))
                             {
                                 localePath = args[i + 1];
@@ -98,7 +105,8 @@ namespace AgOop
                             }
                             else
                             {
-                                Console.WriteLine("A valid language code needs to be provided");
+                                // Console.WriteLine("A valid language code needs to be provided");
+                                logger.LogWarning("A valid language code needs to be provided");
                                 Environment.Exit(0);
                                 break;
                             }
@@ -185,7 +193,8 @@ namespace AgOop
 
             if (!IsValidLocale(language))
             {
-                Console.WriteLine($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
+                // Console.WriteLine($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
+                logger.LogError($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
                 // TODO: Terminate better?
                 Environment.Exit(1);
             }
