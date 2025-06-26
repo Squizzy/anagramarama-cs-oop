@@ -1,4 +1,3 @@
-using AgOpp;
 
 namespace AgOop
 {
@@ -26,10 +25,16 @@ namespace AgOop
     /// <summary> Manages the Anagrams activity, inc checking if found, moving letters... </summary>
     internal class AnagramsManager
     {
+        private static readonly AgOopLogger logger;
+        static AnagramsManager()
+        {
+            logger = new AgOopLogger("AnagramsManager");
+        }
 
         internal static void AnagramsManagerExit(ref Sprite? letters, ref Anagrams.Node? headNode)
         {
-            Console.WriteLine("AnagramsManager Desctructor");
+            // Console.WriteLine("AnagramsManager Destructor");
+            logger.LogInformation("AnagramsManager Destructor");
             DestroyLetters(ref letters);
             DestroyAnswers(ref headNode);
 
