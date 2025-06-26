@@ -1,5 +1,5 @@
-using AgOpp;
 using SDL2;
+
 
 // TODO: Create a usable installer
 // TODO: Test under different platforms
@@ -61,6 +61,9 @@ namespace AgOop
     /// <summary> Manages the game handling the anagrams, solving the game, requesting the screen refreshes... </summary>
     internal class GameManager
     {
+
+        private static readonly AgOopLogger logger = new AgOopLogger("GameManager");
+
         /// <summary>The word from which the anagrams are created</summary>
         internal static string rootword = "";
 
@@ -142,6 +145,7 @@ namespace AgOop
         /// <summary> Constructor - Initialises the game
         internal GameManager()
         {
+
             // TODO: should probably use this to clean up even more, but haven't done yet. And a pseudo destructor too
         }
 
@@ -518,6 +522,7 @@ namespace AgOop
         /// <returns>Nothing</returns>
         public static void GameLoop(ref Anagrams.Node? headNode, WordsList.Dlb_node? dldHeadNode, IntPtr screen, ref Sprite? letters)
         {
+            logger.LogWarning("GameLoop started");
             bool done = false;
             SDL.SDL_Event sdlEvent;
             TimeSpan timeNow;
@@ -696,10 +701,14 @@ namespace AgOop
         /// <returns>0 if exited normally, 1 if exited with an error</returns>
         internal static int Main(string[] args)
         {
+            logger.LogInformation("Starting AgOop GameManager...");
+
             WordsList.Dlb_node? dlbHeadNode = null;
             Anagrams.Node? headNode = null;
             Sprite? letters = null;
+            // {
 
+            // }
             // Configure the locale (language/path)
             new LocaleManager(args);
 
