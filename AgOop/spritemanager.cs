@@ -34,6 +34,7 @@ namespace AgOop
     /// <summary> Manages the sprites creation, modification, rendering </summary>
     internal class SpriteManager
     {
+        private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
 
         // SDL summarys
 
@@ -81,11 +82,13 @@ namespace AgOop
             // TODO: 
             // initialise screen textures
             // load and initialise textures
-            Console.WriteLine("SpriteManager Constructor");
+            // Console.WriteLine("SpriteManager Constructor");
+            logger.LogInformation("SpriteManager Constructor");
 
             if (SDL.SDL_Init(SDL.SDL_INIT_AUDIO | SDL.SDL_INIT_VIDEO | SDL.SDL_INIT_TIMER) < 0)
             {
-                Console.WriteLine("Unable to unit SDL: %s", SDL.SDL_GetError());
+                // Console.WriteLine($"Unable to unit SDL: {SDL.SDL_GetError()}");
+                logger.LogError($"Unable to unit SDL: {SDL.SDL_GetError()}");
                 Console.ReadLine();
             }
 
@@ -97,7 +100,8 @@ namespace AgOop
                                                                 .SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
             if (GameManagerVariables.window == IntPtr.Zero)
             {
-                Console.WriteLine("Unable to set 800x600 video: %s", SDL.SDL_GetError());
+                // Console.WriteLine($"Unable to set 800x600 video:  {SDL.SDL_GetError()}");
+                logger.LogWarning($"Unable to set 800x600 video:  {SDL.SDL_GetError()}");
                 Console.ReadLine();
             }
 
@@ -107,7 +111,8 @@ namespace AgOop
                                               SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
             if (GameManagerVariables.renderer == IntPtr.Zero)
             {
-                Console.WriteLine("Rendered creating problem");
+                // Console.WriteLine($"Error creating the renderer: {SDL.SDL_GetError()}");
+                logger.LogError($"Error creating the renderer: {SDL.SDL_GetError()}");
                 Console.ReadLine();
 
             }
@@ -121,27 +126,31 @@ namespace AgOop
 
             if (!File.Exists(imagesPath + "background.png"))
             {
-                Console.WriteLine("problem with background file");
+                // Console.WriteLine("problem with background file");
+                logger.LogWarning($"Background picture file not found at {imagesPath + "background.png"}");
                 Console.ReadLine();
 
             }
             IntPtr backgroundSurf = SDL_image.IMG_Load(imagesPath + "background.png");
             if (backgroundSurf == IntPtr.Zero)
             {
-                Console.WriteLine(SDL.SDL_GetError());
+                // Console.WriteLine($"Error loading background image: {SDL.SDL_GetError()}");
+
+                logger.LogError($"Error loading background image: {SDL.SDL_GetError()}");
             }
-            if (backgroundSurf == IntPtr.Zero)
-            {
-                string error = SDL.SDL_GetError();
-                Console.WriteLine("SDL Error: " + error);
-            }
+            // if (backgroundSurf == IntPtr.Zero)
+            // {
+            //     string error = SDL.SDL_GetError();
+            //     Console.WriteLine("SDL Error: " + error);
+            // }
             backgroundTex = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, backgroundSurf);
             SDL.SDL_FreeSurface(backgroundSurf);
 
 
             if (!File.Exists(imagesPath + "letterBank.png"))
             {
-                Console.WriteLine("problem with letterBank file");
+                // Console.WriteLine("problem with letterBank file");
+                logger.LogError($"Letter bank picture file not found at {imagesPath + "letterBank.png"}");
                 Console.ReadLine();
             }
             IntPtr letterSurf = SDL_image.IMG_Load(imagesPath + "letterBank.png");
@@ -151,7 +160,8 @@ namespace AgOop
 
             if (!File.Exists(imagesPath + "smallLetterBank.png"))
             {
-                Console.WriteLine("problem with smallLetterBank file");
+                // Console.WriteLine("problem with smallLetterBank file");
+                logger.LogError($"Small letter bank picture file not found at {imagesPath + "smallLetterBank.png"}");
                 Console.ReadLine();
             }
             IntPtr smallLetterSurf = SDL_image.IMG_Load(imagesPath + "smallLetterBank.png");
@@ -161,23 +171,26 @@ namespace AgOop
 
             if (!File.Exists(imagesPath + "numberBank.png"))
             {
-                Console.WriteLine("problem with numberBank file");
+                // Console.WriteLine("problem with numberBank file");
+                logger.LogError($"Number bank picture file not found at {imagesPath + "numberBank.png"}");
                 Console.ReadLine();
             }
             IntPtr numberSurf = SDL_image.IMG_Load(imagesPath + "numberBank.png");
             numberBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, numberSurf);
             SDL.SDL_FreeSurface(numberSurf);
-            
+
             _lastClockTick = 11;
 
-            Console.WriteLine("SpriteManager Constructor DONE");
+            // Console.WriteLine("SpriteManager Constructor DONE");
+            logger.LogInformation("SpriteManager Constructor DONE");
         }
 
 
 
         internal static void SpriteManagerExit()
         {
-            Console.WriteLine("SpriteManager destructor");
+            // Console.WriteLine("SpriteManager destructor");
+            logger.LogInformation("SpriteManager Destructor");
 
             SDL.SDL_DestroyTexture(letterBank);
             SDL.SDL_DestroyTexture(smallLetterBank);
@@ -368,7 +381,8 @@ namespace AgOop
                     int sdlRtn = SDL.SDL_RenderCopy(renderer, texture, ref srcRectToSend, ref dstReal);
                     if (sdlRtn != 0)
                     {
-                        Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 1");
+                        // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 1");
+                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 1");
                         Console.ReadLine();
                     }
                 }
@@ -377,7 +391,8 @@ namespace AgOop
                     int sdlRtn = SDL.SDL_RenderCopy(renderer, texture, (nint)null, ref dstReal);
                     if (sdlRtn != 0)
                     {
-                        Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 2 ");
+                        // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 2 ");
+                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 2");
                         Console.ReadLine();
                     }
                 }
@@ -393,7 +408,8 @@ namespace AgOop
                     int sdlRtn = SDL.SDL_RenderCopy(renderer, texture, ref srcRectToSend, (nint)null);
                     if (sdlRtn != 0)
                     {
-                        Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 3 ");
+                        // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 3 ");
+                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 3");
                         Console.ReadLine();
                     }
                 }
@@ -402,7 +418,8 @@ namespace AgOop
                     int sdlRtn = SDL.SDL_RenderCopy(renderer, texture, (nint)null, (nint)null);
                     if (sdlRtn != 0)
                     {
-                        Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 4 ");
+                        // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 4 ");
+                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 4");
                         Console.ReadLine();
                     }
                 }
@@ -438,7 +455,8 @@ namespace AgOop
             imageSurf = SDL.SDL_LoadBMP(file);
             if (imageSurf == IntPtr.Zero)
             {
-                Console.WriteLine("Couldn't load %s: %s\n", file, SDL.SDL_GetError());
+                // Console.WriteLine("Couldn't load %s: %s\n", file, SDL.SDL_GetError());
+                logger.LogError($"Couldn't load {file}: {SDL.SDL_GetError()}");
                 return;
             }
             dest.x = 0;
@@ -754,7 +772,8 @@ namespace AgOop
 
             if (current == null)
             {
-                Console.WriteLine("AddScore: Error navigating to the end of the letters list, no letters yet");
+                // Console.WriteLine("AddScore: Error navigating to the end of the letters list, no letters yet");
+                logger.LogError("AddScore: Error navigating to the end of the letters list, no letters yet");
                 return;
             }
 
@@ -855,7 +874,8 @@ namespace AgOop
 
             if (current == null)
             {
-                Console.WriteLine("AddClock: Error navigating to the end of the letters list, no letters yet");
+                // Console.WriteLine("AddClock: Error navigating to the end of the letters list, no letters yet");
+                logger.LogError("AddClock: Error navigating to the end of the letters list, no letters yet");
                 return;
             }
 

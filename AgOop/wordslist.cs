@@ -1,24 +1,34 @@
-namespace AgOpp
+namespace AgOop
 {
 
     internal class WordsList
     {
+        private static readonly AgOopLogger logger = new("WordsList");
+
+        static WordsList()
+        {
+            logger.LogInformation("WordsList constructor");
+        }
 
         /// <summary>Constructor for the wordlist</summary
-        internal WordsList(ref Dlb_node? dlbHeadNode,  string wordlist)
+        internal WordsList(ref Dlb_node? dlbHeadNode, string wordlist)
         {
-            Console.WriteLine("loading dictionary: " + wordlist);
-            
+            // Console.WriteLine("loading dictionary: " + wordlist);
+            logger.LogInformation($"loading dictionary: {wordlist}");
+
+
             if (!DlbCreate(ref dlbHeadNode, wordlist))
             {
-                Console.WriteLine("error leading the dictionary");
+                // Console.WriteLine("error leading the dictionary");
+                logger.LogError($"error leading the dictionary: {wordlist}");
                 Console.ReadLine();
             }
         }
 
         internal static void WordsListExit(ref Dlb_node? dlbHeadNode)
         {
-            Console.WriteLine("WordsList Destructor");
+            // Console.WriteLine("WordsList Destructor");
+            logger.LogInformation("WordsList Destructor called");
             DlbFree(ref dlbHeadNode);
         }
 
@@ -253,12 +263,14 @@ namespace AgOpp
             }
             catch (Exception e)
             {
-                Console.WriteLine("DlbCreate Exception while creating dlbHeadNode: " + e.Message);
+                // Console.WriteLine("DlbCreate Exception while creating dlbHeadNode: " + e.Message);
+                logger.LogError($"DlbCreate Exception while creating dlbHeadNode: {e.Message}");
                 return false;
             }
             finally
             {
-                Console.WriteLine("dlbHead Dictionary linked list created");
+                // Console.WriteLine("dlbHead Dictionary linked list created");
+                logger.LogInformation("dlbHead Dictionary linked list created");
             }
             return true;
 

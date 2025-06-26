@@ -69,6 +69,9 @@ namespace AgOop
 
     internal class SoundManager : IDisposable
     {
+        private static readonly AgOopLogger logger = new AgOopLogger("SoundManager");
+        // private static readonly AgOopLogger logger;
+
         /// <summary>The object holding the SDL audio configuration </summary>
         private readonly AudioConfig _audioConfig;
 
@@ -118,10 +121,11 @@ namespace AgOop
         /// <summary>Constructor - initialises the sound setup </summary>
         internal SoundManager()
         {
-            Console.WriteLine("SoundManager Constructor");
-            
+            // Console.WriteLine("SoundManager Constructor"); 
+            logger.LogInformation("SoundManager Constructor");
+
             _audioConfig = new AudioConfig();
-            
+
             try
             {
                 int result = SDL_mixer.Mix_OpenAudio(_audioConfig.AudioRate,
@@ -137,9 +141,12 @@ namespace AgOop
             }
             catch (Exception Ex)
             {
-                Console.WriteLine($"SoundManager Constructor: {Ex.Message}");
+                // Console.WriteLine($"SoundManager Constructor: {Ex.Message}");
+                logger.LogError($"SoundManager Constructor: {Ex.Message}");
                 _audioEnabled = false;
             }
+
+            logger.LogInformation("SoundManager Constructor DONE");
         }
 
 
@@ -162,7 +169,8 @@ namespace AgOop
         /// <param name="disposing">true if from Dispose, false if from the Finalizer</param>
         protected virtual void Dispose(bool disposing)
         {
-            Console.WriteLine($"SoundManager Dispose requested  by: " + (disposing ? "Dispose" : "~SoundManager"));
+            // Console.WriteLine($"SoundManager Dispose requested  by: " + (disposing ? "Dispose" : "~SoundManager"));
+            logger.LogInformation($"SoundManager Dispose requested  by: {(disposing ? "Dispose" : "~SoundManager")}");
 
             if (_disposed)
             {
@@ -239,7 +247,8 @@ namespace AgOop
             }
             catch (Exception Ex)
             {
-                Console.WriteLine($"SoundManager PushSound error: {Ex.Message}");
+                // Console.WriteLine($"SoundManager PushSound error: {Ex.Message}");
+                logger.LogError($"SoundManager PushSound error: {Ex.Message}");
                 // load an empty sound placeholder to so the game can 
                 // gracefully continue without this individual sound
                 Sound newSound = new Sound(name: name, audioChunk: IntPtr.Zero);
@@ -306,7 +315,8 @@ namespace AgOop
             }
             catch (Exception Ex)
             {
-                Console.Write($"SoundManager GetSound error: {Ex.Message}");
+                // Console.Write($"SoundManager GetSound error: {Ex.Message}");
+                logger.LogError($"SoundManager GetSound error: {Ex.Message}");
                 return IntPtr.Zero;
             }
         }
@@ -328,7 +338,8 @@ namespace AgOop
             }
             catch (Exception Ex)
             {
-                Console.WriteLine($"QueueSound error: {Ex.Message}");
+                // Console.WriteLine($"QueueSound error: {Ex.Message}");
+                logger.LogError($"QueueSound error: {Ex.Message}");
             }
         }
 
@@ -369,7 +380,8 @@ namespace AgOop
             }
             catch (Exception Ex)
             {
-                Console.WriteLine($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
+                // Console.WriteLine($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
+                logger.LogError($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
             }
         }
 
@@ -387,7 +399,7 @@ namespace AgOop
             {
                 return;
             }
-    
+
             try
             {
                 ObjectDisposedException.ThrowIf(_disposed, this);
@@ -406,7 +418,8 @@ namespace AgOop
             }
             catch (Exception Ex)
             {
-                Console.WriteLine($"SoundManager PlaySound error: {Ex.Message}");
+                // Console.WriteLine($"SoundManager PlaySound error: {Ex.Message}");
+                logger.LogError($"SoundManager PlaySound error: {Ex.Message}");
             }
         }
 
