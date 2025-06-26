@@ -62,8 +62,8 @@ using System.Runtime.CompilerServices;
 //
 
 // Adjust this back to AgOop if I want to use this logger
-// namespace AgOog
-namespace AgOopSerilog
+namespace AgOop
+// namespace AgOopSerilog
 {
 
     /// <summary> Static class that to give names to ANSI  VT100 colours.
@@ -205,7 +205,7 @@ namespace AgOopSerilog
         private static string GetTemplatedMessage()
         {
             String consoleTime = "{Timestamp:ddMMyyyy HH:mm:ss}"; // the timestamp format
-            String consoleLevel = "{Level:u5}"; // Uppercase 5 characters for level
+            String consoleLevel = "{Level:u}"; // Uppercase 4 characters for level
             String consoleSourceContext = "{SourceContext}"; // Context of the log
             String consoleMessage = "{Message:lj}"; // Long message
             String consoleException = "{Exception}"; // Exception details
@@ -216,7 +216,7 @@ namespace AgOopSerilog
               $"[{consoleTime}] {consoleLevel} [{consoleSourceContext}>{consoleMemberName}:{consoleLineNumber}] {consoleMessage}{Environment.NewLine}{consoleException}";
         }
 
-        /// <summary> Define the log file path for logging.
+        /// <summary> The location of the log file.
         /// </summary>
         /// <returns>The path to the log file.</returns>
         private static string GetLogFile()
