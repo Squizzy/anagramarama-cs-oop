@@ -1,11 +1,11 @@
 # What is this
-The anagram game Anagramarama.
-Works with Windows, MacOS (only intel CPU tested so far), linux
+The anagram game Anagramarama.  
+Works with Windows, MacOS (only intel CPU tested so far), linux  
 
 The original Anagramarama (v0.7/0.8), but rewritten in C# (.net8.0+) and object oriented  
-Released under GPL2 as the original authors of the application in C did
+Released under GPL2 as the original authors of the application in C did  
 
-Added more comprehensive __command line__ switches:
+Added more comprehensive __command line__ switches:  
 ```
 -h/--help: help (eg shortcut keys) 
 -v/--version: version number
@@ -14,7 +14,7 @@ Added more comprehensive __command line__ switches:
     (locale-code such as en-GB or fr-FR)
 ```
 
-Keyboard usage:
+Keyboard usage:  
 ```
 LETTER A to Z: Move Available Letter to the Guess
 BACKSPACE: remove the rightmost letter from the Guess
@@ -29,18 +29,18 @@ F5: quit the game (not available yet in release v1.0.0)
 ```
 
 # Just run it?
-Download the [release](https://github.com/Squizzy/anagramarama-cs-oop/releases/tag/v1.0.0) version for the desired OS, unzip and then run the executable.
+Download the [release](https://github.com/Squizzy/anagramarama-cs-oop/releases/tag/v1.0.0) version for the desired OS, unzip and then run the executable.  
 ### NOTE
-There is no installer yet, and the MacOS version is not yet available as a package... all on the todo list but the executables already run fine (normally)
+There is no installer yet, and the MacOS version is not yet available as a package... all on the todo list but the executables already run fine (normally)  
 
 # How to compile and run
 ### Code editor  
-  - [VSCode](https://code.visualstudio.com/download)
+  - [VSCode](https://code.visualstudio.com/download)  
 ### Development platform: C# + Dotnet  
   - [DotNet 8.0 or above](https://dotnet.microsoft.com/en-us/download)  
   - and the relevant extensions for vscode if desired  
 ### Logging (two options)
- 1. Microsoft: MS Extension logging, MS output to Console (terminal), MS output to vscode Debug Console
+ 1. Microsoft: MS Extension logging, MS output to Console (terminal), MS output to vscode Debug Console  
   ```
     dotnet add package Microsoft.Extensions.Logging  
     dotnet add package Microsoft.Extensions.Logging.Consoled
@@ -57,8 +57,8 @@ There is no installer yet, and the MacOS version is not yet available as a packa
 ```
 
 ### SDL2 development librairies
-- Jeremy Sayers' [SDL2 adaptation for C#](https://jsayers.dev/tutorials/)
-- This application was developed using only this set of librairies, and not tested with any others SDL2 bindings
+- Jeremy Sayers' [SDL2 adaptation for C#](https://jsayers.dev/tutorials/)  
+- This application was developed using only this set of librairies, and not tested with any others SDL2 bindings  
 
 ### Clone this repository
 - ```
@@ -78,10 +78,10 @@ There is no installer yet, and the MacOS version is not yet available as a packa
   ```
 
 ### Creating the executables from the source code
-The command is similar for Windows, MacOs or Linux:
+The command is similar for Windows, MacOs or Linux:  
 1. If ok to modify AgOop.csproj content:  
 Uncomment the OS desired wanted in AgOop.csproj by removing the ```<!-- -->```
-    - eg to compile for windows x64
+    - eg to compile for windows x64  
       ```
       <RuntimeIdentifier>win-x64</RuntimeIdentifier>
       <!-- <RuntimeIdentifier>linux-x64</RuntimeIdentifier> -->
@@ -99,18 +99,22 @@ Uncomment the OS desired wanted in AgOop.csproj by removing the ```<!-- -->```
 
 2. If modifying AgOop.csproj is not considered:  
 from the command line:  
-    Windows: 
+    Windows:  
     ``` 
     dotnet publish --runtime win-x64
     ``` 
-    MacOs (intel version): 
+    MacOs (intel version):  
     ```
     dotnet publish --runtime osx-x64
     ```
-    Linux
+    Linux:  
     ```
     dotnet publish --runtime linux-x64
     ``` 
 
 # History
 25 Jun 2025: Release v1.0.0
+
+# Credit
+All who developed the original application  
+Latest version they maintain: https://identicalsoftware.com/anagramarama/
