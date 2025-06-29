@@ -1,0 +1,24 @@
+Misc info collected here and there:
+- Dulsi's repository, the most updated version of the original
+    + https://github.com/dulsi/anagramarama
+    + Includes a lot of info, like the background image
+
+- Serie Lexijeux
+    + http://patrick.jenty.free.fr/_libre/anagramarama.php
+    + Patrick Jenty (French version)
+    + Old, 2007
+    + but added some good idea improvements: 
+    using fonts instead of sprites
+    changing volume
+    exit key
+    logging results
+    scoring
+    gamer name
+    restart with the last playing player
+    display/empty log
+    translation of information on page
+    pause the game
+    help screen
+    changing the words list
+    check for new version
+    multiple backgrounds (not sure if his creation)
