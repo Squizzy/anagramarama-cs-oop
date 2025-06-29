@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <!-- <TargetFramework>net9.0</TargetFramework> -->
     <RootNamespace>AgOop</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
@@ -81,6 +82,13 @@
   <ItemGroup>
     <!-- Uncomment if you need this package -->
     <!-- <PackageReference Include="icecream" Version="3.2.0" /> -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
     <PackageReference Include="Sayers.SDL2.Core" Version="1.0.11" />
+    <PackageReference Include="serilog.extensions.logging" Version="9.0.2" />
+    <PackageReference Include="serilog.sinks.console" Version="6.0.0" />
+    <PackageReference Include="serilog.sinks.debug" Version="3.0.0" />
+    <PackageReference Include="serilog.sinks.file" Version="7.0.0" />
   </ItemGroup>
 </Project>
