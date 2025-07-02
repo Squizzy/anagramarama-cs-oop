@@ -81,7 +81,7 @@ namespace AgOop
 
 
         /// <summary> Constructor </summary>
-        internal SpriteManager(ILogger<SpriteManager> logger)
+        public SpriteManager(ILogger<SpriteManager> logger)
         {
             // TODO: 
             // initialise screen textures
@@ -134,13 +134,14 @@ namespace AgOop
 
             /* cache in-game graphics */
             // string imagesPath = LocaleManager.basePath + LocaleManager.i18nPath + _localeManager.localePath + _localeManager.imagesSubPath;
-            string imagesPath = _localeManager.language + _localeManager.imagesSubPath;
+            // string imagesPath = _localeManager.language + _localeManager.imagesSubPath;
+            string imagesPath = _localeManager.imagesSubPath;
 
             if (!File.Exists(imagesPath + "background.png"))
             {
                 // Console.WriteLine("problem with background file");
                 _logger.LogError($"Background picture file not found at {imagesPath + "background.png"}");
-                Console.ReadLine();
+                // Console.ReadLine("Please press a key");
 
             }
             IntPtr backgroundSurf = SDL_image.IMG_Load(imagesPath + "background.png");
