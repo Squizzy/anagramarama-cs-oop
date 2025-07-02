@@ -1,7 +1,12 @@
-
-using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
+// using System.Collections;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
+using Serilog.Extensions.Logging;
+
 
 // Requires installation of:
 //  - Serilog logging:  
@@ -62,7 +67,7 @@ using System.Runtime.CompilerServices;
 //
 
 // Adjust this back to AgOop if I want to use this logger
-namespace AgOop
+namespace AgOop1
 // namespace AgOopSerilog
 {
 
@@ -134,44 +139,114 @@ namespace AgOop
     /// logger.LogInformation("This is an information message.");
     /// logger.LogError("This is an error message.");
     /// </example>
-    public class AgOopLogger(string categoryName)
+    internal class SerilogLogger<T> : ILogger<T>
+    // internal class AgOopLogger(string categoryName)
     {
 
         /// <summary> The logger instance used for logging messages.
         /// </summary>
-        private ILogger _logger { get; set; } = new LoggerConfiguration()
+        private readonly Serilog.ILogger _logger; // { get; set; } = new LoggerConfiguration()
+        // private ILogger _logger { get; set; } = new LoggerConfiguration()
 
-                // Set the min log level to verbose(Trace) or Debug for development
-                // .MinimumLevel.Verbose() // Set the minimum log level
+        internal SerilogLogger()
+        {
+            // if (Log.Logger == Serilog.Core.Logger.None)
+            // if (Log.Logger.GetType().Name == "SilentLogger")
+            // if (_logger.GetType().Name == "SilentLogger")
+            if (_logger == Serilog.Core.Logger.None)
+            {
 
-                // Override the minimum log level for the specific category
-                // defaults to Warning
-                .MinimumLevel.Override(categoryName, GetMinimumLevelConfiguration(categoryName)) // Set the minimum log level based on the category name
+                _logger = new LoggerConfiguration()
+                    // Log.Logger = new LoggerConfiguration()
+                    // Set the min log level to verbose(Trace) or Debug for development
+                    // .MinimumLevel.Verbose() // Set the minimum log level
 
-                // Format the console output and output to console
-                // Comment if not using console output
-                .WriteTo.Console(outputTemplate: GetTemplatedMessage(), theme: AgOopConsoleThemes.AgOop)
-                // .WriteTo.Console(outputTemplate: GetTemplatedMessage(), theme: AnsiConsoleTheme.Sixteen)
+                    // Override the minimum log level for the specific category
+                    // defaults to Warning
+                    // .MinimumLevel.Override(categoryName, GetMinimumLevelConfiguration(categoryName)) // Set the minimum log level based on the category name
 
-                // Output to vscode debug console
-                // Comment if not using debug output
-                .WriteTo.Debug(outputTemplate: GetTemplatedMessage())
+                    .MinimumLevel.Debug()
 
-                // // Output to a local log file
-                // Comment if not using file output
-                // .WriteTo.File(GetLogFile(), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5) // File output with rolling interval
+                    // Format the console output and output to console
+                    // Comment if not using console output
+                    .WriteTo.Console(outputTemplate: GetTemplatedMessage(), theme: AgOopConsoleThemes.AgOop)
+                    // .WriteTo.Console(outputTemplate: GetTemplatedMessage(), theme: AnsiConsoleTheme.Sixteen)
 
-                // Create the logger with dedicated category name
-                .CreateLogger()
+                    // Output to vscode debug console
+                    // Comment if not using debug output
+                    .WriteTo.Debug(outputTemplate: GetTemplatedMessage())
 
-                    .ForContext("SourceContext", categoryName);
+                    // // Output to a local log file
+                    // Comment if not using file output
+                    // .WriteTo.File(GetLogFile(), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5) // File output with rolling interval
+
+                    // Create the logger with dedicated category name
+                    .CreateLogger();
+
+                // .ForContext("SourceContext", categoryName);
+            }
+
+            _logger = _logger.ForContext<T>();
+            // _logger = Log.Logger.ForContext<T>();
+        }
+
+
+        // Implementation of ILogger methods
+        public IDisposable BeginScope<TState>(TState state) => null!;
+
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return logLevel switch
+            {
+                LogLevel.Trace => _logger.IsEnabled(LogEventLevel.Verbose),
+                LogLevel.Debug => _logger.IsEnabled(LogEventLevel.Debug),
+                LogLevel.Information => _logger.IsEnabled(LogEventLevel.Information),
+                LogLevel.Warning => _logger.IsEnabled(LogEventLevel.Warning),
+                LogLevel.Error => _logger.IsEnabled(LogEventLevel.Error),
+                LogLevel.Critical => _logger.IsEnabled(LogEventLevel.Fatal),
+                _ => false
+            };
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            if (!IsEnabled(logLevel))
+                return;
+
+            var message = formatter(state, exception);
+
+            switch (logLevel)
+            {
+                case LogLevel.Trace:
+                    _logger.Verbose(exception, message);
+                    break;
+                case LogLevel.Debug:
+                    _logger.Debug(exception, message);
+                    break;
+                case LogLevel.Information:
+                    _logger.Information(exception, message);
+                    break;
+                case LogLevel.Warning:
+                    _logger.Warning(exception, message);
+                    break;
+                case LogLevel.Error:
+                    _logger.Error(exception, message);
+                    break;
+                case LogLevel.Critical:
+                    _logger.Fatal(exception, message);
+                    break;
+            }
+        }
+
+
 
         /// <summary> A static class that defines the AnsiConsole themes used for Serilog Console logging.
         /// /// </summary>
         /// /// <remarks>
         /// This class currently contains a single theme called Literate
         /// Colours can me modified using the Colour class above.
-        static class AgOopConsoleThemes
+        private class AgOopConsoleThemes
         {
             public static AnsiConsoleTheme AgOop { get; } = new AnsiConsoleTheme(
                 new Dictionary<ConsoleThemeStyle, string>
@@ -202,7 +277,7 @@ namespace AgOop
         /// This excludes colours which are dealt using the theme
         /// </summary>
         /// <returns>The message to be logged</returns>
-        private static string GetTemplatedMessage()
+        private string GetTemplatedMessage()
         {
             String consoleTime = "{Timestamp:ddMMyyyy HH:mm:ss}"; // the timestamp format
             String consoleLevel = "{Level:u4}"; // Uppercase 4 characters for level
@@ -219,7 +294,7 @@ namespace AgOop
         /// <summary> The location of the log file.
         /// </summary>
         /// <returns>The path to the log file.</returns>
-        private static string GetLogFile()
+        private string GetLogFile()
         {
             String logFile = "log/AgOopLog.txt";
             return logFile;
@@ -230,7 +305,7 @@ namespace AgOop
         /// </summary>
         /// <param name="categoryName">the category (like class initiating)</param>
         /// <returns>the log level</returns>
-        private static Serilog.Events.LogEventLevel GetMinimumLevelConfiguration(string categoryName)
+        private Serilog.Events.LogEventLevel GetMinimumLevelConfiguration(string categoryName)
         {
             switch (categoryName)
             {
@@ -246,8 +321,9 @@ namespace AgOop
             // This method can be used to set the minimum log level dynamically if needed
         }
 
+
         // The below are added for compatibility with Microsoft.Extensions.Logging
-        public void LogTrace(
+        internal void LogTrace(
                     string message,
                     [CallerMemberName] string memberName = "",
                     [CallerFilePath] string filePath = "",
@@ -261,7 +337,7 @@ namespace AgOop
                 .Verbose(message, args);
         }
 
-        public void LogDebug(
+        internal void LogDebug(
                     string message,
                     [CallerMemberName] string memberName = "",
                     [CallerFilePath] string filePath = "",
@@ -275,7 +351,7 @@ namespace AgOop
                 .Debug(message, args);
         }
 
-        public void LogInformation(
+        internal void LogInformation(
                     string message,
                     [CallerMemberName] string memberName = "",
                     [CallerFilePath] string filePath = "",
@@ -289,7 +365,7 @@ namespace AgOop
                 .Information(message, args);
         }
 
-        public void LogWarning(
+        internal void LogWarning(
                     string message,
                     [CallerMemberName] string memberName = "",
                     [CallerFilePath] string filePath = "",
@@ -303,7 +379,7 @@ namespace AgOop
                 .Warning(message, args);
         }
 
-        public void LogError(
+        internal void LogError(
                     string message,
                     [CallerMemberName] string memberName = "",
                     [CallerFilePath] string filePath = "",
@@ -317,7 +393,7 @@ namespace AgOop
                 .Error(message, args);
         }
 
-        public void LogCritical(
+        internal void LogCritical(
                     string message,
                     [CallerMemberName] string memberName = "",
                     [CallerFilePath] string filePath = "",
@@ -332,4 +408,27 @@ namespace AgOop
         }
 
     }
+
+    // public static class SerilogLoggerFactory
+    // {
+    //     // Create a logger for a specific class
+    //     internal static ILogger<T> CreateLogger<T>()
+    //     {
+    //         return new SerilogLogger<T>();
+    //     }
+    // }
+
+    // public static class SerilogService
+    // {
+    //     public static IServiceCollection AddLogging(this IServiceCollection services)
+    //     {
+    //         services.AddLogging(builder =>
+    //         {
+    //             builder.ClearProviders();
+    //             builder.AddSerilog(); // <-- This is the correct usage
+    //         });
+    //         return services;
+    //     }
+    // }
+
 }

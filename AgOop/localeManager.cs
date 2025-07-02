@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Logging;
 
 namespace AgOop
 {
@@ -7,42 +8,62 @@ namespace AgOop
     {
 
         // private static readonly AgOopLogger logger;
-        private static readonly AgOopLogger logger = new AgOopLogger("LocaleManager");
+        // private static readonly AgOopLogger logger = new AgOopLogger("LocaleManager");
+        private readonly ILogger<LocaleManager> _logger;
 
         /// <summary>Directory separator for the OS used </summary>
         // internal static char DIR_SEP = Path.DirectorySeparatorChar;
-        internal readonly static char DIR_SEP = Path.DirectorySeparatorChar;
+        internal static char DIR_SEP;
+        // internal static string DIR_SEP = "/"; //Path.DirectorySeparatorChar;
 
-        internal readonly static string RESOURCES_PATH = "res";
+        /// <summary> Resources path </summary>
+        internal static string RESOURCES_PATH = "res" + DIR_SEP;
 
-        /// <summary>Path to the locale dictionary </summary>
-        // public const string DEFAULT_LOCALE_PATH = "i18n/en_GB";
-        internal static string DEFAULT_LOCALE_PATH = RESOURCES_PATH + DIR_SEP + "i18n" + DIR_SEP + "en-GB" + DIR_SEP;
+        /// <summary> Audio data path</summary>
+        internal static string audioSubPath = RESOURCES_PATH + "audio" + DIR_SEP;
 
-        /// <summary>Subdirectory where the audio is stored</summary>
-        internal static string audioSubPath = RESOURCES_PATH + DIR_SEP + "audio" + DIR_SEP;
+        /// <summary> International content path</summary>
+        internal static string i18nPath = RESOURCES_PATH + "i18n" + DIR_SEP;
 
-        /// <summary>Subdirectory for internationalised content</summary>
-        internal static string i18nPath = RESOURCES_PATH + DIR_SEP + "i18n" + DIR_SEP;
+        /// <summary> Path of a specified locale to use (dict, images) </summary>
+        internal string localePath;
+        // internal string localePath = i18nPath + language;
 
-        /// <summary>Subdirectory where the audio is stored</summary>
-        internal static string imagesSubPath = "images" + DIR_SEP;
+        /// <value> Locale to be used when non-default language (where the worldlist.txt is)</value>
+        internal string language = "" + DIR_SEP;
 
-        /// <summary>Subdirectory where the internationalised content is stored (dict, images)</summary>
-        internal static string localePath = "";
+        /// <summary> A default value for the locale (language) </summary>
+        internal static string defaultLocale = "en-GB" + DIR_SEP;
 
-        /// <value>the path to the locale language to use for the game (where the worldlist.txt is)</value>
-        internal static string language = "";
+        /// <summary> Images path </summary>
+        internal string imagesSubPath;
 
-        /// <value>the path to the locale data to use for the game. Used for Gamerzilla, which is not implemented here</value>
+        /// <summary> Default locale (Dictionary and images) </summary>
+        // internal static string DEFAULT_LOCALE_PATH = i18nPath + "en-GB" + DIR_SEP;
+        internal static string DEFAULT_LOCALE_PATH = i18nPath + defaultLocale;
+
+        /// <summary>the path to the locale data to use for the game. 
+        /// Used for Gamerzilla, which is not implemented here</summary>
         /// https://jimrich.sk/environment-specialfolder-on-windows-linux-and-os-x/
         internal static string userPath = "";
 
-        /// <value>the base path for the game. Used for Gamerzilla, which is not implemented here</value>
+        /// <summary>the base path for the game. Used for Gamerzilla, which is not implemented here</summary>
         internal static string basePath = "";
 
-        internal LocaleManager(string[] args)
+        internal LocaleManager(ILogger<LocaleManager> logger)
         {
+
+            _logger = logger;
+            // _logger = LoggerFactory.CreateLogger<LocaleManager>();
+            DIR_SEP = Path.DirectorySeparatorChar;
+            localePath = i18nPath + language;
+            imagesSubPath = localePath + "images" + DIR_SEP
+
+            _logger.LogDebug($"{}")
+        }
+        internal void GetBasePathAndInitLocale(string[] args)
+        {
+
             GetBasePath();
 
             InitLocale(args);
@@ -51,12 +72,13 @@ namespace AgOop
             {
                 language += DIR_SEP;
             }
+
         }
 
 
         /// <summary> not used.</summary>
         /// <returns>Nothing</returns>
-        internal static void GetBasePath()
+        internal void GetBasePath()
         {
             string? env = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             if (env == null)
@@ -76,7 +98,7 @@ namespace AgOop
         /// </summary>
         /// <param name="args">the command line arguments passed to the application</param>
         /// <returns>Nothing</returns>
-        internal static void InitLocale(string[] args)
+        internal void InitLocale(string[] args)
         {
             if (args.Length > 0)
             {
@@ -87,19 +109,19 @@ namespace AgOop
                         case "-h":
                         case "--help":
                             // Console.WriteLine(GameConstants.HELP);
-                            logger.LogInformation(GameConstants.HELP);
+                            _logger.LogInformation(GameConstants.HELP);
                             Environment.Exit(0);
                             break;
                         case "-v":
                         case "--version":
                             // Console.WriteLine(GameConstants.VERSION);
-                            logger.LogInformation(GameConstants.VERSION);
+                            _logger.LogInformation(GameConstants.VERSION);
                             Environment.Exit(0);
                             break;
                         case "-l":
                         case "--locale":
                             // Console.WriteLine("here " +  args[i] + " " + args[i + 1]);
-                            logger.LogInformation("here " +  args[i] + " " + args[i + 1]);
+                            _logger.LogInformation("here " +  args[i] + " " + args[i + 1]);
                             if (args[i + 1] != null && GameConstants.AllowedLanguages.Contains(args[i + 1]))
                             {
                                 localePath = args[i + 1];
@@ -108,7 +130,7 @@ namespace AgOop
                             else
                             {
                                 // Console.WriteLine("A valid language code needs to be provided");
-                                logger.LogWarning("A valid language code needs to be provided");
+                                _logger.LogWarning("A valid language code needs to be provided");
                                 Environment.Exit(0);
                                 break;
                             }
@@ -137,7 +159,7 @@ namespace AgOop
         /// </summary>
         /// <param name="prefix">a path prefix</param>
         /// <returns>true if language was set to a value that had valid "wordslist.txt" else false</returns>
-        internal static bool InitLocalePrefix(string prefix)
+        internal bool InitLocalePrefix(string prefix)
         {
             // prefix is the local folder where the language specifics are stored (ie in addition to "i18n/")
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
@@ -199,7 +221,7 @@ namespace AgOop
             if (!IsValidLocale(language))
             {
                 // Console.WriteLine($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
-                logger.LogError($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
+                _logger.LogError($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
                 // TODO: Terminate better?
                 Environment.Exit(1);
             }
@@ -210,7 +232,7 @@ namespace AgOop
 
         /// <summary> not used. Used for Gamerzilla, which is not implemented here</summary>
         /// <returns>Nothing</returns>
-        internal static void GetUserPath()
+        internal void GetUserPath()
         {
             string? env = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             if (env == null)
@@ -225,7 +247,7 @@ namespace AgOop
         /// <summary> Check that the dictionary in the local language exists </summary>
         /// <param name="path">The path, including the locale, to the wordfile in the desired language</param>
         /// <returns>true if the file exists otherwise false</returns>
-        internal static bool IsValidLocale(string path)
+        internal bool IsValidLocale(string path)
         {
             string filePath = path;
             if (filePath[filePath.Length - 1] != DIR_SEP)

@@ -1,6 +1,4 @@
-using System.Collections;
-using System.ComponentModel;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging;
 using SDL2;
 
 namespace AgOop
@@ -69,11 +67,14 @@ namespace AgOop
 
     internal class SoundManager : IDisposable
     {
-        private static readonly AgOopLogger logger = new AgOopLogger("SoundManager");
+        // private static readonly AgOopLogger logger = new AgOopLogger("SoundManager");
         // private static readonly AgOopLogger logger;
+        private readonly ILogger<SoundManager> _logger;
+        internal GameManager? _gameManager { get; set; }
 
         /// <summary>The object holding the SDL audio configuration </summary>
-        private readonly AudioConfig _audioConfig;
+        private AudioConfig? _audioConfig;
+        // TODO: This was changed to nullable and away from readonly - can it be changed back?
 
         /// <summary>The flag representing if the audio is enabled</summary>
         private bool _audioEnabled;
@@ -84,45 +85,51 @@ namespace AgOop
         /// <summary>The cache with all the sounds</summary>
         private Sound? _soundCache;
 
-        #region Singleton Implementation
+        // #region Singleton Implementation
         
-        /// <summary>Singleton instance of the SoundManager</summary>
-        private static SoundManager? _instance;
+        // /// <summary>Singleton instance of the SoundManager</summary>
+        // private static SoundManager? _instance;
         
-        /// <summary>Lock object for thread safety</summary>
-        private static readonly object _lock = new object();
+        // /// <summary>Lock object for thread safety</summary>
+        // private static readonly object _lock = new object();
         
-        /// <summary>
-        /// Gets the singleton instance of the SoundManager
-        /// </summary>
-        public static SoundManager Instance
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new SoundManager();
-                    }
-                    return _instance;
-                }
-            }
-        }
+        // /// <summary>
+        // /// Gets the singleton instance of the SoundManager
+        // /// </summary>
+        // public static SoundManager Instance
+        // {
+        //     get
+        //     {
+        //         lock (_lock)
+        //         {
+        //             if (_instance == null)
+        //             {
+        //                 _instance = new SoundManager();
+        //             }
+        //             return _instance;
+        //         }
+        //     }
+        // }
         
-        #endregion
+        // #endregion
 
         /// <summary> sound queue of the sounds to be played </summary>
-        internal static Queue<string> _soundQueue = new Queue<string>();
+        internal Queue<string> _soundQueue = new Queue<string>();
 
-        internal static bool _isPlaying;
+        internal bool _isPlaying;
 
 
         /// <summary>Constructor - initialises the sound setup </summary>
-        internal SoundManager()
+        internal SoundManager(ILogger<SoundManager> logger)
+        {
+            _logger = logger;
+
+        }
+        
+        internal void InitialiseSoundManager()
         {
             // Console.WriteLine("SoundManager Constructor"); 
-            logger.LogInformation("SoundManager Constructor");
+        _logger.LogInformation("SoundManager Constructor");
 
             _audioConfig = new AudioConfig();
 
@@ -142,11 +149,11 @@ namespace AgOop
             catch (Exception Ex)
             {
                 // Console.WriteLine($"SoundManager Constructor: {Ex.Message}");
-                logger.LogError($"SoundManager Constructor: {Ex.Message}");
+                _logger.LogError($"SoundManager Constructor: {Ex.Message}");
                 _audioEnabled = false;
             }
 
-            logger.LogInformation("SoundManager Constructor DONE");
+            _logger.LogInformation("SoundManager Constructor DONE");
         }
 
 
@@ -170,7 +177,7 @@ namespace AgOop
         protected virtual void Dispose(bool disposing)
         {
             // Console.WriteLine($"SoundManager Dispose requested  by: " + (disposing ? "Dispose" : "~SoundManager"));
-            logger.LogInformation($"SoundManager Dispose requested  by: {(disposing ? "Dispose" : "~SoundManager")}");
+            _logger.LogInformation($"SoundManager Dispose requested  by: {(disposing ? "Dispose" : "~SoundManager")}");
 
             if (_disposed)
             {
@@ -248,7 +255,7 @@ namespace AgOop
             catch (Exception Ex)
             {
                 // Console.WriteLine($"SoundManager PushSound error: {Ex.Message}");
-                logger.LogError($"SoundManager PushSound error: {Ex.Message}");
+                _logger.LogError($"SoundManager PushSound error: {Ex.Message}");
                 // load an empty sound placeholder to so the game can 
                 // gracefully continue without this individual sound
                 Sound newSound = new Sound(name: name, audioChunk: IntPtr.Zero);
@@ -316,11 +323,10 @@ namespace AgOop
             catch (Exception Ex)
             {
                 // Console.Write($"SoundManager GetSound error: {Ex.Message}");
-                logger.LogError($"SoundManager GetSound error: {Ex.Message}");
+                _logger.LogError($"SoundManager GetSound error: {Ex.Message}");
                 return IntPtr.Zero;
             }
         }
-
 
         /// <summary> Enqueue the name of the sounds to be played </summary>
         /// <param name="name">name of the sound</param>
@@ -339,18 +345,20 @@ namespace AgOop
             catch (Exception Ex)
             {
                 // Console.WriteLine($"QueueSound error: {Ex.Message}");
-                logger.LogError($"QueueSound error: {Ex.Message}");
+                _logger.LogError($"QueueSound error: {Ex.Message}");
             }
         }
 
-        public static void QueueSound(string name)
+        internal void QueueSound(string name)
         {
-            Instance.EnqueueSound(name);
+            EnqueueSound(name);
+            // Instance.EnqueueSound(name);
         }
 
-        public static void ProcessSoundQueue()
+        internal void ProcessSoundQueue()
         {
-            Instance.ProcessCurrentSoundQueue();
+            // Instance.ProcessCurrentSoundQueue();
+            ProcessCurrentSoundQueue();
         }
 
         internal void ProcessCurrentSoundQueue()
@@ -369,7 +377,6 @@ namespace AgOop
             }
         }
 
-
         internal void PlaySoundWithCallback(string name)
         {
             try
@@ -381,7 +388,7 @@ namespace AgOop
             catch (Exception Ex)
             {
                 // Console.WriteLine($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
-                logger.LogError($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
+                _logger.LogError($"SoundManager PlaySoundWithCallback error: {Ex.Message}");
             }
         }
 
@@ -419,7 +426,7 @@ namespace AgOop
             catch (Exception Ex)
             {
                 // Console.WriteLine($"SoundManager PlaySound error: {Ex.Message}");
-                logger.LogError($"SoundManager PlaySound error: {Ex.Message}");
+                _logger.LogError($"SoundManager PlaySound error: {Ex.Message}");
             }
         }
 

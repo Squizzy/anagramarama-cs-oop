@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using SDL2;
 
 namespace AgOop
@@ -34,41 +35,44 @@ namespace AgOop
     /// <summary> Manages the sprites creation, modification, rendering </summary>
     internal class SpriteManager
     {
-        private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
+        private readonly ILogger<SpriteManager> _logger;
+        internal GameManager? _gameManager;
+        internal LocaleManager? _localeManager;
+        // private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
 
         // SDL summarys
 
         // - SDL Textures    
         /// <summary>the SDL texture containing the background image</summary>
-        internal static IntPtr backgroundTex = IntPtr.Zero;
+        internal IntPtr backgroundTex = IntPtr.Zero;
 
         /// <summary>The SDL texture containing all the large letters</summary>
-        internal static IntPtr letterBank = IntPtr.Zero;
+        internal IntPtr letterBank = IntPtr.Zero;
 
         /// <summary>The SDL texture containing all the small letters</summary>
-        internal static IntPtr smallLetterBank = IntPtr.Zero;
+        internal IntPtr smallLetterBank = IntPtr.Zero;
 
         /// <summary>The SDL texture containing all the numbers</summary>
-        internal static IntPtr numberBank = IntPtr.Zero;
+        internal IntPtr numberBank = IntPtr.Zero;
 
         // textures for the (small) answer boxes
         /// <summary>answerBoxUnknown</summary>
-        internal static IntPtr answerBoxUnknown = IntPtr.Zero;
+        internal IntPtr answerBoxUnknown = IntPtr.Zero;
 
         /// <summary>answerBoxKnown</summary>
-        internal static IntPtr answerBoxKnown = IntPtr.Zero;
+        internal IntPtr answerBoxKnown = IntPtr.Zero;
 
 
         // The clock and score sprite representations
         /// <summary>The list of sprites containing the graphical time representation</summary>
-        internal static Sprite clockSprite = new Sprite(5);
+        internal Sprite clockSprite = new Sprite(5);
 
         /// <summary>The list of sprites containing the graphical score representation</summary>
-        internal static Sprite scoreSprite = new Sprite(5);
+        internal Sprite scoreSprite = new Sprite(5);
 
 
         /// <summary>The time for which the last tick sound of the clock was requested</summary>
-        internal static int _lastClockTick;
+        internal int _lastClockTick;
 
 
         /// <summary> Scaling factors related to the new dimensions of a resized window from 600x800 </summary>
@@ -77,18 +81,26 @@ namespace AgOop
 
 
         /// <summary> Constructor </summary>
-        internal SpriteManager()
+        internal SpriteManager(ILogger<SpriteManager> logger)
         {
             // TODO: 
             // initialise screen textures
             // load and initialise textures
             // Console.WriteLine("SpriteManager Constructor");
-            logger.LogInformation("SpriteManager Constructor");
+            // logger = LoggerFactory.CreateLogger<SpriteManager>();
+            _logger = logger;
+            // _gameManager = gameManager;
+        }
+
+        internal void Initialise()
+        {
+
+            _logger.LogInformation("SpriteManager Constructor");
 
             if (SDL.SDL_Init(SDL.SDL_INIT_AUDIO | SDL.SDL_INIT_VIDEO | SDL.SDL_INIT_TIMER) < 0)
             {
                 // Console.WriteLine($"Unable to unit SDL: {SDL.SDL_GetError()}");
-                logger.LogError($"Unable to unit SDL: {SDL.SDL_GetError()}");
+                _logger.LogError($"Unable to unit SDL: {SDL.SDL_GetError()}");
                 Console.ReadLine();
             }
 
@@ -101,7 +113,7 @@ namespace AgOop
             if (GameManagerVariables.window == IntPtr.Zero)
             {
                 // Console.WriteLine($"Unable to set 800x600 video:  {SDL.SDL_GetError()}");
-                logger.LogWarning($"Unable to set 800x600 video:  {SDL.SDL_GetError()}");
+                _logger.LogWarning($"Unable to set 800x600 video:  {SDL.SDL_GetError()}");
                 Console.ReadLine();
             }
 
@@ -112,7 +124,7 @@ namespace AgOop
             if (GameManagerVariables.renderer == IntPtr.Zero)
             {
                 // Console.WriteLine($"Error creating the renderer: {SDL.SDL_GetError()}");
-                logger.LogError($"Error creating the renderer: {SDL.SDL_GetError()}");
+                _logger.LogError($"Error creating the renderer: {SDL.SDL_GetError()}");
                 Console.ReadLine();
 
             }
@@ -121,13 +133,13 @@ namespace AgOop
             SDL.SDL_RenderPresent(GameManagerVariables.renderer);
 
             /* cache in-game graphics */
-            // string imagesPath = LocaleManager.basePath + LocaleManager.i18nPath + LocaleManager.localePath + LocaleManager.imagesSubPath;
-            string imagesPath = LocaleManager.language + LocaleManager.imagesSubPath;
+            // string imagesPath = LocaleManager.basePath + LocaleManager.i18nPath + _localeManager.localePath + _localeManager.imagesSubPath;
+            string imagesPath = _localeManager.language + _localeManager.imagesSubPath;
 
             if (!File.Exists(imagesPath + "background.png"))
             {
                 // Console.WriteLine("problem with background file");
-                logger.LogWarning($"Background picture file not found at {imagesPath + "background.png"}");
+                _logger.LogError($"Background picture file not found at {imagesPath + "background.png"}");
                 Console.ReadLine();
 
             }
@@ -136,7 +148,7 @@ namespace AgOop
             {
                 // Console.WriteLine($"Error loading background image: {SDL.SDL_GetError()}");
 
-                logger.LogError($"Error loading background image: {SDL.SDL_GetError()}");
+                _logger.LogError($"Error loading background image: {SDL.SDL_GetError()}");
             }
             // if (backgroundSurf == IntPtr.Zero)
             // {
@@ -150,7 +162,7 @@ namespace AgOop
             if (!File.Exists(imagesPath + "letterBank.png"))
             {
                 // Console.WriteLine("problem with letterBank file");
-                logger.LogError($"Letter bank picture file not found at {imagesPath + "letterBank.png"}");
+                _logger.LogError($"Letter bank picture file not found at {imagesPath + "letterBank.png"}");
                 Console.ReadLine();
             }
             IntPtr letterSurf = SDL_image.IMG_Load(imagesPath + "letterBank.png");
@@ -161,7 +173,7 @@ namespace AgOop
             if (!File.Exists(imagesPath + "smallLetterBank.png"))
             {
                 // Console.WriteLine("problem with smallLetterBank file");
-                logger.LogError($"Small letter bank picture file not found at {imagesPath + "smallLetterBank.png"}");
+                _logger.LogError($"Small letter bank picture file not found at {imagesPath + "smallLetterBank.png"}");
                 Console.ReadLine();
             }
             IntPtr smallLetterSurf = SDL_image.IMG_Load(imagesPath + "smallLetterBank.png");
@@ -172,7 +184,7 @@ namespace AgOop
             if (!File.Exists(imagesPath + "numberBank.png"))
             {
                 // Console.WriteLine("problem with numberBank file");
-                logger.LogError($"Number bank picture file not found at {imagesPath + "numberBank.png"}");
+                _logger.LogError($"Number bank picture file not found at {imagesPath + "numberBank.png"}");
                 Console.ReadLine();
             }
             IntPtr numberSurf = SDL_image.IMG_Load(imagesPath + "numberBank.png");
@@ -182,15 +194,15 @@ namespace AgOop
             _lastClockTick = 11;
 
             // Console.WriteLine("SpriteManager Constructor DONE");
-            logger.LogInformation("SpriteManager Constructor DONE");
+            _logger.LogInformation("SpriteManager Constructor DONE");
         }
 
 
 
-        internal static void SpriteManagerExit()
+        internal void SpriteManagerExit()
         {
             // Console.WriteLine("SpriteManager destructor");
-            logger.LogInformation("SpriteManager Destructor");
+            _logger.LogInformation("SpriteManager Destructor");
 
             SDL.SDL_DestroyTexture(letterBank);
             SDL.SDL_DestroyTexture(smallLetterBank);
@@ -205,7 +217,7 @@ namespace AgOop
         /// <param name="screen">The renderer to display on</param>
         /// <param name="movie">The sprite to use</param>
         /// <returns>Nothing</returns>
-        internal static void ShowSprite(IntPtr screen, Sprite movie)
+        internal void ShowSprite(IntPtr screen, Sprite movie)
         {
             SDL.SDL_Rect rect = new SDL.SDL_Rect()
             {
@@ -229,7 +241,7 @@ namespace AgOop
         /// <summary> checks if a sprite needs to move </summary>
         /// <param name="sprite">The sprite tested</param>
         /// <returns>true if this sprite needs to move</returns>
-        internal static bool IsSpriteMoving(Sprite sprite)
+        internal bool IsSpriteMoving(Sprite sprite)
         {
             return (sprite.y != sprite.toY) || (sprite.x != sprite.toX);
         }
@@ -238,7 +250,7 @@ namespace AgOop
         /// <summary> checks if any sprite needs to move </summary>
         /// <param name="letters">The sprite tested</param>
         /// <returns>false if a sprite needs to move</returns>
-        internal static bool AnySpriteMoving(Sprite letters)
+        internal bool AnySpriteMoving(Sprite letters)
         {
             Sprite? current = letters;
 
@@ -262,7 +274,7 @@ namespace AgOop
         /// <param name="letterSpeed">The speed to move the sprite at</param>
         /// <returns>Nothing</returns>
         // TODO: Optimise
-        internal static void MoveSprite(IntPtr screen, Sprite movie, int letterSpeed)
+        internal void MoveSprite(IntPtr screen, Sprite movie, int letterSpeed)
         {
             int Xsteps;
 
@@ -324,7 +336,7 @@ namespace AgOop
         /// <param name="letters">the sprites to move</param>
         /// <param name="letterSpeed">the speed of the move</param>
         /// <returns>Nothing</returns>
-        internal static void MoveSprites(IntPtr screen, Sprite? letters, int letterSpeed)
+        internal void MoveSprites(IntPtr screen, Sprite? letters, int letterSpeed)
         {
             Sprite? current = letters;
 
@@ -348,7 +360,7 @@ namespace AgOop
         /// <summary> identify the location of the mouse event if the window was scaled </summary>
         /// <param name="mouseEvent">the mouse event</param>
         /// <returns>Nothing</returns>
-        internal static void SDLScale_MouseEvent(ref SDL.SDL_Event mouseEvent)
+        internal void SDLScale_MouseEvent(ref SDL.SDL_Event mouseEvent)
         {
             mouseEvent.button.x = (int)(mouseEvent.button.x / scalew);
             mouseEvent.button.y = (int)(mouseEvent.button.y / scaleh);
@@ -361,7 +373,7 @@ namespace AgOop
         /// <param name="srcRect">The original size, if any</param>
         /// <param name="dstRect">The scaled rectangle</param>
         /// <returns>Nothing</returns>
-        internal static void SDLScale_RenderCopy(IntPtr renderer, IntPtr texture, SDL.SDL_Rect? srcRect, SDL.SDL_Rect? dstRect)
+        internal void SDLScale_RenderCopy(IntPtr renderer, IntPtr texture, SDL.SDL_Rect? srcRect, SDL.SDL_Rect? dstRect)
         {
 
             if (dstRect.HasValue)
@@ -382,7 +394,7 @@ namespace AgOop
                     if (sdlRtn != 0)
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 1");
-                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 1");
+                        _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 1");
                         Console.ReadLine();
                     }
                 }
@@ -392,7 +404,7 @@ namespace AgOop
                     if (sdlRtn != 0)
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 2 ");
-                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 2");
+                        _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 2");
                         Console.ReadLine();
                     }
                 }
@@ -409,7 +421,7 @@ namespace AgOop
                     if (sdlRtn != 0)
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 3 ");
-                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 3");
+                        _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 3");
                         Console.ReadLine();
                     }
                 }
@@ -419,7 +431,7 @@ namespace AgOop
                     if (sdlRtn != 0)
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 4 ");
-                        logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 4");
+                        _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 4");
                         Console.ReadLine();
                     }
                 }
@@ -431,7 +443,7 @@ namespace AgOop
         /// <param name="w">width factor</param>
         /// <param name="h">height factor</param>
         /// <returns>Nothing</returns>
-        internal static void SDLScaleSet(double w, double h)
+        internal void SDLScaleSet(double w, double h)
         {
             scalew = w;
             scaleh = h;
@@ -445,7 +457,7 @@ namespace AgOop
         /// <param name="file">the filename to load (.BMP)</param>
         /// <param name="screen">the SDL_Surface to display the image</param>
         /// <returns>Nothing</returns>
-        internal static void ShowBMP(string file, IntPtr screen)
+        internal void ShowBMP(string file, IntPtr screen)
         {
             IntPtr imageSurf;
             IntPtr image;
@@ -456,7 +468,7 @@ namespace AgOop
             if (imageSurf == IntPtr.Zero)
             {
                 // Console.WriteLine("Couldn't load %s: %s\n", file, SDL.SDL_GetError());
-                logger.LogError($"Couldn't load {file}: {SDL.SDL_GetError()}");
+                _logger.LogError($"Couldn't load {file}: {SDL.SDL_GetError()}");
                 return;
             }
             dest.x = 0;
@@ -474,7 +486,7 @@ namespace AgOop
 
         /// <summary> Creates the SDL surfaces of the small answer boxes if they do not exist </summary>
         /// <param name="screen">The renderer</param>
-        internal static void CreateAnswerBoxesSurfaces(IntPtr screen)
+        internal void CreateAnswerBoxesSurfaces(IntPtr screen)
         {
             //answerBoxUnknown: empty answer box as it has not been found
             //amswerBoxKnow: contains the known letter on a white background
@@ -531,7 +543,7 @@ namespace AgOop
         /// <param name="headNode">The head node of anagrams (with the info on if they have been found or guessed)</param>
         /// <param name="screen">The renderer</param>
         /// <returns>Nothing</returns>
-        internal static void DisplayAnswerBoxes(Anagrams.Node? headNode, IntPtr screen)
+        internal void DisplayAnswerBoxes(Anagrams.Node? headNode, IntPtr screen)
         {
             Anagrams.Node? current = headNode;
             int numWords = 0;
@@ -674,7 +686,7 @@ namespace AgOop
         /// <param name="letters">letter sprites head node (in/out)</param>
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <returns>Nothing</returns>
-        internal static void BuildLetters(ref Sprite? letters, IntPtr screen)
+        internal void BuildLetters(ref Sprite? letters, IntPtr screen)
         {
             Sprite thisLetter;
             Sprite previousLetter;
@@ -690,7 +702,7 @@ namespace AgOop
                 h = SpriteConstants.GAME_LETTER_HEIGHT
             };
 
-            int len = GameManager.Shuffle.Length;
+            int len = _gameManager.Shuffle.Length;
             thisLetter = new Sprite(1);
             previousLetter = new Sprite(1);
 
@@ -698,9 +710,9 @@ namespace AgOop
             {
                 thisLetter.numSpr = 0;
 
-                if (GameManager.Shuffle[i] != AnagramsConstants.ASCII_SPACE && GameManager.Shuffle[i] != AnagramsConstants.SPACE_CHAR)
+                if (_gameManager.Shuffle[i] != AnagramsConstants.ASCII_SPACE && _gameManager.Shuffle[i] != AnagramsConstants.SPACE_CHAR)
                 {
-                    int chr = (int)(GameManager.Shuffle[i] - 'a');
+                    int chr = (int)(_gameManager.Shuffle[i] - 'a');
                     rect.x = chr * SpriteConstants.GAME_LETTER_WIDTH;
                     thisLetter.numSpr = 1;
 
@@ -709,7 +721,7 @@ namespace AgOop
                     thisLetter.sprite[0].sprite_x_offset = 0;
                     thisLetter.sprite[0].sprite_y_offset = 0;
 
-                    thisLetter.letter = GameManager.Shuffle[i];
+                    thisLetter.letter = _gameManager.Shuffle[i];
                     // appear at random on the screen in x, y 
                     // To make the letter fly in from wherever on the screen to toX, toY location
                     thisLetter.x = random.Next(800); 
@@ -733,7 +745,7 @@ namespace AgOop
                 }
                 else
                 {
-                    GameManager.Shuffle.ToCharArray()[i] = AnagramsConstants.SPACE_CHAR;
+                    _gameManager.Shuffle.ToCharArray()[i] = AnagramsConstants.SPACE_CHAR;
                     // rect.x = 26 * GAME_LETTER_WIDTH;
                 }
 
@@ -748,7 +760,7 @@ namespace AgOop
         /// <param name="letters">letter sprites head node (in/out)</param>
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <returns>Nothing</returns>
-        internal static void AddScore(ref Sprite? letters, IntPtr screen)
+        internal void AddScore(ref Sprite? letters, IntPtr screen)
         {
             Sprite thisLetter;
             Sprite? previousLetter = null;
@@ -773,7 +785,7 @@ namespace AgOop
             if (current == null)
             {
                 // Console.WriteLine("AddScore: Error navigating to the end of the letters list, no letters yet");
-                logger.LogError("AddScore: Error navigating to the end of the letters list, no letters yet");
+                _logger.LogError("AddScore: Error navigating to the end of the letters list, no letters yet");
                 return;
             }
 
@@ -821,7 +833,7 @@ namespace AgOop
         /// <summary>Renders the score graphically on the SDL surface</summary>
         /// <param name="screen">the SDL_Surface to display the image</param>
         /// <returns>Nothing</returns>
-        internal static void UpdateScore(IntPtr screen)
+        internal void UpdateScore(IntPtr screen)
         {
 
             SDL.SDL_Rect fromRect = new SDL.SDL_Rect
@@ -838,7 +850,7 @@ namespace AgOop
                 h = BoxConstants.SCORE_HEIGHT
             };
 
-            string buffer = GameManager.totalScore.ToString();
+            string buffer = _gameManager.totalScore.ToString();
 
             for (int i = 0; i < buffer.Length; i++)
             {
@@ -858,7 +870,7 @@ namespace AgOop
         /// <param name="letters">letter sprites head node (in/out)</param>
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <returns>Nothing</returns>
-        internal static void AddClock(ref Sprite? letters, IntPtr screen)
+        internal void AddClock(ref Sprite? letters, IntPtr screen)
         {
             Sprite thisLetter;
             Sprite? previousLetter = null;
@@ -875,7 +887,7 @@ namespace AgOop
             if (current == null)
             {
                 // Console.WriteLine("AddClock: Error navigating to the end of the letters list, no letters yet");
-                logger.LogError("AddClock: Error navigating to the end of the letters list, no letters yet");
+                _logger.LogError("AddClock: Error navigating to the end of the letters list, no letters yet");
                 return;
             }
 
@@ -940,7 +952,7 @@ namespace AgOop
         /// <summary>Renders the time graphically on the SDL surface</summary>
         /// <param name="screen">the SDL_Surface on which to display the image</param>
         /// <returns>Nothing</returns>
-        internal static void UpdateTime(IntPtr screen)
+        internal void UpdateTime(IntPtr screen)
         {
             SDL.SDL_Rect fromRect = new SDL.SDL_Rect
             {
@@ -949,7 +961,7 @@ namespace AgOop
                 h = BoxConstants.CLOCK_HEIGHT // height of the character in px
             };
 
-            int thisTime = GameManagerVariables.AVAILABLE_TIME - GameManager.gameTime;
+            int thisTime = GameManagerVariables.AVAILABLE_TIME - _gameManager.gameTime;
             TimeSpan remainingTime = TimeSpan.FromSeconds(thisTime);
 
             int minutes = remainingTime.Minutes;
@@ -974,7 +986,7 @@ namespace AgOop
             {
                 if (thisTime < _lastClockTick)
                 {
-                    GameManager.TickClock = true;
+                    _gameManager.TickClock = true;
                     _lastClockTick = thisTime;
                 }
                 // SoundManager.PlaySound("clock-tick");

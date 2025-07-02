@@ -6,12 +6,63 @@ using Microsoft.Extensions.Options;
 
 
 // Adjust to AaOop if I want to use this logger
-// namespace AgOop
-namespace AgOopMSLogging
+namespace AgOop1
+// namespace AgOopMSLogging
 {
 
-    public class AgOopLogger
+    // public class AgOopLogger
+    public class MicrosoftLogger<T> : ILogger<T>
     {
+
+        // Implement the Microsoft logger interface
+
+        public IDisposable BeginScope<TState>(TState state) => null!;
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return logLevel switch
+            {
+                LogLevel.Trace => _logger.IsEnabled(LogLevel.Trace),
+                LogLevel.Debug => _logger.IsEnabled(LogLevel.Debug),
+                LogLevel.Information => _logger.IsEnabled(LogLevel.Information),
+                LogLevel.Warning => _logger.IsEnabled(LogLevel.Warning),
+                LogLevel.Error => _logger.IsEnabled(LogLevel.Error),
+                LogLevel.Critical => _logger.IsEnabled(LogLevel.Critical),
+                _ => false
+            };
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+            if (!IsEnabled(logLevel))
+                return;
+
+            var message = formatter(state, exception);
+
+            switch (logLevel)
+            {
+                case LogLevel.Trace:
+                    _logger.LogTrace(exception, message);
+                    break;
+                case LogLevel.Debug:
+                    _logger.LogDebug(exception, message);
+                    break;
+                case LogLevel.Information:
+                    _logger.LogInformation(exception, message);
+                    break;
+                case LogLevel.Warning:
+                    _logger.LogWarning(exception, message);
+                    break;
+                case LogLevel.Error:
+                    _logger.LogError(exception, message);
+                    break;
+                case LogLevel.Critical:
+                    _logger.LogCritical(exception, message);
+                    break;
+            }
+        }
+
+
         /// <summary> The logger instance used for logging messages.
         /// </summary>
         private ILogger _logger { get; set; }
@@ -24,44 +75,44 @@ namespace AgOopMSLogging
         /// MS Logging also cannot write to file
         /// If multiple handing or writing to file, use Serilog for example
         /// if multiple builder options are selected below, the logger will be built by the last one in the list
-        readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-        {
-            // // DO NOT REMOVE THE BELOW COMMENTED LINES, 
-            // // THEY GET UNCOMMENDED DEPENDING ON THE LOGGER REQUESTED
+        // readonly ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+        // {
+        //     // // DO NOT REMOVE THE BELOW COMMENTED LINES, 
+        //     // // THEY GET UNCOMMENDED DEPENDING ON THE LOGGER REQUESTED
 
-            // // NOTE: old console logger, output on two lines
-            // builder.AddConsole(options =>
-            // {
-            //     // options.FormatterName = "customName"; // Set a custom formatter name
-            //     options.FormatterName = "simple"; // Set a custom formatter name
-            // });
+        //     // // NOTE: old console logger, output on two lines
+        //     // builder.AddConsole(options =>
+        //     // {
+        //     //     // options.FormatterName = "customName"; // Set a custom formatter name
+        //     //     options.FormatterName = "simple"; // Set a custom formatter name
+        //     // });
 
-            // // NOTE: new simple console logger, output on one line
-            // builder.AddSimpleConsole(options =>
-            // {
-            //     options.SingleLine = true; // use single line output for console logs
-            //     options.IncludeScopes = false; // Include scopes in console output
-            //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-            // });
+        //     // // NOTE: new simple console logger, output on one line
+        //     // builder.AddSimpleConsole(options =>
+        //     // {
+        //     //     options.SingleLine = true; // use single line output for console logs
+        //     //     options.IncludeScopes = false; // Include scopes in console output
+        //     //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
+        //     // });
 
-            // // NOTE: console logger outputting JSON
-            // builder.AddJsonConsole(options =>
-            // {
-            //     options.IncludeScopes = false; // Include scopes in console output
-            //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-            // });
+        //     // // NOTE: console logger outputting JSON
+        //     // builder.AddJsonConsole(options =>
+        //     // {
+        //     //     options.IncludeScopes = false; // Include scopes in console output
+        //     //     options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
+        //     // });
 
-            // // NOTE: console logger outputting using a custom prefix, output on one line
-            builder.AddCustomConsole(options =>
-            {
-                options.CustomPrefix = GetColouredDate($"{DateTime.UtcNow:ddMMyyyy HH:mm:ss}"); // Set a custom prefix for all log messages
-                options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
-            });
+        //     // // NOTE: console logger outputting using a custom prefix, output on one line
+        //     builder.AddCustomConsole(options =>
+        //     {
+        //         options.CustomPrefix = GetColouredDate($"{DateTime.UtcNow:ddMMyyyy HH:mm:ss}"); // Set a custom prefix for all log messages
+        //         options.TimestampFormat = "yyMMdd HH:mm:ss "; // Set timestamp format for console output
+        //     });
 
-            // // NOTE: vscode debut output logger - displays in vscode debug output window
-            // // Use when running debug using the vscode debug button
-            // builder.AddDebug();
-        });
+        //     // // NOTE: vscode debut output logger - displays in vscode debug output window
+        //     // // Use when running debug using the vscode debug button
+        //     // builder.AddDebug();
+        // });
 
         /// <summary> Creates a new instance of the AgOopLogger class.
         /// </summary>
@@ -70,10 +121,12 @@ namespace AgOopMSLogging
         /// This constructor initializes the logger with the specified category name.
         /// It uses the logger factory to create a logger instance for the given category.
         /// </remarks>
-        public AgOopLogger(string categoryName)
+        internal MicrosoftLogger()
+        // public AgOopLogger(string categoryName)
         {
             // Create a logger for the specified category
-            _logger = loggerFactory.CreateLogger(categoryName);
+            // _logger = loggerFactory.CreateLogger();
+            _logger = new MicrosoftLogger<T>();
         }
 
         /// <summary> Overrides the default logger to include line number, file path, and member name.

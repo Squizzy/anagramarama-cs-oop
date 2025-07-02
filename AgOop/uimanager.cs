@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System.Dynamic;
 using SDL2;
 
@@ -5,11 +6,24 @@ namespace AgOop
 {
 
     /// <summary>Manages UI-related constants and functionality </summary>
-    internal static class UIManager
+    internal class UIManager
     {
 
         /// <summary>Flag to indicate need to make the window full screen or not</summary>
-        internal static bool fullscreen = false;
+        internal bool fullscreen = false;
+
+        private readonly ILogger<UIManager> _logger;
+
+        internal GameManager? _gameManager {get; set; }
+        internal SoundManager? _soundManager;
+
+        // internal UIManager(SoundManager soundManager)
+        internal UIManager(ILogger<UIManager> logger)
+        {
+            _logger = logger;
+            // _soundManager = soundManager;
+            // _gameManager = gameManager;
+        }
 
 
         /// <summary> handle the keyboard events:
@@ -22,7 +36,7 @@ namespace AgOop
         /// <param name="headNode">the head node of the anagrams</param>
         /// <param name="letters">The letters</param>
         /// <returns>Nothing</returns>
-        internal static void HandleKeyboardEvent(SDL.SDL_Event SDLevent, Anagrams.Node? headNode, Sprite? letters)
+        internal void HandleKeyboardEvent(SDL.SDL_Event SDLevent, Anagrams.Node? headNode, Sprite? letters)
         {
             Sprite? current = letters;
             var keyedLetter = SDLevent.key.keysym.sym;
@@ -46,23 +60,27 @@ namespace AgOop
             // F2 key pressed: Start new game
             else if (keyedLetter == SDL.SDL_Keycode.SDLK_F2)
             {
-                GameManager.startNewGame = true;
+                _gameManager.startNewGame = true;
+                // GameManager.startNewGame = true;
             }
 
             // F5 key pressed: quit the game
             else if (keyedLetter == SDL.SDL_Keycode.SDLK_F5)
             {
-                GameManager.quitGame = true;
+                _gameManager.quitGame = true;
+                // GameManager.quitGame = true;
             }
 
-            else if (!GameManager.gamePaused)
+            // else if (!GameManager.gamePaused)
+            else if (!_gameManager.gamePaused)
             {
                 switch (keyedLetter)
                 {
                     // ESC key pressed: clear the ANSWER box
                     case SDL.SDL_Keycode.SDLK_ESCAPE:
-                        
-                        GameManager.clearGuess = true;
+
+                        _gameManager.clearGuess = true;
+                        // GameManager.clearGuess = true;
                         break;
 
                     // BACKSPACE key pressed: remove the last letter from the answer box if present
@@ -83,15 +101,17 @@ namespace AgOop
                         {
                             if (current.box == BoxConstants.ANSWER && current.index == maxIndex)
                             {
-                                current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                                current.toX = _gameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                                // current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                                 current.toY = BoxConstants.SHUFFLE_BOX_Y;
                                 current.box = BoxConstants.SHUFFLE;
                                 // SoundManager.PlaySound("click-answer");
-                               // TODO: Fix using a proper queue system
-                                using (SoundManager sm = new SoundManager())
-                                {
-                                    sm.PlaySound("click-answer");
-                                }
+                                // TODO: Fix using a proper queue system
+                                // using (SoundManager sm = new SoundManager())
+                                // {
+                                //     sm.PlaySound("click-answer");
+                                // }
+                                _soundManager.PlaySound("click-answer");
                                 break;
                             }
                             current = current.next;
@@ -100,18 +120,22 @@ namespace AgOop
 
                     // ENTER key pressed: submit the ANSWER to be checked
                     case SDL.SDL_Keycode.SDLK_RETURN:
-                        GameManager.CheckGuess(GameManager.Answer, headNode);
+                        _gameManager.CheckGuess(_gameManager.Answer, headNode);
+                        // _gameManager.CheckGuess(GameManager.Answer, headNode);
+                        // GameManager.CheckGuess(GameManager.Answer, headNode);
                         break;
 
                     // SPACE key pressed: Shuffle the SHUFFLE box
                     case SDL.SDL_Keycode.SDLK_SPACE:
-                        GameManager.shuffleRemaining = true;
+                        _gameManager.shuffleRemaining = true;
+                        // GameManager.shuffleRemaining = true;
                         // SoundManager.PlaySound("shuffle");
                         // TODO: Fix using a proper queue system
-                        using (SoundManager sm = new SoundManager())
-                        {
-                            sm.PlaySound("shuffle");
-                        }
+                        // using (SoundManager sm = new SoundManager())
+                        // {
+                        //     sm.PlaySound("shuffle");
+                        // }
+                        _soundManager.PlaySound("shuffle");
                         break;
 
                     // Other key pressed: if it is a letter from the SHUFFLE box, move it to the ANSWER box
@@ -122,15 +146,17 @@ namespace AgOop
                             {
                                 if (current.letter == (char)keyedLetter)
                                 {
-                                    current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
+                                    current.toX = _gameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
+                                    // current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                                     current.toY = BoxConstants.ANSWER_BOX_Y;
                                     current.box = BoxConstants.ANSWER;
                                     // SoundManager.PlaySound("click-shuffle");
                                     // TODO: Fix using a proper queue system
-                                    using (SoundManager sm = new SoundManager())
-                                    {
-                                        sm.PlaySound("click-shuffle");
-                                    }
+                                    // using (SoundManager sm = new SoundManager())
+                                    // {
+                                    //     sm.PlaySound("click-shuffle");
+                                    // }
+                                    _soundManager.PlaySound("click-shuffle");
                                     break;
                                 }
                             }
@@ -167,11 +193,12 @@ namespace AgOop
         /// <param name="headNode">pointer to the top of the answers list</param>
         /// <param name="letters">pointer to the letters sprites</param>
         /// <returns>Nothing</returns>
-        internal static void ClickDetect(int button, int x, int y, IntPtr screen, Anagrams.Node? headNode, Sprite? letters)
+        internal void ClickDetect(int button, int x, int y, IntPtr screen, Anagrams.Node? headNode, Sprite? letters)
         {
             Sprite? current = letters;
 
-            if (!GameManager.gamePaused)
+            // if (!GameManager.gamePaused)
+            if (!_gameManager.gamePaused)
             {
                 // ANSWER or SHUFFLE box area clicked
                 while (current != null && current.box != BoxConstants.CONTROLS)
@@ -181,27 +208,31 @@ namespace AgOop
                     {
                         if (current.box == BoxConstants.SHUFFLE)
                         {
-                            current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
+                            // current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
+                            current.toX = _gameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                             current.toY = BoxConstants.ANSWER_BOX_Y;
                             current.box = BoxConstants.ANSWER;
                             // SoundManager.PlaySound("click-shuffle");
                             // TODO: Fix using a proper queue system
-                            using (SoundManager sm = new SoundManager())
-                            {
-                                sm.PlaySound("click-shuffle");
-                            }
+                            // using (SoundManager sm = new SoundManager())
+                            // {
+                            //     sm.PlaySound("click-shuffle");
+                            // }
+                            _soundManager.PlaySound("click-shuffle");
                         }
                         else
                         {
-                            current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                            // current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                            current.toX = _gameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                             current.toY = BoxConstants.SHUFFLE_BOX_Y;
                             current.box = BoxConstants.SHUFFLE;
                             // SoundManager.PlaySound("click-answer");
                             // TODO: Fix using a proper queue system
-                            using (SoundManager sm = new SoundManager())
-                            {
-                                sm.PlaySound("click-answer");
-                            }
+                            // using (SoundManager sm = new SoundManager())
+                            // {
+                            //     sm.PlaySound("click-answer");
+                            // }
+                            _soundManager.PlaySound("click-answer");
                         }
                         break;
                     }
@@ -209,46 +240,57 @@ namespace AgOop
                 }
 
                 // clear ANSWER box (red cross) clicked
-                if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
+                // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
+                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
                 {
-                    GameManager.clearGuess = true;
+                    // GameManager.clearGuess = true;
+                    _gameManager.clearGuess = true;
                 }
 
                 // check ANSWER box (green tick) clicked
-                if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
+                // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
+                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
                 {
-                    GameManager.CheckGuess(GameManager.Answer, headNode);
+                    _gameManager.CheckGuess(_gameManager.Answer, headNode);
+                    // GameManager.CheckGuess(GameManager.Answer, headNode);
                 }
 
                 // Solve box area clicked
-                if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
+                // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
+                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
                 {
-                    GameManager.solvePuzzle = true;
+                    _gameManager.solvePuzzle = true;
                 }
 
                 // Shuffle SHUFFLE area clicked
-                if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
+                // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
+                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
                 {
-                    GameManager.shuffleRemaining = true;
+                    _gameManager.shuffleRemaining = true;
                     // SoundManager.PlaySound("shuffle");
                     // TODO: Fix using a proper queue system
-                    using (SoundManager sm = new SoundManager())
-                    {
-                        sm.PlaySound("click-answer");
-                    }
+                    // using (SoundManager sm = new SoundManager())
+                    // {
+                    //     sm.PlaySound("click-answer");
+                    // }
+                        _soundManager.PlaySound("click-answer");
                 }
             }
 
             // start new game button clicked
-            if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
+            // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
+            if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
             {
-                GameManager.startNewGame = true;
+                // GameManager.startNewGame = true;
+                _gameManager.startNewGame = true;
             }
 
             // quit game button clicked
-            if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
+            // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
+            if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
             {
-                GameManager.quitGame = true;
+                // GameManager.quitGame = true;
+                _gameManager.quitGame = true;
             }
         }
 

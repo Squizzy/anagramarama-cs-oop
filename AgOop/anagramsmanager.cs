@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 
 namespace AgOop
 {
@@ -25,16 +26,22 @@ namespace AgOop
     /// <summary> Manages the Anagrams activity, inc checking if found, moving letters... </summary>
     internal class AnagramsManager
     {
-        private static readonly AgOopLogger logger;
-        static AnagramsManager()
+        // private readonly AgOopLogger _logger;
+        private readonly ILogger<AnagramsManager> _logger;
+        internal LocaleManager? _localeManager;
+
+        internal AnagramsManager(ILogger<AnagramsManager> logger)
         {
-            logger = new AgOopLogger("AnagramsManager");
+            _logger = logger;
+            // logger = new AgOopLogger("AnagramsManager");
+            // _logger = SerilogLoggerFactory.CreateLogger<AnagramsManager>();
+            // _logger = SerilogLoggerFactory.CreateLogger<AnagramsManager>();
         }
 
-        internal static void AnagramsManagerExit(ref Sprite? letters, ref Anagrams.Node? headNode)
+        internal void AnagramsManagerExit(ref Sprite? letters, ref Anagrams.Node? headNode)
         {
             // Console.WriteLine("AnagramsManager Destructor");
-            logger.LogInformation("AnagramsManager Destructor");
+            _logger.LogInformation("AnagramsManager Destructor");
             DestroyLetters(ref letters);
             DestroyAnswers(ref headNode);
 
@@ -44,7 +51,7 @@ namespace AgOop
         /// <summary> returns the number of anagrams from the root word </summary>
         /// <param name="headNode">pointer to the first node</param>
         /// <returns> integer value of the number of anagrams in the list </returns>
-        internal static int Length(Anagrams.Node? headNode)
+        internal int Length(Anagrams.Node? headNode)
         {
             Anagrams.Node? current = headNode;
             int count = 0;
@@ -63,7 +70,7 @@ namespace AgOop
         /// <param name="fromNode">first node (in/out)</param>
         /// <param name="toNode">second node (in/out)</param>
         /// <returns>Nothing</returns>
-        internal static void Swap(ref Anagrams.Node fromNode, ref Anagrams.Node toNode)
+        internal void Swap(ref Anagrams.Node fromNode, ref Anagrams.Node toNode)
         {
             string? word = fromNode.anagram;
             int len = fromNode.length;
@@ -78,7 +85,7 @@ namespace AgOop
         /// <summary>Sort the anagrams list first alphabetically then by increasing word length</summary>
         /// <param name="headNode">the node head (in/out)</param>
         /// <returns>Nothing</returns>
-        internal static void Sort(ref Anagrams.Node headNode)
+        internal void Sort(ref Anagrams.Node headNode)
         {
             Anagrams.Node? left, right;
             bool completed = false;
@@ -125,7 +132,7 @@ namespace AgOop
         /// So no individual node clearing is needed </summary>
         /// <param name="headNode">the head node</param>
         /// <returns>Nothing</returns>
-        internal static void DestroyAnswers(ref Anagrams.Node? headNode)
+        internal void DestroyAnswers(ref Anagrams.Node? headNode)
         {
             headNode = null;
         }
@@ -137,7 +144,7 @@ namespace AgOop
         /// </summary>
         /// <param name="letters">the set of letters to remove from memory</param>
         /// <returns>Nothing</returns>
-        internal static void DestroyLetters(ref Sprite? letters)
+        internal void DestroyLetters(ref Sprite? letters)
         {
             letters = null;
         }
@@ -148,7 +155,7 @@ namespace AgOop
         /// <param name="headNode"></param>
         /// <param name="new_anagram">The word to add to the list</param>
         /// <returns>Nothing as the linkedlist itself is modified</returns>
-        internal static void Push(ref Anagrams.Node? headNode, string new_anagram)
+        internal void Push(ref Anagrams.Node? headNode, string new_anagram)
         {
             Anagrams.Node? current = headNode;
             bool duplicate = false;
@@ -178,7 +185,7 @@ namespace AgOop
         /// blanks are indicated by '#' (SPACE_CHAR) not ' ' (ASCII_SPACE)</summary>
         /// <param name="thisString">the string to analyse</param>
         /// <returns>returns position of next blank (1 is first character) or 0 if no blanks found</returns>
-        internal static int NextBlank(string thisString)
+        internal int NextBlank(string thisString)
         {
             // +1 is needed to align with the 1-position of first character in original C application
             return thisString.IndexOf(AnagramsConstants.SPACE_CHAR) + 1;
@@ -188,7 +195,7 @@ namespace AgOop
         /// <summary>Shift a string one character to the left, truncating the leftmost character</summary>
         /// <param name="thisString"></param>
         /// <returns>the string less its first character</returns>
-        internal static string ShitfLeftKill(string thisString)
+        internal string ShitfLeftKill(string thisString)
         {
             return thisString[1..];
         }
@@ -197,7 +204,7 @@ namespace AgOop
         /// <summary>Move the first character to the end of the string</summary>
         /// <param name="thisString"></param>
         /// <returns></returns>
-        internal static string ShiftLeft(string thisString)
+        internal string ShiftLeft(string thisString)
         {
             return thisString[1..] + thisString[..1];
         }
@@ -211,7 +218,7 @@ namespace AgOop
         /// <param name="guess">the current guess</param>
         /// <param name="remain">the remaining letters</param>
         /// <returns>Nothing, the anagram's linkedlist is updated by reference</returns>
-        internal static void Ag(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, string guess, string remain)
+        internal void Ag(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, string guess, string remain)
         {
             string newGuess = guess;
             string newRemain = remain;
@@ -266,9 +273,9 @@ namespace AgOop
         /// <param name="randomWord">the referenced random word variable (will contain the random word found)</param>
         /// <param name="randomWordMinLength">The min length desired for the random word (7 or 8 in the original game)</param>
         /// <returns>Nothing as the result is passed by reference</returns>
-        internal static void GetRandomWord(ref string randomWord, int randomWordMinLength)
+        internal void GetRandomWord(ref string randomWord, int randomWordMinLength)
         {
-            string filename = LocaleManager.language + "wordlist.txt";
+            string filename = _localeManager.language + "wordlist.txt";
 
             string[] lines = File.ReadAllLines(filename);
 
@@ -293,7 +300,7 @@ namespace AgOop
         /// for the generated number of times. The characters to be swapped are randomly selected using the Random class.
         /// </remarks>
         /// <returns>Nothing, the word is passed by reference</returns>
-        internal static void ShuffleWord(ref char[] word)
+        internal void ShuffleWord(ref char[] word)
         {
             int a, b;
             char tmp;
@@ -318,7 +325,7 @@ namespace AgOop
         /// <param name="word">The word to check</param>
         /// <param name="letter">The char to find in the word</param>
         /// <returns>The position of the letter if it is found or -1 if not</returns>
-        internal static int WhereInString(string word, char letter)
+        internal int WhereInString(string word, char letter)
         {
             int pos = word.IndexOf(letter);
             return pos == -1 ? 0 : pos;
@@ -329,14 +336,14 @@ namespace AgOop
         /// <param name="word">The word to shuffle</param>
         /// <param name="letters">The sprite letters to shuffle at the same time</param>
         /// <returns>Nothing as passed by reference</returns>
-        internal static void ShuffleAvailableLetters(ref string word, ref Sprite? letters)
+        internal void ShuffleAvailableLetters(ref string word, ref Sprite? letters)
         {
             Sprite? thisLetter = letters;
             Random random = new Random();
             int from, to;
 
             /// <summary> Switches two chars in a string </summary>
-            static void CharsSwap(ref string charsSeq, int from, int to)
+            void CharsSwap(ref string charsSeq, int from, int to)
             {
                 // make sure from is the lowest value
                 if (from > to) (from, to) = (to, from);
@@ -344,7 +351,7 @@ namespace AgOop
                 {
                     string tempString = "";
                     tempString = charsSeq[0..from] + charsSeq[to] + charsSeq[(from + 1)..to] + charsSeq[from] + charsSeq[(to + 1)..];
-                    charsSeq = tempString;  
+                    charsSeq = tempString;
                 }
             }
 
@@ -381,7 +388,7 @@ namespace AgOop
         /// Used for debug if needed</summary>
         /// <param name="headNode">the first node in the list of anagrams</param>
         /// <returns>Nothing</results>
-        internal static void ListHead(Anagrams.Node headNode)
+        internal void ListHead(Anagrams.Node headNode)
         {
             Anagrams.Node? current = headNode;
             while (current != null)

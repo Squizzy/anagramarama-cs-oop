@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SDL2;
 
 
@@ -40,8 +42,6 @@ namespace AgOop
     /// <summary> Game related constants </summary>
     internal class GameManagerVariables
     {
-
-
         /// <summary> Sets the time of the game (5 mins default = 300s). </summary>
         internal const int AVAILABLE_TIME = 300;
 
@@ -62,97 +62,109 @@ namespace AgOop
     internal class GameManager
     {
 
-        private static readonly AgOopLogger logger = new AgOopLogger("GameManager");
+        // private static readonly AgOopLogger logger = new AgOopLogger("GameManager");
+        private readonly ILogger<GameManager> _logger;
+        private readonly SoundManager _soundManager;
+        private readonly AnagramsManager _anagramsManager;
+        private readonly UIManager _uiManager;
+        private readonly SpriteManager _spriteManager;
+
+
+        /// <summary> Constructor - Initialises the game
+        internal GameManager(ILogger<GameManager> logger, AnagramsManager anagramsManager, SoundManager soundManager, UIManager uiManager, SpriteManager spriteManager)
+        {
+            _logger = logger;
+            _soundManager = soundManager;
+            _anagramsManager = anagramsManager;
+            _uiManager = uiManager;
+            _spriteManager = spriteManager;
+            // TODO: should probably use this to clean up even more, but haven't done yet. And a pseudo destructor too
+        }
+
 
         /// <summary>The word from which the anagrams are created</summary>
-        internal static string rootword = "";
+        internal string rootword = "";
 
         // Game time inform
         /// <summary>time at which the game was started</summary>
-        internal static DateTime gameStart;
+        internal DateTime gameStart;
 
         /// <summary>The number of seconds elapsed since the begining of the game</summary>
-        internal static int gameTime;
+        internal int gameTime;
 
         /// <summary>Flag to indicate to stop the clock</summary>
-        internal static bool stopTheClock = false;
+        internal bool stopTheClock = false;
 
         /// <summary>Flag to indicate to play the clock ticking sound</summary>
-        internal static bool TickClock = false;
+        internal bool TickClock = false;
 
 
         // Score info
         /// <summary>The information to the final score (if all words found, score x2</summary>
-        internal static int totalScore = 0;
+        internal int totalScore = 0;
 
         /// <summary>The current score, incremented by the number of letters of the words guessed correctly</summary>
-        internal static int score = 0;
+        internal int score = 0;
 
         /// <summary>Flag to indicate need to update the score display</summary>
-        internal static bool updateTheScore = false;
+        internal bool updateTheScore = false;
 
 
         // Guesses related flags and info
         /// <summary>Flag to indicate need to shuffle the remaining letters in the shuffle box</summary>
-        internal static bool shuffleRemaining = false;
+        internal bool shuffleRemaining = false;
 
         /// <summary>Flag to indicate need to clear the Answers box</summary>
-        internal static bool clearGuess = false;
+        internal bool clearGuess = false;
 
         /// <summary>The number of anagrams to find</summary>
-        internal static int answersSought = 0;
+        internal int answersSought = 0;
 
         /// <summary>The number of anagrams found so far</summary>
-        internal static int answersGot = 0;
+        internal int answersGot = 0;
 
         /// <summary>Flag repesenting that the rootword was found</summary>
-        internal static bool gotBigWord = false;
+        internal bool gotBigWord = false;
 
         /// <summary>The length of the rootword</summary>
-        internal static int bigWordLen = 0;
+        internal int bigWordLen = 0;
 
         /// <summary>Flag to indicate that a word guessed had already been discovered</summary>
-        internal static bool foundDuplicate = false;
+        internal bool foundDuplicate = false;
 
         /// <summary>Flag to indicate need to update the small answer boxes</summary>
-        internal static bool updateAnswers = false;
+        internal bool updateAnswers = false;
 
 
         // Game status flags
         /// <summary>Flag to indicate need to start a new game</summary>
-        internal static bool startNewGame = false;
+        internal bool startNewGame = false;
 
         /// <summary>Flag to indicate that game was paused</summary>
-        internal static bool gamePaused = false;
+        internal bool gamePaused = false;
 
         /// <summary>Flag to indicate need to quit the game </summary>
-        internal static bool quitGame = false;
+        internal bool quitGame = false;
 
         /// <summary>Flag to indicate need to solve the anagrams (game timed out)</summary>
-        internal static bool solvePuzzle = false;
+        internal bool solvePuzzle = false;
 
         /// <summary>Flag to indicate the game was won</summary>
-        internal static bool winGame = false;
+        internal bool winGame = false;
 
         // shuffle is an array that can be modified so it needs to have a field that is set and get
         /// <summary>Represents a shuffled array of characters.</summary>
-        internal static string Shuffle = "";
+        internal string Shuffle = "";
 
         // answer is an array that can be modified so it needs to have a field that is set and get
         /// <summary>Represents an answer array of characters.</summary>
-        internal static string Answer = "";
+        internal string Answer = "";
 
-        /// <summary> Constructor - Initialises the game
-        internal GameManager()
-        {
-
-            // TODO: should probably use this to clean up even more, but haven't done yet. And a pseudo destructor too
-        }
 
         /// <summary> Declare all all the anagrams as found (but not necessarily guessed)</summary>
         /// <param name="headNode">The head node of the anagrams list</param>
         /// <returns>Nothing</returns>
-        internal static void SolveIt(Anagrams.Node? headNode)
+        internal void SolveIt(Anagrams.Node? headNode)
         {
             Anagrams.Node? current = headNode;
 
@@ -168,14 +180,15 @@ namespace AgOop
         /// <param name="answer">the word proposed</param>
         /// <param name="headNode">The head node of anagrams</param>
         /// <returns>Nothing</returns>
-        internal static void CheckGuess(string answer, Anagrams.Node? headNode)
+        internal void CheckGuess(string answer, Anagrams.Node? headNode)
         {
             Anagrams.Node? current = headNode;
             bool foundWord = false;
             // bool foundAllLength = true; // used for Gamerzilla - ignored here
 
             string test;
-            int len = AnagramsManager.NextBlank(answer) - 1;
+            // int len = AnagramsManager.NextBlank(answer) - 1;
+            int len = _anagramsManager.NextBlank(answer) - 1;
             if (len == -1) len = answer.Length;
             test = answer[0..len];
 
@@ -195,20 +208,22 @@ namespace AgOop
                             gotBigWord = true;
                             // SoundManager.PlaySound("foundbig");
                             // TODO: Fix using a proper queue system
-                            using (SoundManager sm = new SoundManager())
-                            {
-                                sm.PlaySound("foundbig");
-                            }
+                            // using (SoundManager sm = new SoundManager())
+                            // {
+                            //     sm.PlaySound("foundbig");
+                            // }
+                            _soundManager.PlaySound("foundbig");
                         }
                         else
                         {
                             // just a normal word
                             // SoundManager.PlaySound("found");
                             // TODO: Fix using a proper queue system
-                            using (SoundManager sm = new SoundManager())
-                            {
-                                sm.PlaySound("found");
-                            }
+                            // using (SoundManager sm = new SoundManager())
+                            // {
+                            //     sm.PlaySound("found");
+                            // }
+                            _soundManager.PlaySound("found");
                         }
 
 
@@ -227,10 +242,11 @@ namespace AgOop
                         foundDuplicate = true;
                         // SoundManager.PlaySound("duplicate");
                         // TODO: Fix using a proper queue system
-                        using (SoundManager sm = new SoundManager())
-                        {
-                            sm.PlaySound("duplicate");
-                        }                        
+                        // using (SoundManager sm = new SoundManager())
+                        // {
+                        //     sm.PlaySound("duplicate");
+                        // }            
+                        _soundManager.PlaySound("duplicate");            
 
                     }
                     updateAnswers = true;
@@ -254,10 +270,11 @@ namespace AgOop
             {
                 // SoundManager.PlaySound("badword");
                 // TODO: Fix using a proper queue system
-                using (SoundManager sm = new SoundManager())
-                        {
-                            sm.PlaySound("badword");
-                        }
+                // using (SoundManager sm = new SoundManager())
+                // {
+                //     sm.PlaySound("badword");
+                // }
+                _soundManager.PlaySound("badword");
             }
         }
 
@@ -275,7 +292,7 @@ namespace AgOop
         /// <param name="box">the ANSWER or SHUFFLE box</param>
         /// <param name="index">pointer to the letter we're interested in</param>
         /// <returns>the coords of the next blank position</returns>
-        internal static int NextBlankPosition(int box, ref int index)
+        internal int NextBlankPosition(int box, ref int index)
         {
             int i = 0;
 
@@ -340,7 +357,7 @@ namespace AgOop
         /// <param name="x"> the x position clicked </param>
         /// <param name="y">The y position clicked</param>
         /// <returns>true if clicked inside the box, false otherwise</returns>
-        internal static bool IsInside(Box box, int x, int y)
+        internal bool IsInside(Box box, int x, int y)
         {
             return (x > box.x) && (x < (box.x + box.width)) &&
                     (y > box.y) && (y < (box.y + box.height));
@@ -351,7 +368,7 @@ namespace AgOop
         /// <summary> move all letters from answer to shuffle </summary>
         /// <param name="letters">the letter sprites</param>
         /// <returns>the count of??? letters cleared, used to play a sound if not null??</returns>
-        internal static int ClearWord(Sprite? letters)
+        internal int ClearWord(Sprite? letters)
         {
             Sprite? current = letters;
             Sprite[] orderedLetters = new Sprite[7];
@@ -393,7 +410,7 @@ namespace AgOop
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <param name="letters">first node in the letter sprites (in/out)</param>
         /// <returns>Nothing</returns>
-        static void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
+        internal void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
         {
             string guess;
             string remain = "";
@@ -408,29 +425,35 @@ namespace AgOop
                 w = 800,
                 h = 600
             };
-            SpriteManager.SDLScale_RenderCopy(screen, SpriteManager.backgroundTex, null, dest);
+            _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
 
-            AnagramsManager.DestroyLetters(ref letters);
+            _anagramsManager.DestroyLetters(ref letters);
+            // AnagramsManager.DestroyLetters(ref letters);
 
             while (!happy)
             {
                 // changed this max size from original game
-                AnagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+                // AnagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+                _anagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
                 bigWordLen = rootword.Length - 1; // GetRandomWord adds an extra space at the end
                 guess = "";
                 remain = rootword;
 
-                AnagramsManager.DestroyAnswers(ref headNode);
+                // AnagramsManager.DestroyAnswers(ref headNode);
+                _anagramsManager.DestroyAnswers(ref headNode);
 
-                AnagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
+                // AnagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
+                _anagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
 
-                answersSought = AnagramsManager.Length(headNode);
+                // answersSought = AnagramsManager.Length(headNode);
+                answersSought = _anagramsManager.Length(headNode);
 
                 happy = (answersSought <= 77) && (answersSought >= 6);
             }
 
             // now we have a good set of words - sort them alphabetically and by size
-            AnagramsManager.Sort(ref headNode!);
+            // AnagramsManager.Sort(ref headNode!);
+            _anagramsManager.Sort(ref headNode!);
 
             for (int i = bigWordLen; i < 7; i++)
             {
@@ -438,19 +461,20 @@ namespace AgOop
             }
             remain = remain[0..7]; // making sure we don't have extra chars
             char[] remainToShuffle = remain.ToCharArray();
-            AnagramsManager.ShuffleWord(ref remainToShuffle);
+            // AnagramsManager.ShuffleWord(ref remainToShuffle);
+            _anagramsManager.ShuffleWord(ref remainToShuffle);
             Shuffle = new string(remainToShuffle);
 
             Answer = AnagramsConstants.SPACE_FILLED_CHARS;
 
             /* build up the letter sprites */
 
-            SpriteManager.BuildLetters(ref letters, screen);
-            SpriteManager.AddClock(ref letters, screen);
-            SpriteManager.AddScore(ref letters, screen);
+            _spriteManager.BuildLetters(ref letters, screen);
+            _spriteManager.AddClock(ref letters, screen);
+            _spriteManager.AddScore(ref letters, screen);
 
             /* display all answer boxes */
-            SpriteManager.DisplayAnswerBoxes(headNode, screen);
+            _spriteManager.DisplayAnswerBoxes(headNode, screen);
 
             gotBigWord = false;
             score = 0;
@@ -471,7 +495,7 @@ namespace AgOop
         /// <param name="interval">The interval in milliseconds for the timer.</param>
         /// <param name="param">Additional parameters for the callback (unused).</param>
         /// <returns>The interval for the next timer event.</returns>        
-        public static uint TimerCallBack(uint interval, IntPtr param)
+        public uint TimerCallBack(uint interval, IntPtr param)
         {
             SDL.SDL_UserEvent userEvent = new SDL.SDL_UserEvent()
             {
@@ -520,9 +544,9 @@ namespace AgOop
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <param name="letters">first node in the letter sprites (in/out)</param>
         /// <returns>Nothing</returns>
-        public static void GameLoop(ref Anagrams.Node? headNode, WordsList.Dlb_node? dldHeadNode, IntPtr screen, ref Sprite? letters)
+        public void GameLoop(ref Anagrams.Node? headNode, WordsList.Dlb_node? dldHeadNode, IntPtr screen, ref Sprite? letters)
         {
-            logger.LogWarning("GameLoop started");
+            _logger.LogWarning("GameLoop started");
             bool done = false;
             SDL.SDL_Event sdlEvent;
             TimeSpan timeNow;
@@ -548,12 +572,14 @@ namespace AgOop
                     switch (sdlEvent.type)
                     {
                         case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                            SpriteManager.SDLScale_MouseEvent(ref sdlEvent);
-                            UIManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, headNode, letters);
+                            _spriteManager.SDLScale_MouseEvent(ref sdlEvent);
+                            _uiManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, headNode, letters);
+                            // UIManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, headNode, letters);
                             break;
 
                         case SDL.SDL_EventType.SDL_KEYUP:
-                            UIManager.HandleKeyboardEvent(sdlEvent, headNode, letters);
+                            _uiManager.HandleKeyboardEvent(sdlEvent, headNode, letters);
+                            // UIManager.HandleKeyboardEvent(sdlEvent, headNode, letters);
                             break;
 
                         case SDL.SDL_EventType.SDL_QUIT:
@@ -566,7 +592,7 @@ namespace AgOop
                             {
                                 double scalew = sdlEvent.window.data1 / 800.0;
                                 double scaleh = sdlEvent.window.data2 / 600.0;
-                                SpriteManager.SDLScaleSet(scalew, scaleh);
+                                _spriteManager.SDLScaleSet(scalew, scaleh);
                             }
                             break;
                     }
@@ -586,7 +612,7 @@ namespace AgOop
                     if (timeNowSeconds != gameTime)
                     {
                         gameTime = timeNowSeconds;
-                        SpriteManager.UpdateTime(screen);
+                        _spriteManager.UpdateTime(screen);
                     }
                 }
                 else
@@ -621,7 +647,7 @@ namespace AgOop
                     ClearWord(letters);
                     updateAnswers = false;
                 }
-                SpriteManager.DisplayAnswerBoxes(headNode, screen);
+                _spriteManager.DisplayAnswerBoxes(headNode, screen);
 
                 // start a new game
                 if (startNewGame)
@@ -637,23 +663,25 @@ namespace AgOop
 
                 if (shuffleRemaining)
                 {
-                    AnagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
+                    // AnagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
+                    _anagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
                     shuffleRemaining = false;
                 }
 
                 if (updateTheScore)
                 {
                     updateTheScore = false;
-                    SpriteManager.UpdateScore(screen);
+                    _spriteManager.UpdateScore(screen);
                 }
 
                 if (TickClock)
                 {
                     // TODO: Fix using a proper queue system
-                    using (SoundManager sm = new SoundManager())
-                    {
-                        sm.PlaySound("clock-tick");
-                    }
+                    // using (SoundManager sm = new SoundManager())
+                    // {
+                    //     sm.PlaySound("clock-tick");
+                    // }
+                    _soundManager.PlaySound("clock-tick");
                     TickClock = false;
                 }
 
@@ -665,10 +693,11 @@ namespace AgOop
                         clearGuess = false;
                         // TODO: Fix using a proper queue system
                         // SoundManager.PlaySound("clear");
-                        using (SoundManager sm = new SoundManager())
-                        {
-                            sm.PlaySound("clear");
-                        }
+                        // using (SoundManager sm = new SoundManager())
+                        // {
+                        //     sm.PlaySound("clear");
+                        // }
+                        _soundManager.PlaySound("clear");
                     }
                 }
 
@@ -681,9 +710,9 @@ namespace AgOop
                 SDL.SDL_SetRenderDrawColor(screen, 0, 0, 0, 255);
                 SDL.SDL_RenderClear(screen);
                 // update the renderer
-                SpriteManager.SDLScale_RenderCopy(screen, SpriteManager.backgroundTex, null, dest);
-                SpriteManager.DisplayAnswerBoxes(headNode, screen);
-                SpriteManager.MoveSprites(screen, letters, GameManagerVariables.letterSpeed);
+                _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
+                _spriteManager.DisplayAnswerBoxes(headNode, screen);
+                _spriteManager.MoveSprites(screen, letters, GameManagerVariables.letterSpeed);
                 // present the renderer
                 SDL.SDL_RenderPresent(screen);
 
@@ -694,51 +723,106 @@ namespace AgOop
 
             }
         }
+    }
 
-
+    internal static class AgOop
+    {
         /// <summary>The application entry point </summary>
         /// <param name="args">The command line arguments, uf ysed</param>
         /// <returns>0 if exited normally, 1 if exited with an error</returns>
+        // internal static int Main(string[] args)
+        // {
+        //     var di = new DependencyInjection();
+        //     var serviceProvider = di.InitialiseServices(args);
+        //     var gameManager = serviceProvider.GetRequiredService<GameManager>();
+
+        //     // var anagramsManager = serviceProvider.GetRequiredService<AnagramsManager>();
+        //     Console.WriteLine("Resolved");
+        //     return 0;
+        // }
+
+
         internal static int Main(string[] args)
         {
-            logger.LogInformation("Starting AgOop GameManager...");
+            // logger.LogInformation("Starting AgOop GameManager...");
+
+            // var ServiceProvider = InitialiseLogging.InitialiseLoggingService<GameManager>();
+            // ILogger<GameManager> _logger = LoggerFactory.CreateLogger<GameManager>();
+            // GameManager = new GameManager()
+            // var loggingservice = InitialiseLogging.InitialiseLoggingService<GameManager>();
+            // // var gameManagerLogger = loggingservice.GetRequiredService<GameManager>();
+            // // var logger = loggingservice.GetRequiredService<ILogger<GameManager>>();
+            // GameManager gameManager = new GameManager(
+            //         loggingservice.GetRequiredService<ILogger<GameManager>>());
+
+            // // logger = loggingservice.GetRequiredService<ILogger<AnagramsManager>>();
+            // AnagramsManager AnagramsManager = new AnagramsManager(
+            //         loggingservice.GetRequiredService<ILogger<AnagramsManager>>());
+
+            // WordsList WordsList = new WordsList(
+            //     loggingservice.GetRequiredService<ILogger<WordsList>>());
+
+            var di = new DependencyInjection();
+            var serviceProvider = di.InitialiseServices(args);
+
+            var gameManagerFactory = serviceProvider.GetRequiredService<Func<GameManager>>();
+            var gameManager = gameManagerFactory();
+
+            var anagramsManager = serviceProvider.GetRequiredService<AnagramsManager>();
+            // var gameManager = serviceProvider.GetRequiredService<GameManager>();
+            var localeManager = serviceProvider.GetRequiredService<LocaleManager>();
+            var soundManager = serviceProvider.GetRequiredService<SoundManager>();
+            var spriteManager = serviceProvider.GetRequiredService<SpriteManager>();
+            var uiManager = serviceProvider.GetRequiredService<UIManager>();
+            var wordsList = serviceProvider.GetRequiredService<WordsList>();
+            soundManager._gameManager = gameManager;
+            anagramsManager._localeManager = localeManager;
+            spriteManager._localeManager = localeManager;
+            spriteManager._gameManager = gameManager;
+            uiManager._gameManager = gameManager;
+            uiManager._soundManager = soundManager;
 
             WordsList.Dlb_node? dlbHeadNode = null;
             Anagrams.Node? headNode = null;
+            spriteManager.Initialise();
             Sprite? letters = null;
             // {
 
             // }
             // Configure the locale (language/path)
-            new LocaleManager(args);
+            // new LocaleManager(args);
+            // var localeManager(args) = ServiceProvider.GetRequiredService<LocaleManager>;
+            localeManager.GetBasePathAndInitLocale(args);
 
             // create the word list from the dictionary file in the locale language
-            string wordlist = LocaleManager.language + "wordlist.txt";
-            new WordsList(ref dlbHeadNode, wordlist);
+            string wordlist = localeManager.language + "wordlist.txt";
+            // new WordsList(ref dlbHeadNode, wordlist);
+            // new WordsList(ref dlbHeadNode, wordlist);
+            wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
 
             // load the hotboxes positions and sizes from the Config.ini if available
             new ConfigurationManager();
 
             // Initialise the SDL window, renderer and the textures
-            new SpriteManager();
+            // var SpriteManager = new SpriteManager(loggingservice.GetRequiredService<ILogger<SpriteManager>>());
 
             // Initiate the SDL sounds system if possible
-            new SoundManager();
+            // new SoundManager();
 
             // Initialise the game
-            NewGame(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            gameManager.NewGame(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
 
             // Run the main loop until the game is quit.
-            GameLoop(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            gameManager.GameLoop(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
 
             /* tidy up and exit */
 
             // As we don't know if the garbace collector will run the destructors, do this manually.
             // not really needed but done for the sake of keeping with the original code
             // SoundManager.SoundManagerExit();
-            WordsList.WordsListExit(ref dlbHeadNode);
-            AnagramsManager.AnagramsManagerExit(ref letters, ref headNode);
-            SpriteManager.SpriteManagerExit();
+            wordsList.WordsListExit(ref dlbHeadNode);
+            anagramsManager.AnagramsManagerExit(ref letters, ref headNode);
+            spriteManager.SpriteManagerExit();
 
             return 0;
         }

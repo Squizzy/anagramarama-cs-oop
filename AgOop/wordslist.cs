@@ -1,34 +1,38 @@
+using Microsoft.Extensions.Logging;
+
 namespace AgOop
 {
 
     internal class WordsList
     {
-        private static readonly AgOopLogger logger = new("WordsList");
-
-        static WordsList()
-        {
-            logger.LogInformation("WordsList constructor");
-        }
+        // private static readonly AgOopLogger logger = new("WordsList");
+        private readonly ILogger<WordsList> _logger;
 
         /// <summary>Constructor for the wordlist</summary
-        internal WordsList(ref Dlb_node? dlbHeadNode, string wordlist)
+        // internal WordsList(ILogger<WordsList> logger, ref Dlb_node? dlbHeadNode, string wordlist)
+        internal WordsList(ILogger<WordsList> logger)
+        {
+            _logger = logger;
+
+
+        }
+
+        internal void GenerateWordsList(ref Dlb_node? dlbHeadNode, string wordlist)
         {
             // Console.WriteLine("loading dictionary: " + wordlist);
-            logger.LogInformation($"loading dictionary: {wordlist}");
-
-
+            _logger.LogInformation($"loading dictionary: {wordlist}");
             if (!DlbCreate(ref dlbHeadNode, wordlist))
             {
                 // Console.WriteLine("error leading the dictionary");
-                logger.LogError($"error leading the dictionary: {wordlist}");
+                _logger.LogError($"error leading the dictionary: {wordlist}");
                 Console.ReadLine();
             }
         }
 
-        internal static void WordsListExit(ref Dlb_node? dlbHeadNode)
+        internal void WordsListExit(ref Dlb_node? dlbHeadNode)
         {
             // Console.WriteLine("WordsList Destructor");
-            logger.LogInformation("WordsList Destructor called");
+            _logger.LogInformation("WordsList Destructor called");
             DlbFree(ref dlbHeadNode);
         }
 
@@ -243,7 +247,7 @@ namespace AgOop
         /// <param name="dlbHeadNode">The head node of the dictionary.</param>
         /// <param name="filename">The name of the file containing the dictionary words.</param>
         /// <returns>Nothing</returns>
-        internal static bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
+        internal bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
         {
             int lineCount = File.ReadLines(filename).Count();
             string? currentWord;
@@ -264,13 +268,13 @@ namespace AgOop
             catch (Exception e)
             {
                 // Console.WriteLine("DlbCreate Exception while creating dlbHeadNode: " + e.Message);
-                logger.LogError($"DlbCreate Exception while creating dlbHeadNode: {e.Message}");
+                _logger.LogError($"DlbCreate Exception while creating dlbHeadNode: {e.Message}");
                 return false;
             }
             finally
             {
                 // Console.WriteLine("dlbHead Dictionary linked list created");
-                logger.LogInformation("dlbHead Dictionary linked list created");
+                _logger.LogInformation("dlbHead Dictionary linked list created");
             }
             return true;
 
