@@ -30,7 +30,7 @@ namespace AgOop
         private readonly ILogger<AnagramsManager> _logger;
         internal LocaleManager? _localeManager;
 
-        internal AnagramsManager(ILogger<AnagramsManager> logger)
+        public AnagramsManager(ILogger<AnagramsManager> logger)
         {
             _logger = logger;
             // logger = new AgOopLogger("AnagramsManager");

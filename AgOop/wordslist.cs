@@ -10,7 +10,7 @@ namespace AgOop
 
         /// <summary>Constructor for the wordlist</summary
         // internal WordsList(ILogger<WordsList> logger, ref Dlb_node? dlbHeadNode, string wordlist)
-        internal WordsList(ILogger<WordsList> logger)
+        public WordsList(ILogger<WordsList> logger)
         {
             _logger = logger;
 

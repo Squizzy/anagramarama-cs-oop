@@ -18,7 +18,7 @@ namespace AgOop
         internal SoundManager? _soundManager;
 
         // internal UIManager(SoundManager soundManager)
-        internal UIManager(ILogger<UIManager> logger)
+        public UIManager(ILogger<UIManager> logger)
         {
             _logger = logger;
             // _soundManager = soundManager;
