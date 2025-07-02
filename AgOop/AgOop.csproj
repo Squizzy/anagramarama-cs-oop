@@ -33,7 +33,7 @@
 
   <!-- Internationalization files -->
   <ItemGroup>
-    <Content Include="i18n\**\*.*">
+    <Content Include="res\i18n\**\*.*">
       <!-- Always copy to output directory for all build types -->
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <!-- Also ensure files are included in publish -->
@@ -43,7 +43,7 @@
 
   <!-- Audio files -->
   <ItemGroup>
-    <Content Include="audio\**\*.*">
+    <Content Include="res\audio\**\*.*">
       <!-- Always copy to output directory for all build types -->
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <!-- Also ensure files are included in publish -->
@@ -86,6 +86,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.6" />
     <PackageReference Include="Sayers.SDL2.Core" Version="1.0.11" />
+    <PackageReference Include="Serilog.Enrichers.callerInfo" Version="1.0.6" />
     <PackageReference Include="serilog.extensions.logging" Version="9.0.2" />
     <PackageReference Include="serilog.sinks.console" Version="6.0.0" />
     <PackageReference Include="serilog.sinks.debug" Version="3.0.0" />
@@ -96,5 +97,7 @@
     <Compile Remove="loggermanager.cs" />
     <Compile Remove="logger_serilog.cs" />
     <Compile Remove="mslogger.cs" />
+    <Compile Remove="tools\**\*.cs" />
+    <Compile Remove="tools\obj\**\*.cs" />
   </ItemGroup>
 </Project>
