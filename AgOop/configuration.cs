@@ -5,15 +5,20 @@ namespace AgOop
 
     internal class ConfigurationManager
     {
+        private readonly LocaleManager _localeManager;
+        private string configFilePath;
 
-        internal ConfigurationManager()
+        internal ConfigurationManager(LocaleManager localeManager)
         {
-            string configFilePath = LocaleManager.basePath + LocaleManager.i18nPath + LocaleManager.localePath;
+            _localeManager = localeManager;
+
+            configFilePath = _localeManager.basePath + _localeManager.i18nPath + _localeManager.localePath;
+            // string configFilePath = LocaleManager.basePath + LocaleManager.i18nPath + LocaleManager.localePath;
             LoadConfig(configFilePath + "config.ini");
         }
 
         /// <summary>The name of the hotboxes in the config.ini file - used by Configuration</summary>
-        internal static string[] boxnames = ["solve", "new", "quit", "shuffle", "enter", "clear"];
+        internal static string[] boxnames = new[] {"solve", "new", "quit", "shuffle", "enter", "clear"};
 
         /// <summary> parse a config line eg: solve = 555 30 76 20
         /// Modified from the original to 
