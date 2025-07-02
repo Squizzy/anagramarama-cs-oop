@@ -13,53 +13,66 @@ namespace AgOop
 
         /// <summary>Directory separator for the OS used </summary>
         // internal static char DIR_SEP = Path.DirectorySeparatorChar;
-        internal static char DIR_SEP;
+        internal char DIR_SEP;
         // internal static string DIR_SEP = "/"; //Path.DirectorySeparatorChar;
 
         /// <summary> Resources path </summary>
-        internal static string RESOURCES_PATH = "res" + DIR_SEP;
+        internal string RESOURCES_PATH;
 
         /// <summary> Audio data path</summary>
-        internal static string audioSubPath = RESOURCES_PATH + "audio" + DIR_SEP;
+        internal string audioSubPath;
 
         /// <summary> International content path</summary>
-        internal static string i18nPath = RESOURCES_PATH + "i18n" + DIR_SEP;
+        internal string i18nPath;
 
         /// <summary> Path of a specified locale to use (dict, images) </summary>
         internal string localePath;
         // internal string localePath = i18nPath + language;
 
         /// <value> Locale to be used when non-default language (where the worldlist.txt is)</value>
-        internal string language = "" + DIR_SEP;
+        internal string language;
 
         /// <summary> A default value for the locale (language) </summary>
-        internal static string defaultLocale = "en-GB" + DIR_SEP;
+        internal string defaultLocale;
 
         /// <summary> Images path </summary>
         internal string imagesSubPath;
 
         /// <summary> Default locale (Dictionary and images) </summary>
         // internal static string DEFAULT_LOCALE_PATH = i18nPath + "en-GB" + DIR_SEP;
-        internal static string DEFAULT_LOCALE_PATH = i18nPath + defaultLocale;
+        internal string DEFAULT_LOCALE_PATH;
 
         /// <summary>the path to the locale data to use for the game. 
         /// Used for Gamerzilla, which is not implemented here</summary>
         /// https://jimrich.sk/environment-specialfolder-on-windows-linux-and-os-x/
-        internal static string userPath = "";
+        internal string userPath;
 
         /// <summary>the base path for the game. Used for Gamerzilla, which is not implemented here</summary>
-        internal static string basePath = "";
+        internal string basePath;
 
-        internal LocaleManager(ILogger<LocaleManager> logger)
+        public LocaleManager(ILogger<LocaleManager> logger)
         {
 
             _logger = logger;
+            Console.WriteLine("LocaleManager Constructor");
             // _logger = LoggerFactory.CreateLogger<LocaleManager>();
             DIR_SEP = Path.DirectorySeparatorChar;
-            localePath = i18nPath + language;
-            imagesSubPath = localePath + "images" + DIR_SEP
+            RESOURCES_PATH = "res" + DIR_SEP;
 
-            _logger.LogDebug($"{}")
+            audioSubPath = RESOURCES_PATH + "audio" + DIR_SEP;
+
+            i18nPath = RESOURCES_PATH + "i18n" + DIR_SEP;
+            defaultLocale = "en-GB" + DIR_SEP;
+            language = defaultLocale;
+            localePath = i18nPath + language;
+            imagesSubPath = localePath + "images" + DIR_SEP;
+            DEFAULT_LOCALE_PATH = i18nPath + defaultLocale;
+
+            // For Gamerzilla I think
+            userPath = "";
+            basePath = "";
+
+            _logger.LogDebug($"imagesSubPath: {imagesSubPath}");
         }
         internal void GetBasePathAndInitLocale(string[] args)
         {
