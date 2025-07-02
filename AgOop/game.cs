@@ -71,7 +71,7 @@ namespace AgOop
 
 
         /// <summary> Constructor - Initialises the game
-        internal GameManager(ILogger<GameManager> logger, AnagramsManager anagramsManager, SoundManager soundManager, UIManager uiManager, SpriteManager spriteManager)
+        public GameManager(ILogger<GameManager> logger, AnagramsManager anagramsManager, SoundManager soundManager, UIManager uiManager, SpriteManager spriteManager)
         {
             _logger = logger;
             _soundManager = soundManager;
@@ -765,17 +765,18 @@ namespace AgOop
             var di = new DependencyInjection();
             var serviceProvider = di.InitialiseServices(args);
 
-            var gameManagerFactory = serviceProvider.GetRequiredService<Func<GameManager>>();
-            var gameManager = gameManagerFactory();
+            // var gameManagerFactory = serviceProvider.GetRequiredService<Func<GameManager>>();
+            // var gameManager = gameManagerFactory();
 
-            var anagramsManager = serviceProvider.GetRequiredService<AnagramsManager>();
-            // var gameManager = serviceProvider.GetRequiredService<GameManager>();
             var localeManager = serviceProvider.GetRequiredService<LocaleManager>();
+            var anagramsManager = serviceProvider.GetRequiredService<AnagramsManager>();
+            var gameManager = serviceProvider.GetRequiredService<GameManager>();
             var soundManager = serviceProvider.GetRequiredService<SoundManager>();
             var spriteManager = serviceProvider.GetRequiredService<SpriteManager>();
             var uiManager = serviceProvider.GetRequiredService<UIManager>();
             var wordsList = serviceProvider.GetRequiredService<WordsList>();
             soundManager._gameManager = gameManager;
+            soundManager._localeManager = localeManager;
             anagramsManager._localeManager = localeManager;
             spriteManager._localeManager = localeManager;
             spriteManager._gameManager = gameManager;
@@ -801,7 +802,7 @@ namespace AgOop
             wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
 
             // load the hotboxes positions and sizes from the Config.ini if available
-            new ConfigurationManager();
+            new ConfigurationManager(localeManager);
 
             // Initialise the SDL window, renderer and the textures
             // var SpriteManager = new SpriteManager(loggingservice.GetRequiredService<ILogger<SpriteManager>>());
