@@ -71,6 +71,7 @@ namespace AgOop
         // private static readonly AgOopLogger logger;
         private readonly ILogger<SoundManager> _logger;
         internal GameManager? _gameManager { get; set; }
+        internal LocaleManager _localeManager;
 
         /// <summary>The object holding the SDL audio configuration </summary>
         private AudioConfig? _audioConfig;
@@ -120,10 +121,9 @@ namespace AgOop
 
 
         /// <summary>Constructor - initialises the sound setup </summary>
-        internal SoundManager(ILogger<SoundManager> logger)
+        public SoundManager(ILogger<SoundManager> logger)
         {
             _logger = logger;
-
         }
         
         internal void InitialiseSoundManager()
@@ -230,12 +230,12 @@ namespace AgOop
             try
             {
                 // Determine the path to the sound file
-                string? soundPath = LocaleManager.audioSubPath;
+                string? soundPath = _localeManager.audioSubPath;
                 if (string.IsNullOrEmpty(soundPath))
                 {
                     throw new InvalidOperationException("Path to audio files empty. LocaleManager may not be properly initialized.");
                 }
-                soundPath += !soundPath.EndsWith(LocaleManager.DIR_SEP) ? LocaleManager.DIR_SEP : "";
+                soundPath += !soundPath.EndsWith(_localeManager.DIR_SEP) ? _localeManager.DIR_SEP : "";
                 string soundFilename = soundPath + filename;
 
                 // Load the sound audio data
