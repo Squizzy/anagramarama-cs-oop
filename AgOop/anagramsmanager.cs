@@ -4,7 +4,7 @@ namespace AgOop
 {
 
     /// <summary> Constants used for creating and processing the anagrams </summary>
-    internal class AnagramsConstants
+    internal static class AnagramsConstants
     {
         /// <summary>Represents the space character used in the program.</summary>
         internal const char SPACE_CHAR = '#';
