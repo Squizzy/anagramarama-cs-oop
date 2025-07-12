@@ -4,7 +4,7 @@ namespace AgOop
 {
 
     /// <summary> Constants used for creating and processing the anagrams </summary>
-    internal class AnagramsConstants
+    internal static class AnagramsConstants
     {
         /// <summary>Represents the space character used in the program.</summary>
         internal const char SPACE_CHAR = '#';
@@ -21,7 +21,6 @@ namespace AgOop
         /// <summary>the size of the biggest word to be used in the game</summary>
         internal const int MAX_ANAGRAM_LENGTH = 7;
     }
-
 
     /// <summary> Manages the Anagrams activity, inc checking if found, moving letters... </summary>
     internal class AnagramsManager
