@@ -32,6 +32,46 @@ namespace AgOop
 
     }
 
+    internal static class Sprites
+    {
+        // SDL summarys
+
+        // - SDL Textures    
+        /// <summary>the SDL texture containing the background image</summary>
+        internal static IntPtr backgroundTex = IntPtr.Zero;
+
+        /// <summary>The SDL texture containing all the large letters</summary>
+        // internal IntPtr letterBank = IntPtr.Zero;
+        internal static IntPtr letterBank = IntPtr.Zero;
+
+        /// <summary>The SDL texture containing all the small letters</summary>
+        internal static IntPtr smallLetterBank = IntPtr.Zero;
+
+        /// <summary>The SDL texture containing all the numbers</summary>
+        internal static IntPtr numberBank = IntPtr.Zero;
+
+        // textures for the (small) answer boxes
+        /// <summary>answerBoxUnknown</summary>
+        internal static IntPtr answerBoxUnknown = IntPtr.Zero;
+
+        /// <summary>answerBoxKnown</summary>
+        internal static IntPtr answerBoxKnown = IntPtr.Zero;
+
+
+        // The clock and score sprite representations
+        /// <summary>The list of sprites containing the graphical time representation</summary>
+        internal static Sprite clockSprite = new Sprite(5);
+
+        /// <summary>The list of sprites containing the graphical score representation</summary>
+        internal static Sprite scoreSprite = new Sprite(5);
+    }
+
+    internal abstract class ISpriteManager
+    {
+        //TODO: Define the interface for the SpriteManager
+        
+    }
+
     /// <summary> Manages the sprites creation, modification, rendering </summary>
     internal class SpriteManager
     {
@@ -47,44 +87,48 @@ namespace AgOop
         {
             // TODO: 
             // initialise screen textures
-            // load and initialise textures
             // Console.WriteLine("SpriteManager Constructor");
-            // logger = LoggerFactory.CreateLogger<SpriteManager>();
+
+            // Inject logger and localeManager 
             _logger = logger;
-            // _gameManager = gameManager;
             _localeManager = localeManager;
+
+            // _gameManager = gameManager;
+
+            // load and initialise textures
+            Initialise();
         }
 
 
-        // SDL summarys
+        // // SDL summarys
 
-        // - SDL Textures    
-        /// <summary>the SDL texture containing the background image</summary>
-        internal IntPtr backgroundTex = IntPtr.Zero;
+        // // - SDL Textures    
+        // /// <summary>the SDL texture containing the background image</summary>
+        // internal IntPtr backgroundTex = IntPtr.Zero;
 
-        /// <summary>The SDL texture containing all the large letters</summary>
-        internal IntPtr letterBank = IntPtr.Zero;
+        // /// <summary>The SDL texture containing all the large letters</summary>
+        // internal IntPtr letterBank = IntPtr.Zero;
 
-        /// <summary>The SDL texture containing all the small letters</summary>
-        internal IntPtr smallLetterBank = IntPtr.Zero;
+        // /// <summary>The SDL texture containing all the small letters</summary>
+        // internal IntPtr smallLetterBank = IntPtr.Zero;
 
-        /// <summary>The SDL texture containing all the numbers</summary>
-        internal IntPtr numberBank = IntPtr.Zero;
+        // /// <summary>The SDL texture containing all the numbers</summary>
+        // internal IntPtr numberBank = IntPtr.Zero;
 
-        // textures for the (small) answer boxes
-        /// <summary>answerBoxUnknown</summary>
-        internal IntPtr answerBoxUnknown = IntPtr.Zero;
+        // // textures for the (small) answer boxes
+        // /// <summary>answerBoxUnknown</summary>
+        // internal IntPtr answerBoxUnknown = IntPtr.Zero;
 
-        /// <summary>answerBoxKnown</summary>
-        internal IntPtr answerBoxKnown = IntPtr.Zero;
+        // /// <summary>answerBoxKnown</summary>
+        // internal IntPtr answerBoxKnown = IntPtr.Zero;
 
 
-        // The clock and score sprite representations
-        /// <summary>The list of sprites containing the graphical time representation</summary>
-        internal Sprite clockSprite = new Sprite(5);
+        // // The clock and score sprite representations
+        // /// <summary>The list of sprites containing the graphical time representation</summary>
+        // internal Sprite clockSprite = new Sprite(5);
 
-        /// <summary>The list of sprites containing the graphical score representation</summary>
-        internal Sprite scoreSprite = new Sprite(5);
+        // /// <summary>The list of sprites containing the graphical score representation</summary>
+        // internal Sprite scoreSprite = new Sprite(5);
 
 
         /// <summary>The time for which the last tick sound of the clock was requested</summary>
@@ -160,7 +204,7 @@ namespace AgOop
             //     string error = SDL.SDL_GetError();
             //     Console.WriteLine("SDL Error: " + error);
             // }
-            backgroundTex = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, backgroundSurf);
+            Sprites.backgroundTex = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, backgroundSurf);
             SDL.SDL_FreeSurface(backgroundSurf);
 
 
@@ -171,7 +215,7 @@ namespace AgOop
                 Console.ReadLine();
             }
             IntPtr letterSurf = SDL_image.IMG_Load(imagesPath + "letterBank.png");
-            letterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, letterSurf);
+            Sprites.letterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, letterSurf);
             SDL.SDL_FreeSurface(letterSurf);
 
 
@@ -182,7 +226,7 @@ namespace AgOop
                 Console.ReadLine();
             }
             IntPtr smallLetterSurf = SDL_image.IMG_Load(imagesPath + "smallLetterBank.png");
-            smallLetterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, smallLetterSurf);
+            Sprites.smallLetterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, smallLetterSurf);
             SDL.SDL_FreeSurface(smallLetterSurf);
 
 
@@ -193,7 +237,7 @@ namespace AgOop
                 Console.ReadLine();
             }
             IntPtr numberSurf = SDL_image.IMG_Load(imagesPath + "numberBank.png");
-            numberBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, numberSurf);
+            Sprites.numberBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, numberSurf);
             SDL.SDL_FreeSurface(numberSurf);
 
             _lastClockTick = 11;
@@ -209,10 +253,10 @@ namespace AgOop
             // Console.WriteLine("SpriteManager destructor");
             _logger.LogInformation("SpriteManager Destructor");
 
-            SDL.SDL_DestroyTexture(letterBank);
-            SDL.SDL_DestroyTexture(smallLetterBank);
-            SDL.SDL_DestroyTexture(numberBank);
-            SDL.SDL_DestroyTexture(backgroundTex);
+            SDL.SDL_DestroyTexture(Sprites.letterBank);
+            SDL.SDL_DestroyTexture(Sprites.smallLetterBank);
+            SDL.SDL_DestroyTexture(Sprites.numberBank);
+            SDL.SDL_DestroyTexture(Sprites.backgroundTex);
             SDL.SDL_DestroyRenderer(GameManagerVariables.renderer);
             SDL.SDL_DestroyWindow(GameManagerVariables.window);
 
@@ -497,7 +541,7 @@ namespace AgOop
             //amswerBoxKnow: contains the known letter on a white background
 
             // create the unknown and known (small) answerbox texture
-            if (answerBoxUnknown == IntPtr.Zero)
+            if (Sprites.answerBoxUnknown == IntPtr.Zero)
             {
                 // coordinates of the outer rectangle (border rectangle -/+ boder thickness)
                 SDL.SDL_Rect outerRect = new SDL.SDL_Rect
@@ -530,13 +574,13 @@ namespace AgOop
                 // applying the surface format of the texture with light blue colour
                 SDL.SDL_FillRect(box, ref innerRect, SDL.SDL_MapRGB(surface.format, 217, 220, 255));
                 // set this to the unknown answerbox as a texture
-                answerBoxUnknown = SDL.SDL_CreateTextureFromSurface(screen, box);
+                Sprites.answerBoxUnknown = SDL.SDL_CreateTextureFromSurface(screen, box);
 
                 // fill in the texture with the inner rectangle, 
                 // applying the surface format of the texture with white colour
                 SDL.SDL_FillRect(box, ref innerRect, SDL.SDL_MapRGB(surface.format, 255, 255, 255));
                 // set this to the known answerbox as a texture
-                answerBoxKnown = SDL.SDL_CreateTextureFromSurface(screen, box);
+                Sprites.answerBoxKnown = SDL.SDL_CreateTextureFromSurface(screen, box);
 
                 // free the memory used by the temporary surface
                 SDL.SDL_FreeSurface(box);
@@ -632,7 +676,7 @@ namespace AgOop
                     numLetters++;
 
                     // render the type of box for that letter
-                    SDLScale_RenderCopy(screen, current.guessed ? answerBoxKnown : answerBoxUnknown, null, outerRect);
+                    SDLScale_RenderCopy(screen, current.guessed ? Sprites.answerBoxKnown : Sprites.answerBoxUnknown, null, outerRect);
                     // if (current.guessed)
                     // {
                     //     SDLScale_RenderCopy(screen, answerBoxKnown, null, outerRect);
@@ -658,7 +702,7 @@ namespace AgOop
                         innerRect.x += 2;
                         innerRect.w = letterBankRect.w;
                         innerRect.h = letterBankRect.h;
-                        SDLScale_RenderCopy(screen, smallLetterBank, letterBankRect, innerRect);
+                        SDLScale_RenderCopy(screen, Sprites.smallLetterBank, letterBankRect, innerRect);
                     }
 
                     outerRect.x += 18;
@@ -721,7 +765,7 @@ namespace AgOop
                     rect.x = chr * SpriteConstants.GAME_LETTER_WIDTH;
                     thisLetter.numSpr = 1;
 
-                    thisLetter.sprite[0].sprite_band_texture = letterBank;
+                    thisLetter.sprite[0].sprite_band_texture = Sprites.letterBank;
                     thisLetter.sprite[0].sprite_band_dimensions = rect;
                     thisLetter.sprite[0].sprite_x_offset = 0;
                     thisLetter.sprite[0].sprite_y_offset = 0;
@@ -729,7 +773,7 @@ namespace AgOop
                     thisLetter.letter = _gameManager.Shuffle[i];
                     // appear at random on the screen in x, y 
                     // To make the letter fly in from wherever on the screen to toX, toY location
-                    thisLetter.x = random.Next(800); 
+                    thisLetter.x = random.Next(800);
                     thisLetter.y = random.Next(600);
                     thisLetter.h = SpriteConstants.GAME_LETTER_HEIGHT;
                     thisLetter.w = SpriteConstants.GAME_LETTER_WIDTH;
@@ -795,25 +839,25 @@ namespace AgOop
             }
 
             // Traverse to the end of the letters linkedlist
-                while (current != null)
-                {
-                    previousLetter = current;
-                    current = current.next;
-                }
+            while (current != null)
+            {
+                previousLetter = current;
+                current = current.next;
+            }
 
             // Create a new node containing 5 sprites for the score
-            thisLetter = new Sprite(5); 
+            thisLetter = new Sprite(5);
             thisLetter.numSpr = 5;
 
             // pre-loading: "0    "
             for (int i = 0; i < 5; i++)
             {
                 // The character in the numband corresponding to 0 or ' ' (character 0x11)
-                fromRect.x = i==0 ? 0 : BoxConstants.SCORE_WIDTH * SpriteConstants.SPACE_POS_IN_NUMBERSGRAPHICS;
+                fromRect.x = i == 0 ? 0 : BoxConstants.SCORE_WIDTH * SpriteConstants.SPACE_POS_IN_NUMBERSGRAPHICS;
                 // The position in the Score box
                 toRect.x = BoxConstants.SCORE_WIDTH * i;
 
-                thisLetter.sprite[i].sprite_band_texture = numberBank;
+                thisLetter.sprite[i].sprite_band_texture = Sprites.numberBank;
                 thisLetter.sprite[i].sprite_band_dimensions = fromRect;
                 thisLetter.sprite[i].sprite_x_offset = toRect.x;
                 thisLetter.sprite[i].sprite_y_offset = 0;
@@ -830,7 +874,7 @@ namespace AgOop
             thisLetter.index = index++;
 
             previousLetter!.next = thisLetter;
-            scoreSprite = thisLetter;
+            Sprites.scoreSprite = thisLetter;
         }
 
 
@@ -860,11 +904,11 @@ namespace AgOop
             for (int i = 0; i < buffer.Length; i++)
             {
                 // The position in the number band for the number chraracter
-                fromRect.x = BoxConstants.SCORE_WIDTH * (buffer[i] - SpriteConstants.NUM_TO_CHAR); 
+                fromRect.x = BoxConstants.SCORE_WIDTH * (buffer[i] - SpriteConstants.NUM_TO_CHAR);
                 // The position in the scorebopx
                 toRect.x = BoxConstants.SCORE_WIDTH * i; // The location in the score box
-                scoreSprite.sprite[i].sprite_band_dimensions = fromRect;
-                scoreSprite.sprite[i].sprite_x_offset = toRect.x;
+                Sprites.scoreSprite.sprite[i].sprite_band_dimensions = fromRect;
+                Sprites.scoreSprite.sprite[i].sprite_x_offset = toRect.x;
             }
         }
 
@@ -897,11 +941,11 @@ namespace AgOop
             }
 
             // go to the end of the anagrams linked list
-                while (current.next != null)
-                {
-                    previousLetter = current;
-                    current = current.next;
-                }
+            while (current.next != null)
+            {
+                previousLetter = current;
+                current = current.next;
+            }
 
             thisLetter = new Sprite(5); // 5 characters in the clock
             thisLetter.numSpr = 5;
@@ -932,7 +976,7 @@ namespace AgOop
                         break;
                 }
 
-                thisLetter.sprite[i].sprite_band_texture = numberBank;
+                thisLetter.sprite[i].sprite_band_texture = Sprites.numberBank;
                 thisLetter.sprite[i].sprite_band_dimensions = fromRect;
                 thisLetter.sprite[i].sprite_x_offset = BoxConstants.CLOCK_WIDTH * i;
                 thisLetter.sprite[i].sprite_y_offset = 0;
@@ -949,7 +993,7 @@ namespace AgOop
             thisLetter.index = index++;
 
             previousLetter!.next = thisLetter;
-            clockSprite = thisLetter;
+            Sprites.clockSprite = thisLetter;
 
         }
 
@@ -978,13 +1022,13 @@ namespace AgOop
 
             // clockSprite = new Sprite(5);
             fromRect.x = BoxConstants.CLOCK_WIDTH * minutesTens;
-            clockSprite.sprite[0].sprite_band_dimensions = fromRect;
+            Sprites.clockSprite.sprite[0].sprite_band_dimensions = fromRect;
             fromRect.x = BoxConstants.CLOCK_WIDTH * minutesUnits;
-            clockSprite.sprite[1].sprite_band_dimensions = fromRect;
+            Sprites.clockSprite.sprite[1].sprite_band_dimensions = fromRect;
             fromRect.x = BoxConstants.CLOCK_WIDTH * secondsTens;
-            clockSprite.sprite[3].sprite_band_dimensions = fromRect;
+            Sprites.clockSprite.sprite[3].sprite_band_dimensions = fromRect;
             fromRect.x = BoxConstants.CLOCK_WIDTH * secondsUnits;
-            clockSprite.sprite[4].sprite_band_dimensions = fromRect;
+            Sprites.clockSprite.sprite[4].sprite_band_dimensions = fromRect;
 
             // tick out the last 10 seconds
             if (thisTime <= 10 && thisTime > 0)
