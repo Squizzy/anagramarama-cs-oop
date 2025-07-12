@@ -4,7 +4,7 @@ using SDL2;
 
 namespace AgOop
 {
-    internal class SpriteConstants
+    internal static class SpriteConstants
     {
         // Large letters graphics dimensions and spacing and displacement speed
         /// <summary>Width of the graphic of a letter in the "band" image file</summary>
@@ -36,9 +36,25 @@ namespace AgOop
     internal class SpriteManager
     {
         private readonly ILogger<SpriteManager> _logger;
+        private readonly LocaleManager _localeManager;
+
+        // internal LocaleManager? _localeManager;
         internal GameManager? _gameManager;
-        internal LocaleManager? _localeManager;
         // private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
+
+        /// <summary> Constructor </summary>
+        public SpriteManager(ILogger<SpriteManager> logger, LocaleManager localeManager)
+        {
+            // TODO: 
+            // initialise screen textures
+            // load and initialise textures
+            // Console.WriteLine("SpriteManager Constructor");
+            // logger = LoggerFactory.CreateLogger<SpriteManager>();
+            _logger = logger;
+            // _gameManager = gameManager;
+            _localeManager = localeManager;
+        }
+
 
         // SDL summarys
 
@@ -79,18 +95,6 @@ namespace AgOop
         static double scalew = 1;
         static double scaleh = 1;
 
-
-        /// <summary> Constructor </summary>
-        public SpriteManager(ILogger<SpriteManager> logger)
-        {
-            // TODO: 
-            // initialise screen textures
-            // load and initialise textures
-            // Console.WriteLine("SpriteManager Constructor");
-            // logger = LoggerFactory.CreateLogger<SpriteManager>();
-            _logger = logger;
-            // _gameManager = gameManager;
-        }
 
         internal void Initialise()
         {
