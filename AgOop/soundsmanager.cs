@@ -70,8 +70,16 @@ namespace AgOop
         // private static readonly AgOopLogger logger = new AgOopLogger("SoundManager");
         // private static readonly AgOopLogger logger;
         private readonly ILogger<SoundManager> _logger;
-        internal GameManager? _gameManager { get; set; }
-        internal LocaleManager _localeManager;
+        // internal GameManager? _gameManager { get; set; }
+        // internal LocaleManager _localeManager;
+        private readonly LocaleManager _localeManager;
+
+        /// <summary>Constructor - initialises the sound setup </summary>
+        public SoundManager(ILogger<SoundManager> logger, LocaleManager localeManager)
+        {
+            _logger = logger;
+            _localeManager = localeManager;
+        }
 
         /// <summary>The object holding the SDL audio configuration </summary>
         private AudioConfig? _audioConfig;
@@ -120,11 +128,7 @@ namespace AgOop
         internal bool _isPlaying;
 
 
-        /// <summary>Constructor - initialises the sound setup </summary>
-        public SoundManager(ILogger<SoundManager> logger)
-        {
-            _logger = logger;
-        }
+
         
         internal void InitialiseSoundManager()
         {
