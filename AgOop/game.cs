@@ -136,6 +136,12 @@ namespace AgOop
         /// <summary>Represents an answer array of characters.</summary>
         internal static string Answer = "";
 
+        /// <summary>The word from which the anagrams are created</summary>
+        internal static string rootword = "";
+
+        /// <summary>The length of the rootword</summary>
+        internal static int bigWordLen = 0;
+
     }
 
     /// <summary> Manages the game handling the anagrams, solving the game, requesting the screen refreshes... </summary>
@@ -162,11 +168,11 @@ namespace AgOop
         }
 
 
-        /// <summary>The word from which the anagrams are created</summary>
-        internal string rootword = "";
+        // /// <summary>The word from which the anagrams are created</summary>
+        // internal string rootword = "";
 
-        /// <summary>The length of the rootword</summary>
-        internal int bigWordLen = 0;
+        // /// <summary>The length of the rootword</summary>
+        // internal int bigWordLen = 0;
 
         // Game time inform
         // /// <summary>time at which the game was started</summary>
@@ -262,9 +268,9 @@ namespace AgOop
         /// <returns>Nothing</returns>
         internal void CheckGuess(string answer, Anagrams.Node? headNode)
         {
-            bool foundWord = false;
-            bool wasAlreadyFound = false;
-            int lengthFound = 0;
+            bool foundWord;
+            bool wasAlreadyFound;
+            int lengthFound;
             (foundWord, wasAlreadyFound, lengthFound) = _anagramsManager.IsInAnagramsList(answer, headNode);
 
 
@@ -292,7 +298,8 @@ namespace AgOop
                     GameState.score += lengthFound;
                     GameState.totalScore += lengthFound;
                     GameState.answersGot++;
-                    if (lengthFound == bigWordLen)
+                    if (lengthFound == GameState.bigWordLen)
+                    // if (lengthFound == bigWordLen)
                     {
                         GameState.gotBigWord = true;
                         _soundManager.PlaySound("foundbig");
@@ -511,10 +518,13 @@ namespace AgOop
             {
                 // changed this max size from original game
                 // AnagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
-                _anagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
-                bigWordLen = rootword.Length - 1; // GetRandomWord adds an extra space at the end
+                _anagramsManager.GetRandomWord(ref GameState.rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+                // _anagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+                GameState.bigWordLen = GameState.rootword.Length - 1; // GetRandomWord adds an extra space at the end
+                // bigWordLen = rootword.Length - 1; // GetRandomWord adds an extra space at the end
                 guess = "";
-                remain = rootword;
+                remain = GameState.rootword;
+                // remain = rootword;
 
                 // AnagramsManager.DestroyAnswers(ref headNode);
                 _anagramsManager.DestroyAnswers(ref headNode);
@@ -534,7 +544,8 @@ namespace AgOop
             // AnagramsManager.Sort(ref headNode!);
             _anagramsManager.Sort(ref headNode!);
 
-            for (int i = bigWordLen; i < 7; i++)
+            for (int i = GameState.bigWordLen; i < 7; i++)
+            // for (int i = bigWordLen; i < 7; i++)
             {
                 remain = remain[0..(i - 1)] + AnagramsConstants.SPACE_CHAR;
             }
@@ -736,7 +747,8 @@ namespace AgOop
                     ClearWord(letters);
                     GameState.Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
                     // Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
-                    GameState.Answer = rootword;
+                    GameState.Answer = GameState.rootword;
+                    // GameState.Answer = rootword;
                     // Answer = rootword;
                     GameState.gamePaused = true;
                     // gamePaused = true;
