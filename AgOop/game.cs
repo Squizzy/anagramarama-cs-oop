@@ -515,35 +515,39 @@ namespace AgOop
             _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
 
-            while (!happy)
-            {
-                // changed this max size from original game
-                // AnagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
-                _anagramsManager.GetRandomWord(ref GameState.rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
-                // _anagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
-                GameState.bigWordLen = GameState.rootword.Length - 1; // GetRandomWord adds an extra space at the end
-                // bigWordLen = rootword.Length - 1; // GetRandomWord adds an extra space at the end
-                guess = "";
-                remain = GameState.rootword;
-                // remain = rootword;
+            _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode, dlbHeadNode);
 
-                // AnagramsManager.DestroyAnswers(ref headNode);
-                _anagramsManager.DestroyAnswers(ref headNode);
+            // while (!happy)
+            // {
+            //     // changed this max size from original game
+            //     // AnagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+            //     _anagramsManager.GetRandomWord(ref GameState.rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+            //     // _anagramsManager.GetRandomWord(ref rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+            //     GameState.bigWordLen = GameState.rootword.Length - 1; // GetRandomWord adds an extra space at the end
+            //     // bigWordLen = rootword.Length - 1; // GetRandomWord adds an extra space at the end
+            //     guess = "";
+            //     remain = GameState.rootword;
+            //     // remain = rootword;
 
-                // AnagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
-                _anagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
+            //     // AnagramsManager.DestroyAnswers(ref headNode);
+            //     _anagramsManager.DestroyAnswers(ref headNode);
 
-                // answersSought = AnagramsManager.Length(headNode);
-                GameState.answersSought = _anagramsManager.Length(headNode);
-                // answersSought = _anagramsManager.Length(headNode);
+            //     // AnagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
+            //     _anagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
 
-                happy = (GameState.answersSought <= 77) && (GameState.answersSought >= 6);
-                // happy = (answersSought <= 77) && (answersSought >= 6);
-            }
+            //     // answersSought = AnagramsManager.Length(headNode);
+            //     GameState.answersSought = _anagramsManager.Length(headNode);
+            //     // answersSought = _anagramsManager.Length(headNode);
 
-            // now we have a good set of words - sort them alphabetically and by size
-            // AnagramsManager.Sort(ref headNode!);
-            _anagramsManager.Sort(ref headNode!);
+            //     happy = (GameState.answersSought <= 77) && (GameState.answersSought >= 6);
+            //     // happy = (answersSought <= 77) && (answersSought >= 6);
+            // }
+
+            // // now we have a good set of words - sort them alphabetically and by size
+            // // AnagramsManager.Sort(ref headNode!);
+            // _anagramsManager.Sort(ref headNode!);
+
+            remain = GameState.rootword;
 
             for (int i = GameState.bigWordLen; i < 7; i++)
             // for (int i = bigWordLen; i < 7; i++)

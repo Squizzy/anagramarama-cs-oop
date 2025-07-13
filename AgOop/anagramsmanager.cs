@@ -41,8 +41,11 @@ namespace AgOop
             _logger.LogInformation("AnagramsManager Destructor");
             DestroyLetters(ref letters);
             DestroyAnswers(ref headNode);
-
         }
+
+        // private string _rootword;
+        // private Anagrams.Node _anagramsList;
+        // private int bigWordLength;
 
 
         /// <summary> returns the number of anagrams from the root word </summary>
@@ -442,6 +445,69 @@ namespace AgOop
             }
             return (isInList, wasAlreadyFound, lengthFound);
         }
+
+        /// <summary> Do all of the initialisation for a new game:
+        /// build the screen
+        /// get a random word and generate anagrams
+        /// (must get less than 66 anagrams to display on screen)
+        /// initialise all the game control flags
+        /// </summary>
+        /// <param name="headNode">first node in the answers list (in/out)</param>
+        /// <param name="dlbHeadNode">first node in the dictionary list</param>
+        /// <param name="screen">SDL_Surface to display the image</param>
+        /// <param name="letters">first node in the letter sprites (in/out)</param>
+        /// <returns>Nothing</returns>
+        internal void GetNewRootWordAndAnagramsList(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode)
+        {
+            string guess;
+            string remain = "";
+
+            // happy is true if we have < 67 anagrams and => 6
+            bool happy = false;
+
+            // DestroyLetters(ref letters);
+            // AnagramsManager.DestroyLetters(ref letters);
+
+            while (!happy)
+            {
+                // changed this max size from original game
+                GetRandomWord(ref GameState.rootword, AnagramsConstants.MAX_ANAGRAM_LENGTH);
+                // GetRandomWord adds an extra space at the end (legacy from C) so we remove it
+                GameState.bigWordLen = GameState.rootword.Length - 1;
+                guess = "";
+                remain = GameState.rootword;
+
+                DestroyAnswers(ref headNode);
+
+                // Call the recursive Ag method that will identify all the 
+                Ag(ref headNode, dlbHeadNode, guess, remain);
+
+                GameState.answersSought = this.Length(headNode);
+
+                happy = (GameState.answersSought <= 77) && (GameState.answersSought >= 6);
+            }
+
+            // now we have a good set of words - sort them alphabetically and by size
+            this.Sort(ref headNode!);
+        }
+
+        //     // if the big word is less than 7 chars, fill in the rest with spaces
+        //     for (int i = GameState.bigWordLen; i < 7; i++)
+        //     {
+        //         remain = remain[0..(i - 1)] + AnagramsConstants.SPACE_CHAR;
+        //     }
+
+        //     // remain should still contain the root word... not sure why the original game didn't pass that
+        //     // making sure the remain string is exactly 7 chars
+        //     remain = remain[0..7]; 
+        //     // Original game remnant - convert to char array 
+        //     char[] remainToShuffle = remain.ToCharArray();
+        //     ShuffleWord(ref remainToShuffle);
+        //     GameState.Shuffle = new string(remainToShuffle);
+
+        //     GameState.Answer = AnagramsConstants.SPACE_FILLED_CHARS;
+        // }
+
 
     }
 }
