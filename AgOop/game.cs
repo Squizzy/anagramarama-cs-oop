@@ -262,89 +262,68 @@ namespace AgOop
         /// <returns>Nothing</returns>
         internal void CheckGuess(string answer, Anagrams.Node? headNode)
         {
-            Anagrams.Node? current = headNode;
             bool foundWord = false;
+            bool wasAlreadyFound = false;
+            int lengthFound = 0;
+            (foundWord, wasAlreadyFound, lengthFound) = _anagramsManager.IsInAnagramsList(answer, headNode);
+
+
+            // Anagrams.Node? current = headNode;
+            // bool foundWord = false;
             // bool foundAllLength = true; // used for Gamerzilla - ignored here
 
-            string test;
-            // int len = AnagramsManager.NextBlank(answer) - 1;
-            int len = _anagramsManager.NextBlank(answer) - 1;
-            if (len == -1) len = answer.Length;
-            test = answer[0..len];
+            // string test;
+            // // int len = AnagramsManager.NextBlank(answer) - 1;
+            // int len = _anagramsManager.NextBlank(answer) - 1;
+            // if (len == -1) len = answer.Length;
+            // test = answer[0..len];
 
-            while (current != null)
-            {
-                // if (current.anagram == new string(test))
-                if (current.anagram == test)
+            // while (current != null)
+            // {
+            //     // if (current.anagram == new string(test))
+            //     if (current.anagram == test)
+            //     {
+            //         foundWord = true;
+            //         if (!current.found)
+
+            if (foundWord)
+                if (!wasAlreadyFound)
                 {
-                    foundWord = true;
-                    if (!current.found)
+                    GameState.score += lengthFound;
+                    GameState.totalScore += lengthFound;
+                    GameState.answersGot++;
+                    if (lengthFound == bigWordLen)
                     {
-                        GameState.score += current.length;
-                        // score += current.length;
-                        GameState.totalScore += current.length;
-                        // totalScore += current.length;
-                        GameState.answersGot++;
-                        // answersGot++;
-                        if (len == bigWordLen)
-                        {
-                            GameState.gotBigWord = true;
-                            // gotBigWord = true;
-                            // SoundManager.PlaySound("foundbig");
-                            // TODO: Fix using a proper queue system
-                            // using (SoundManager sm = new SoundManager())
-                            // {
-                            //     sm.PlaySound("foundbig");
-                            // }
-                            _soundManager.PlaySound("foundbig");
-                        }
-                        else
-                        {
-                            // just a normal word
-                            // SoundManager.PlaySound("found");
-                            // TODO: Fix using a proper queue system
-                            // using (SoundManager sm = new SoundManager())
-                            // {
-                            //     sm.PlaySound("found");
-                            // }
-                            _soundManager.PlaySound("found");
-                        }
-
-
-                        if (GameState.answersSought == GameState.answersGot)
-                        // if (answersSought == answersGot)
-                        {
-                            // getting all answers gives us the game score again!!
-                            // GameState.totalScore += score;
-                            GameState.totalScore += GameState.score;
-                            // totalScore += score;
-                            GameState.winGame = true;
-                            // winGame = true;
-                        }
-                        current.found = true;
-                        current.guessed = true;
-                        GameState.updateTheScore = true;
-                        // updateTheScore = true;
+                        GameState.gotBigWord = true;
+                        _soundManager.PlaySound("foundbig");
                     }
                     else
                     {
-                        GameState.foundDuplicate = true;
-                        // foundDuplicate = true;
-                        // SoundManager.PlaySound("duplicate");
-                        // TODO: Fix using a proper queue system
-                        // using (SoundManager sm = new SoundManager())
-                        // {
-                        //     sm.PlaySound("duplicate");
-                        // }            
-                        _soundManager.PlaySound("duplicate");
-
+                        _soundManager.PlaySound("found");
                     }
-                    GameState.updateAnswers = true;
-                    // updateAnswers = true;
-                    break;
+
+
+                if (GameState.answersSought == GameState.answersGot)
+                {
+                    // getting all answers gives us the game score again!!
+                    GameState.totalScore += GameState.score;
+                    GameState.winGame = true;
                 }
-                current = current.next;
+                // current.found = true;
+                // current.guessed = true;
+                GameState.updateTheScore = true;
+                // updateTheScore = true;
             }
+            else
+            {
+                GameState.foundDuplicate = true;        
+                _soundManager.PlaySound("duplicate");
+            }
+            GameState.updateAnswers = true;
+                //     break;
+                // }
+                // current = current.next;
+            // }
 
             // used for gamerzilla - ignored here
             // current = headNode;
@@ -927,7 +906,7 @@ namespace AgOop
             // soundManager._localeManager = localeManager;
             // anagramsManager._localeManager = localeManager;
             // spriteManager._localeManager = localeManager;
-            spriteManager._gameManager = gameManager;
+            // spriteManager._gameManager = gameManager;
             uiManager._gameManager = gameManager;
             uiManager._soundManager = soundManager;
 
