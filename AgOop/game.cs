@@ -142,6 +142,10 @@ namespace AgOop
         /// <summary>The length of the rootword</summary>
         internal static int bigWordLen = 0;
 
+        /// <summary> Flag to indicate that the guess has to be checked </summary>
+        internal static bool checkGuess = false;
+
+
     }
 
     /// <summary> Manages the game handling the anagrams, solving the game, requesting the screen refreshes... </summary>
@@ -828,24 +832,37 @@ namespace AgOop
                     // TickClock = false;
                 }
 
-                if (GameState.clearGuess)
-                // if (clearGuess)
+                if (GameState.checkGuess)
                 {
-                    // clear the guess
-                    // returns the number of clears it did do
-                    if (_spriteManager.ClearWord(letters) > 0)
+                    // A check of the proposed answer has been requested
+                    // by typing enter or clicking the tick button
                     {
-                        GameState.clearGuess = false;
-                        // clearGuess = false;
-                        // TODO: Fix using a proper queue system
-                        // SoundManager.PlaySound("clear");
-                        // using (SoundManager sm = new SoundManager())
-                        // {
-                        //     sm.PlaySound("clear");
-                        // }
-                        _soundManager.PlaySound("clear");
+                        // check the guess
+                        CheckGuess(GameState.Answer, headNode);
+                        // CheckGuess(GameState.Answer, headNode);
+                        GameState.checkGuess = false;
+                        // checkGuess = false;
                     }
                 }
+
+                if (GameState.clearGuess)
+                    // if (clearGuess)
+                    {
+                        // clear the guess
+                        // returns the number of clears it did do
+                        if (_spriteManager.ClearWord(letters) > 0)
+                        {
+                            GameState.clearGuess = false;
+                            // clearGuess = false;
+                            // TODO: Fix using a proper queue system
+                            // SoundManager.PlaySound("clear");
+                            // using (SoundManager sm = new SoundManager())
+                            // {
+                            //     sm.PlaySound("clear");
+                            // }
+                            _soundManager.PlaySound("clear");
+                        }
+                    }
 
                 if (GameState.quitGame)
                 // if (quitGame)
@@ -875,21 +892,10 @@ namespace AgOop
 
     internal static class AgOop
     {
+
         /// <summary>The application entry point </summary>
         /// <param name="args">The command line arguments, uf ysed</param>
         /// <returns>0 if exited normally, 1 if exited with an error</returns>
-        // internal static int Main(string[] args)
-        // {
-        //     var di = new DependencyInjection();
-        //     var serviceProvider = di.InitialiseServices(args);
-        //     var gameManager = serviceProvider.GetRequiredService<GameManager>();
-
-        //     // var anagramsManager = serviceProvider.GetRequiredService<AnagramsManager>();
-        //     Console.WriteLine("Resolved");
-        //     return 0;
-        // }
-
-
         internal static int Main(string[] args)
         {
             // logger.LogInformation("Starting AgOop GameManager...");
