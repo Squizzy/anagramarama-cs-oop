@@ -923,11 +923,12 @@ namespace AgOop
             // var gameManager = gameManagerFactory();
 
             var localeManager = serviceProvider.GetRequiredService<LocaleManager>();
+            var localeSettings = serviceProvider.GetRequiredService<LocaleSettings>();
             var anagramsManager = serviceProvider.GetRequiredService<AnagramsManager>();
             var gameManager = serviceProvider.GetRequiredService<GameManager>();
-            var soundManager = serviceProvider.GetRequiredService<SoundManager>();
+            // var soundManager = serviceProvider.GetRequiredService<SoundManager>();
             var spriteManager = serviceProvider.GetRequiredService<SpriteManager>();
-            var uiManager = serviceProvider.GetRequiredService<UIManager>();
+            // var uiManager = serviceProvider.GetRequiredService<UIManager>();
             var wordsList = serviceProvider.GetRequiredService<WordsList>();
             // soundManager._gameManager = gameManager;
             // soundManager._localeManager = localeManager;
@@ -942,21 +943,27 @@ namespace AgOop
             // spriteManager.Initialise();
             Sprite? letters = null;
             // {
+            new ConfigurationManager(localeSettings);
 
             // }
             // Configure the locale (language/path)
             // new LocaleManager(args);
             // var localeManager(args) = ServiceProvider.GetRequiredService<LocaleManager>;
-            localeManager.GetBasePathAndInitLocale(args);
+            // localeManager.GetBasePathAndInitLocale(args);
+            localeManager.ParseCommandLine(args);
+            localeManager.InitLocaleFromCommandLine();
 
             // create the word list from the dictionary file in the locale language
-            string wordlist = localeManager.language + "wordlist.txt";
+            // string wordlist = LocaleSettings.language + "wordlist.txt";
+            string wordlist = localeSettings.wordslistPath;
+            Console.WriteLine($"Wordlist path: {wordlist}");
             // new WordsList(ref dlbHeadNode, wordlist);
             // new WordsList(ref dlbHeadNode, wordlist);
             wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
 
             // load the hotboxes positions and sizes from the Config.ini if available
-            new ConfigurationManager(localeManager);
+            // new ConfigurationManager(localeManager);
+            // new ConfigurationManager();
 
             // Initialise the SDL window, renderer and the textures
             // var SpriteManager = new SpriteManager(loggingservice.GetRequiredService<ILogger<SpriteManager>>());
