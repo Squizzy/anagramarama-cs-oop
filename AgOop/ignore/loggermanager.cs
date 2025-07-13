@@ -10,19 +10,19 @@ namespace AgOop1
         // Create a logger for a specific class
         // internal static ILogger<T> CreateLogger<T>()
         //TODO: Removed line above here
-        void donothing()
-        {
-            // string loggerSelected = "serilog";
+        // void donothing()
+        // {
+        //     // string loggerSelected = "serilog";
 
-            // switch (loggerSelected)
-            // {
-            //     case "serilog":
-            //         return new SerilogLogger<T>();
-            //     case "microsoft":
-            //     default:
-            //         return new MicrosoftLogger<T>();
-            // }
-        }
+        //     // switch (loggerSelected)
+        //     // {
+        //     //     case "serilog":
+        //     //         return new SerilogLogger<T>();
+        //     //     case "microsoft":
+        //     //     default:
+        //     //         return new MicrosoftLogger<T>();
+        //     // }
+        // }
     }
 
 
