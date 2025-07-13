@@ -60,26 +60,30 @@ namespace AgOop
             // F2 key pressed: Start new game
             else if (keyedLetter == SDL.SDL_Keycode.SDLK_F2)
             {
-                _gameManager.startNewGame = true;
+                GameState.startNewGame = true;
+                // _gameManager.startNewGame = true;
                 // GameManager.startNewGame = true;
             }
 
             // F5 key pressed: quit the game
             else if (keyedLetter == SDL.SDL_Keycode.SDLK_F5)
             {
-                _gameManager.quitGame = true;
+                GameState.quitGame = true;
+                // _gameManager.quitGame = true;
                 // GameManager.quitGame = true;
             }
 
             // else if (!GameManager.gamePaused)
-            else if (!_gameManager.gamePaused)
+            // else if (!_gameManager.gamePaused)
+            else if (!GameState.gamePaused)
             {
                 switch (keyedLetter)
                 {
                     // ESC key pressed: clear the ANSWER box
                     case SDL.SDL_Keycode.SDLK_ESCAPE:
 
-                        _gameManager.clearGuess = true;
+                        GameState.clearGuess = true;
+                        // _gameManager.clearGuess = true;
                         // GameManager.clearGuess = true;
                         break;
 
@@ -127,7 +131,8 @@ namespace AgOop
 
                     // SPACE key pressed: Shuffle the SHUFFLE box
                     case SDL.SDL_Keycode.SDLK_SPACE:
-                        _gameManager.shuffleRemaining = true;
+                        GameState.shuffleRemaining = true;
+                        // _gameManager.shuffleRemaining = true;
                         // GameManager.shuffleRemaining = true;
                         // SoundManager.PlaySound("shuffle");
                         // TODO: Fix using a proper queue system
@@ -198,7 +203,8 @@ namespace AgOop
             Sprite? current = letters;
 
             // if (!GameManager.gamePaused)
-            if (!_gameManager.gamePaused)
+            // if (!_gameManager.gamePaused)
+            if (!GameState.gamePaused)
             {
                 // ANSWER or SHUFFLE box area clicked
                 while (current != null && current.box != BoxConstants.CONTROLS)
@@ -244,7 +250,8 @@ namespace AgOop
                 if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
                 {
                     // GameManager.clearGuess = true;
-                    _gameManager.clearGuess = true;
+                    GameState.clearGuess = true;
+                    // _gameManager.clearGuess = true;
                 }
 
                 // check ANSWER box (green tick) clicked
@@ -259,21 +266,23 @@ namespace AgOop
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
                 if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
                 {
-                    _gameManager.solvePuzzle = true;
+                    GameState.solvePuzzle = true;
+                    // _gameManager.solvePuzzle = true;
                 }
 
                 // Shuffle SHUFFLE area clicked
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
                 if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
                 {
-                    _gameManager.shuffleRemaining = true;
+                    GameState.shuffleRemaining = true;
+                    // _gameManager.shuffleRemaining = true;
                     // SoundManager.PlaySound("shuffle");
                     // TODO: Fix using a proper queue system
                     // using (SoundManager sm = new SoundManager())
                     // {
                     //     sm.PlaySound("click-answer");
                     // }
-                        _soundManager.PlaySound("click-answer");
+                    _soundManager.PlaySound("click-answer");
                 }
             }
 
@@ -282,7 +291,8 @@ namespace AgOop
             if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
             {
                 // GameManager.startNewGame = true;
-                _gameManager.startNewGame = true;
+                // _gameManager.startNewGame = true;
+                GameState.startNewGame = true;
             }
 
             // quit game button clicked
@@ -290,7 +300,8 @@ namespace AgOop
             if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
             {
                 // GameManager.quitGame = true;
-                _gameManager.quitGame = true;
+                // _gameManager.quitGame = true;
+                GameState.quitGame = true;
             }
         }
 
