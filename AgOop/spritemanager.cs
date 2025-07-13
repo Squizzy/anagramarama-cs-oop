@@ -79,7 +79,7 @@ namespace AgOop
         private readonly LocaleManager _localeManager;
 
         // internal LocaleManager? _localeManager;
-        internal GameManager? _gameManager;
+        // internal GameManager? _gameManager;
         // private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
 
         /// <summary> Constructor </summary>
@@ -751,7 +751,8 @@ namespace AgOop
                 h = SpriteConstants.GAME_LETTER_HEIGHT
             };
 
-            int len = _gameManager.Shuffle.Length;
+            int len = GameState.Shuffle.Length;
+            // int len = _gameManager.Shuffle.Length;
             thisLetter = new Sprite(1);
             previousLetter = new Sprite(1);
 
@@ -759,9 +760,11 @@ namespace AgOop
             {
                 thisLetter.numSpr = 0;
 
-                if (_gameManager.Shuffle[i] != AnagramsConstants.ASCII_SPACE && _gameManager.Shuffle[i] != AnagramsConstants.SPACE_CHAR)
+                if (GameState.Shuffle[i] != AnagramsConstants.ASCII_SPACE && GameState.Shuffle[i] != AnagramsConstants.SPACE_CHAR)
+                // if (_gameManager.Shuffle[i] != AnagramsConstants.ASCII_SPACE && _gameManager.Shuffle[i] != AnagramsConstants.SPACE_CHAR)
                 {
-                    int chr = (int)(_gameManager.Shuffle[i] - 'a');
+                    int chr = (int)(GameState.Shuffle[i] - 'a');
+                    // int chr = (int)(_gameManager.Shuffle[i] - 'a');
                     rect.x = chr * SpriteConstants.GAME_LETTER_WIDTH;
                     thisLetter.numSpr = 1;
 
@@ -770,7 +773,8 @@ namespace AgOop
                     thisLetter.sprite[0].sprite_x_offset = 0;
                     thisLetter.sprite[0].sprite_y_offset = 0;
 
-                    thisLetter.letter = _gameManager.Shuffle[i];
+                    thisLetter.letter = GameState.Shuffle[i];
+                    // thisLetter.letter = _gameManager.Shuffle[i];
                     // appear at random on the screen in x, y 
                     // To make the letter fly in from wherever on the screen to toX, toY location
                     thisLetter.x = random.Next(800);
@@ -794,7 +798,8 @@ namespace AgOop
                 }
                 else
                 {
-                    _gameManager.Shuffle.ToCharArray()[i] = AnagramsConstants.SPACE_CHAR;
+                    GameState.Shuffle.ToCharArray()[i] = AnagramsConstants.SPACE_CHAR;
+                    // _gameManager.Shuffle.ToCharArray()[i] = AnagramsConstants.SPACE_CHAR;
                     // rect.x = 26 * GAME_LETTER_WIDTH;
                 }
 
