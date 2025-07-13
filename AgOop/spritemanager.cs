@@ -899,7 +899,8 @@ namespace AgOop
                 h = BoxConstants.SCORE_HEIGHT
             };
 
-            string buffer = _gameManager.totalScore.ToString();
+            // string buffer = _gameManager.totalScore.ToString();
+            string buffer = GameState.totalScore.ToString();
 
             for (int i = 0; i < buffer.Length; i++)
             {
@@ -1010,7 +1011,8 @@ namespace AgOop
                 h = BoxConstants.CLOCK_HEIGHT // height of the character in px
             };
 
-            int thisTime = GameManagerVariables.AVAILABLE_TIME - _gameManager.gameTime;
+            int thisTime = GameManagerVariables.AVAILABLE_TIME - GameState.gameTime;
+            // int thisTime = GameManagerVariables.AVAILABLE_TIME - _gameManager.gameTime;
             TimeSpan remainingTime = TimeSpan.FromSeconds(thisTime);
 
             int minutes = remainingTime.Minutes;
@@ -1035,7 +1037,8 @@ namespace AgOop
             {
                 if (thisTime < _lastClockTick)
                 {
-                    _gameManager.TickClock = true;
+                    GameState.TickClock = true;
+                    // _gameManager.TickClock = true;
                     _lastClockTick = thisTime;
                 }
                 // SoundManager.PlaySound("clock-tick");
