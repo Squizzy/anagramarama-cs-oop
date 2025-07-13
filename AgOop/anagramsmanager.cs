@@ -25,16 +25,14 @@ namespace AgOop
     /// <summary> Manages the Anagrams activity, inc checking if found, moving letters... </summary>
     internal class AnagramsManager
     {
-        // private readonly AgOopLogger _logger;
         private readonly ILogger<AnagramsManager> _logger;
-        internal LocaleManager? _localeManager;
+        // internal LocaleManager? _localeManager;
+        private readonly LocaleManager _localeManager;
 
-        public AnagramsManager(ILogger<AnagramsManager> logger)
+        public AnagramsManager(ILogger<AnagramsManager> logger, LocaleManager localemanager)
         {
             _logger = logger;
-            // logger = new AgOopLogger("AnagramsManager");
-            // _logger = SerilogLoggerFactory.CreateLogger<AnagramsManager>();
-            // _logger = SerilogLoggerFactory.CreateLogger<AnagramsManager>();
+            _localeManager = localemanager;
         }
 
         internal void AnagramsManagerExit(ref Sprite? letters, ref Anagrams.Node? headNode)
