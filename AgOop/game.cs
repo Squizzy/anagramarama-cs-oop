@@ -512,7 +512,8 @@ namespace AgOop
             // // _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
             // _spriteManager.SDLScale_RenderCopy(screen, Sprites.backgroundTex, null, dest);
 
-            _anagramsManager.DestroyLetters(ref letters);
+            _spriteManager.DestroyLetters(ref letters);
+            // _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
 
             _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode, dlbHeadNode);

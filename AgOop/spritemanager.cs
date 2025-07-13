@@ -253,6 +253,8 @@ namespace AgOop
             // Console.WriteLine("SpriteManager destructor");
             _logger.LogInformation("SpriteManager Destructor");
 
+            //TODO: make letters a a spritemanager field 
+            // DestroyLetters(_letters); 
             SDL.SDL_DestroyTexture(Sprites.letterBank);
             SDL.SDL_DestroyTexture(Sprites.smallLetterBank);
             SDL.SDL_DestroyTexture(Sprites.numberBank);
@@ -1063,5 +1065,16 @@ namespace AgOop
             SDLScale_RenderCopy(GameManagerVariables.renderer, Sprites.backgroundTex, null, dest);
         }
 
+
+        /// <summary>Frees the sprite letters memory
+        /// was needed in C but no longer in c# as handled by garbage collector
+        /// Kept for the sake of keepting
+        /// </summary>
+        /// <param name="letters">the set of letters to remove from memory</param>
+        /// <returns>Nothing</returns>
+        internal void DestroyLetters(ref Sprite? letters)
+        {
+            letters = null;
+        }
     }
 }

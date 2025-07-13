@@ -39,7 +39,7 @@ namespace AgOop
         {
             // Console.WriteLine("AnagramsManager Destructor");
             _logger.LogInformation("AnagramsManager Destructor");
-            DestroyLetters(ref letters);
+            // DestroyLetters(ref letters);
             DestroyAnswers(ref headNode);
         }
 
@@ -135,18 +135,6 @@ namespace AgOop
         internal void DestroyAnswers(ref Anagrams.Node? headNode)
         {
             headNode = null;
-        }
-
-
-        /// <summary>Frees the sprite letters memory
-        /// was needed in C but no longer in c# as handled by garbage collector
-        /// Kept for the sake of keepting
-        /// </summary>
-        /// <param name="letters">the set of letters to remove from memory</param>
-        /// <returns>Nothing</returns>
-        internal void DestroyLetters(ref Sprite? letters)
-        {
-            letters = null;
         }
 
 
