@@ -16,12 +16,14 @@ namespace AgOop
 
         internal GameManager? _gameManager { get; set; }
         private readonly SoundManager _soundManager;
+        private readonly SpriteManager _spriteManager;
 
         // internal UIManager(SoundManager soundManager)
-        public UIManager(ILogger<UIManager> logger, SoundManager soundManager)
+        public UIManager(ILogger<UIManager> logger, SoundManager soundManager, SpriteManager spriteManager)
         {
             _logger = logger;
             _soundManager = soundManager;
+            _spriteManager = spriteManager;
         }
 
 
@@ -104,7 +106,8 @@ namespace AgOop
                         {
                             if (current.box == BoxConstants.ANSWER && current.index == maxIndex)
                             {
-                                current.toX = _gameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                                current.toX = _spriteManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                                // current.toX = _gameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                                 // current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                                 current.toY = BoxConstants.SHUFFLE_BOX_Y;
                                 current.box = BoxConstants.SHUFFLE;
@@ -151,7 +154,7 @@ namespace AgOop
                             {
                                 if (current.letter == (char)keyedLetter)
                                 {
-                                    current.toX = _gameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
+                                    current.toX = _spriteManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                                     // current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                                     current.toY = BoxConstants.ANSWER_BOX_Y;
                                     current.box = BoxConstants.ANSWER;
@@ -215,7 +218,7 @@ namespace AgOop
                         if (current.box == BoxConstants.SHUFFLE)
                         {
                             // current.toX = GameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
-                            current.toX = _gameManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
+                            current.toX = _spriteManager.NextBlankPosition(BoxConstants.ANSWER, ref current.index);
                             current.toY = BoxConstants.ANSWER_BOX_Y;
                             current.box = BoxConstants.ANSWER;
                             // SoundManager.PlaySound("click-shuffle");
@@ -229,7 +232,7 @@ namespace AgOop
                         else
                         {
                             // current.toX = GameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
-                            current.toX = _gameManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
+                            current.toX = _spriteManager.NextBlankPosition(BoxConstants.SHUFFLE, ref current.index);
                             current.toY = BoxConstants.SHUFFLE_BOX_Y;
                             current.box = BoxConstants.SHUFFLE;
                             // SoundManager.PlaySound("click-answer");
