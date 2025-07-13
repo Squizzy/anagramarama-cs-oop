@@ -496,6 +496,22 @@ namespace AgOop
         //     GameState.Answer = AnagramsConstants.SPACE_FILLED_CHARS;
         // }
 
+        internal string GetInitialShuffle()
+        {
+            string remain = GameState.rootword;
+
+            for (int i = GameState.bigWordLen; i < 7; i++)
+            // for (int i = bigWordLen; i < 7; i++)
+            {
+                remain = remain[0..(i - 1)] + AnagramsConstants.SPACE_CHAR;
+            }
+            remain = remain[0..7]; // making sure we don't have extra chars
+            char[] remainToShuffle = remain.ToCharArray();
+            // AnagramsManager.ShuffleWord(ref remainToShuffle);
+            ShuffleWord(ref remainToShuffle);
+            return new string(remainToShuffle);
+        }
+
 
     }
 }

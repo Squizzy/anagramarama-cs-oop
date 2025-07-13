@@ -495,11 +495,11 @@ namespace AgOop
         /// <returns>Nothing</returns>
         internal void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
         {
-            string guess;
-            string remain = "";
+            // string guess;
+            // string remain = "";
 
-            // happy is true if we have < 67 anagrams and => 6
-            bool happy = false;
+            // // happy is true if we have < 67 anagrams and => 6
+            // bool happy = false;
 
             _spriteManager.ClearScreen();
             // SDL.SDL_Rect dest = new SDL.SDL_Rect
@@ -548,19 +548,21 @@ namespace AgOop
             // // AnagramsManager.Sort(ref headNode!);
             // _anagramsManager.Sort(ref headNode!);
 
-            remain = GameState.rootword;
+            // remain = GameState.rootword;
 
-            for (int i = GameState.bigWordLen; i < 7; i++)
-            // for (int i = bigWordLen; i < 7; i++)
-            {
-                remain = remain[0..(i - 1)] + AnagramsConstants.SPACE_CHAR;
-            }
-            remain = remain[0..7]; // making sure we don't have extra chars
-            char[] remainToShuffle = remain.ToCharArray();
-            // AnagramsManager.ShuffleWord(ref remainToShuffle);
-            _anagramsManager.ShuffleWord(ref remainToShuffle);
-            // Shuffle = new string(remainToShuffle);
-            GameState.Shuffle = new string(remainToShuffle);
+            // for (int i = GameState.bigWordLen; i < 7; i++)
+            // // for (int i = bigWordLen; i < 7; i++)
+            // {
+            //     remain = remain[0..(i - 1)] + AnagramsConstants.SPACE_CHAR;
+            // }
+            // remain = remain[0..7]; // making sure we don't have extra chars
+            // char[] remainToShuffle = remain.ToCharArray();
+            // // AnagramsManager.ShuffleWord(ref remainToShuffle);
+            // _anagramsManager.ShuffleWord(ref remainToShuffle);
+            // // Shuffle = new string(remainToShuffle);
+            // GameState.Shuffle = new string(remainToShuffle);
+
+            GameState.Shuffle = _anagramsManager.GetInitialShuffle();
 
             GameState.Answer = AnagramsConstants.SPACE_FILLED_CHARS;
             // Answer = AnagramsConstants.SPACE_FILLED_CHARS;
