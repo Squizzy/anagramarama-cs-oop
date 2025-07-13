@@ -408,5 +408,40 @@ namespace AgOop
             }
         }
 
+        /// <summary> Check if the guess is in the list of anagrams and if it has been found before</summary>
+        /// <param name="answer">the word proposed</param>
+        /// <param name="headNode">The head node of anagrams</param>
+        /// <returns >
+        /// isInList: The anagram is in the list to be found
+        /// wasAlreadyFound: The anagram was already found
+        /// lengthFound: The length of the anagram found
+        /// </returns>
+        internal (bool isInList, bool wasAlreadyFound, int lengthFound) IsInAnagramsList(string answer, Anagrams.Node? headNode)
+        {
+            Anagrams.Node? current = headNode;
+            bool isInList = false;
+            bool wasAlreadyFound = false;
+            int lengthFound = 0;
+
+            string test;
+            int len = NextBlank(answer) - 1;
+            if (len == -1) len = answer.Length;
+            test = answer[0..len];
+
+            while (current != null)
+            {
+                if (current.anagram == test)
+                {
+                    isInList = true;
+                    wasAlreadyFound = current.found;
+                    lengthFound = current.length;
+                    current.found = true;
+                    break;
+                }
+                current = current.next;
+            }
+            return (isInList, wasAlreadyFound, lengthFound);
+        }
+
     }
 }
