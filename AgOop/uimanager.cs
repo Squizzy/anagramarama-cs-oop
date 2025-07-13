@@ -14,7 +14,7 @@ namespace AgOop
 
         private readonly ILogger<UIManager> _logger;
 
-        internal GameManager? _gameManager { get; set; }
+        // internal GameManager? _gameManager { get; set; }
         private readonly SoundManager _soundManager;
         private readonly SpriteManager _spriteManager;
 
