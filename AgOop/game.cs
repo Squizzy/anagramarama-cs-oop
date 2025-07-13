@@ -10,7 +10,7 @@ using SDL2;
 
 namespace AgOop
 {
-    internal class GameConstants
+    internal static class GameConstants
     {
         /// <summary> Application version </summary>
         // Based on version 0.7 (dusli) of the game written in C
@@ -36,7 +36,7 @@ namespace AgOop
             "                Italian: it\n" +
             "                French: fr-FR\n" +
             "                Portugese (Brazilian): pt-BR\n"
-        ;  
+        ;
     }
 
     /// <summary> Game related constants </summary>
@@ -57,6 +57,77 @@ namespace AgOop
 
     }
 
+    /// <summary> GameState holds all the game state variables,
+    /// including the game time, score, answers found, etc.
+    /// It is used to manage the game state throughout the game.
+    /// </summary>
+    internal static class GameState
+    {
+        // Game time inform
+        /// <summary>time at which the game was started</summary>
+        internal static DateTime gameStart;
+
+        /// <summary>The number of seconds elapsed since the begining of the game</summary>
+        internal static int gameTime;
+
+        /// <summary>Flag to indicate to stop the clock</summary>
+        internal static bool stopTheClock = false;
+
+        /// <summary>Flag to indicate to play the clock ticking sound</summary>
+        internal static bool TickClock = false;
+
+
+        // Score info
+        /// <summary>The information to the final score (if all words found, score x2</summary>
+        internal static int totalScore = 0;
+
+        /// <summary>The current score, incremented by the number of letters of the words guessed correctly</summary>
+        internal static int score = 0;
+
+        /// <summary>Flag to indicate need to update the score display</summary>
+        internal static bool updateTheScore = false;
+
+
+        // Guesses related flags and info
+        /// <summary>Flag to indicate need to shuffle the remaining letters in the shuffle box</summary>
+        internal static bool shuffleRemaining = false;
+
+        /// <summary>Flag to indicate need to clear the Answers box</summary>
+        internal static bool clearGuess = false;
+
+        /// <summary>The number of anagrams to find</summary>
+        internal static int answersSought = 0;
+
+        /// <summary>The number of anagrams found so far</summary>
+        internal static int answersGot = 0;
+
+        /// <summary>Flag repesenting that the rootword was found</summary>
+        internal static bool gotBigWord = false;
+
+        /// <summary>Flag to indicate that a word guessed had already been discovered</summary>
+        internal static bool foundDuplicate = false;
+
+        /// <summary>Flag to indicate need to update the small answer boxes</summary>
+        internal static bool updateAnswers = false;
+
+
+                // Game status flags
+        /// <summary>Flag to indicate need to start a new game</summary>
+        internal static bool startNewGame = false;
+
+        /// <summary>Flag to indicate that game was paused</summary>
+        internal static bool gamePaused = false;
+
+        /// <summary>Flag to indicate need to quit the game </summary>
+        internal static bool quitGame = false;
+
+        /// <summary>Flag to indicate need to solve the anagrams (game timed out)</summary>
+        internal static bool solvePuzzle = false;
+
+        /// <summary>Flag to indicate the game was won</summary>
+        internal static bool winGame = false;
+
+    }
 
     /// <summary> Manages the game handling the anagrams, solving the game, requesting the screen refreshes... </summary>
     internal class GameManager
@@ -86,71 +157,71 @@ namespace AgOop
         internal string rootword = "";
 
         // Game time inform
-        /// <summary>time at which the game was started</summary>
-        internal DateTime gameStart;
+        // /// <summary>time at which the game was started</summary>
+        // internal DateTime gameStart;
 
-        /// <summary>The number of seconds elapsed since the begining of the game</summary>
-        internal int gameTime;
+        // /// <summary>The number of seconds elapsed since the begining of the game</summary>
+        // internal int gameTime;
 
-        /// <summary>Flag to indicate to stop the clock</summary>
-        internal bool stopTheClock = false;
+        // /// <summary>Flag to indicate to stop the clock</summary>
+        // internal bool stopTheClock = false;
 
-        /// <summary>Flag to indicate to play the clock ticking sound</summary>
-        internal bool TickClock = false;
-
-
-        // Score info
-        /// <summary>The information to the final score (if all words found, score x2</summary>
-        internal int totalScore = 0;
-
-        /// <summary>The current score, incremented by the number of letters of the words guessed correctly</summary>
-        internal int score = 0;
-
-        /// <summary>Flag to indicate need to update the score display</summary>
-        internal bool updateTheScore = false;
+        // /// <summary>Flag to indicate to play the clock ticking sound</summary>
+        // internal bool TickClock = false;
 
 
-        // Guesses related flags and info
-        /// <summary>Flag to indicate need to shuffle the remaining letters in the shuffle box</summary>
-        internal bool shuffleRemaining = false;
+        // // Score info
+        // /// <summary>The information to the final score (if all words found, score x2</summary>
+        // internal int totalScore = 0;
 
-        /// <summary>Flag to indicate need to clear the Answers box</summary>
-        internal bool clearGuess = false;
+        // /// <summary>The current score, incremented by the number of letters of the words guessed correctly</summary>
+        // internal int score = 0;
 
-        /// <summary>The number of anagrams to find</summary>
-        internal int answersSought = 0;
+        // /// <summary>Flag to indicate need to update the score display</summary>
+        // internal bool updateTheScore = false;
 
-        /// <summary>The number of anagrams found so far</summary>
-        internal int answersGot = 0;
 
-        /// <summary>Flag repesenting that the rootword was found</summary>
-        internal bool gotBigWord = false;
+        // // Guesses related flags and info
+        // /// <summary>Flag to indicate need to shuffle the remaining letters in the shuffle box</summary>
+        // internal bool shuffleRemaining = false;
+
+        // /// <summary>Flag to indicate need to clear the Answers box</summary>
+        // internal bool clearGuess = false;
+
+        // /// <summary>The number of anagrams to find</summary>
+        // internal int answersSought = 0;
+
+        // /// <summary>The number of anagrams found so far</summary>
+        // internal int answersGot = 0;
+
+        // /// <summary>Flag repesenting that the rootword was found</summary>
+        // internal bool gotBigWord = false;
 
         /// <summary>The length of the rootword</summary>
         internal int bigWordLen = 0;
 
-        /// <summary>Flag to indicate that a word guessed had already been discovered</summary>
-        internal bool foundDuplicate = false;
+        // /// <summary>Flag to indicate that a word guessed had already been discovered</summary>
+        // internal bool foundDuplicate = false;
 
-        /// <summary>Flag to indicate need to update the small answer boxes</summary>
-        internal bool updateAnswers = false;
+        // /// <summary>Flag to indicate need to update the small answer boxes</summary>
+        // internal bool updateAnswers = false;
 
 
-        // Game status flags
-        /// <summary>Flag to indicate need to start a new game</summary>
-        internal bool startNewGame = false;
+        // // Game status flags
+        // /// <summary>Flag to indicate need to start a new game</summary>
+        // internal bool startNewGame = false;
 
-        /// <summary>Flag to indicate that game was paused</summary>
-        internal bool gamePaused = false;
+        // /// <summary>Flag to indicate that game was paused</summary>
+        // internal bool gamePaused = false;
 
-        /// <summary>Flag to indicate need to quit the game </summary>
-        internal bool quitGame = false;
+        // /// <summary>Flag to indicate need to quit the game </summary>
+        // internal bool quitGame = false;
 
-        /// <summary>Flag to indicate need to solve the anagrams (game timed out)</summary>
-        internal bool solvePuzzle = false;
+        // /// <summary>Flag to indicate need to solve the anagrams (game timed out)</summary>
+        // internal bool solvePuzzle = false;
 
-        /// <summary>Flag to indicate the game was won</summary>
-        internal bool winGame = false;
+        // /// <summary>Flag to indicate the game was won</summary>
+        // internal bool winGame = false;
 
         // shuffle is an array that can be modified so it needs to have a field that is set and get
         /// <summary>Represents a shuffled array of characters.</summary>
@@ -161,7 +232,7 @@ namespace AgOop
         internal string Answer = "";
 
 
-        /// <summary> Declare all all the anagrams as found (but not necessarily guessed)</summary>
+        /// <summary> Declare all the anagrams as found (but not necessarily guessed)</summary>
         /// <param name="headNode">The head node of the anagrams list</param>
         /// <returns>Nothing</returns>
         internal void SolveIt(Anagrams.Node? headNode)
@@ -200,12 +271,16 @@ namespace AgOop
                     foundWord = true;
                     if (!current.found)
                     {
-                        score += current.length;
-                        totalScore += current.length;
-                        answersGot++;
+                        GameState.score += current.length;
+                        // score += current.length;
+                        GameState.totalScore += current.length;
+                        // totalScore += current.length;
+                        GameState.answersGot++;
+                        // answersGot++;
                         if (len == bigWordLen)
                         {
-                            gotBigWord = true;
+                            GameState.gotBigWord = true;
+                            // gotBigWord = true;
                             // SoundManager.PlaySound("foundbig");
                             // TODO: Fix using a proper queue system
                             // using (SoundManager sm = new SoundManager())
@@ -227,29 +302,36 @@ namespace AgOop
                         }
 
 
-                        if (answersSought == answersGot)
+                        if (GameState.answersSought == GameState.answersGot)
+                        // if (answersSought == answersGot)
                         {
                             // getting all answers gives us the game score again!!
-                            totalScore += score;
-                            winGame = true;
+                            // GameState.totalScore += score;
+                            GameState.totalScore += GameState.score;
+                            // totalScore += score;
+                            GameState.winGame = true;
+                            // winGame = true;
                         }
                         current.found = true;
                         current.guessed = true;
-                        updateTheScore = true;
+                        GameState.updateTheScore = true;
+                        // updateTheScore = true;
                     }
                     else
                     {
-                        foundDuplicate = true;
+                        GameState.foundDuplicate = true;
+                        // foundDuplicate = true;
                         // SoundManager.PlaySound("duplicate");
                         // TODO: Fix using a proper queue system
                         // using (SoundManager sm = new SoundManager())
                         // {
                         //     sm.PlaySound("duplicate");
                         // }            
-                        _soundManager.PlaySound("duplicate");            
+                        _soundManager.PlaySound("duplicate");
 
                     }
-                    updateAnswers = true;
+                    GameState.updateAnswers = true;
+                    // updateAnswers = true;
                     break;
                 }
                 current = current.next;
@@ -425,7 +507,8 @@ namespace AgOop
                 w = 800,
                 h = 600
             };
-            _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
+            // _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
+            _spriteManager.SDLScale_RenderCopy(screen, Sprites.backgroundTex, null, dest);
 
             _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
@@ -446,9 +529,11 @@ namespace AgOop
                 _anagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
 
                 // answersSought = AnagramsManager.Length(headNode);
-                answersSought = _anagramsManager.Length(headNode);
+                GameState.answersSought = _anagramsManager.Length(headNode);
+                // answersSought = _anagramsManager.Length(headNode);
 
-                happy = (answersSought <= 77) && (answersSought >= 6);
+                happy = (GameState.answersSought <= 77) && (GameState.answersSought >= 6);
+                // happy = (answersSought <= 77) && (answersSought >= 6);
             }
 
             // now we have a good set of words - sort them alphabetically and by size
@@ -476,16 +561,25 @@ namespace AgOop
             /* display all answer boxes */
             _spriteManager.DisplayAnswerBoxes(headNode, screen);
 
-            gotBigWord = false;
-            score = 0;
-            updateTheScore = true;
-            gamePaused = false;
-            winGame = false;
-            answersGot = 0;
+            GameState.gotBigWord = false;
+            // gotBigWord = false;
+            GameState.score = 0;
+            // score = 0;
+            // updateTheScore = true;
+            GameState.updateTheScore = true;
+            GameState.gamePaused = false;
+            // gamePaused = false;
+            GameState.winGame = false;
+            // winGame = false;
+            GameState.answersGot = 0;
+            // answersGot = 0;
 
-            gameStart = DateTime.Now;
-            gameTime = 0;
-            stopTheClock = false;
+            GameState.gameStart = DateTime.Now;
+            // gameStart = DateTime.Now;
+            // gameTime = 0;
+            GameState.gameTime = 0;
+            GameState.stopTheClock = false;
+            // stopTheClock = false;
         }
 
 
@@ -583,7 +677,8 @@ namespace AgOop
                             break;
 
                         case SDL.SDL_EventType.SDL_QUIT:
-                            quitGame = true;
+                            GameState.quitGame = true;
+                            // quitGame = true;
                             break;
 
                         case SDL.SDL_EventType.SDL_WINDOWEVENT:
@@ -598,83 +693,110 @@ namespace AgOop
                     }
                 }
 
-                if (winGame)
+                if (GameState.winGame)
+                // if (winGame)
                 {
-                    stopTheClock = true;
-                    solvePuzzle = true;
+                    // stopTheClock = true;
+                    GameState.stopTheClock = true;
+                    GameState.solvePuzzle = true;
+                    // solvePuzzle = true;
                 }
 
-                if ((gameTime < GameManagerVariables.AVAILABLE_TIME) && !stopTheClock)
+                if ((GameState.gameTime < GameManagerVariables.AVAILABLE_TIME) && !GameState.stopTheClock)
+                // if ((GameState.gameTime < GameManagerVariables.AVAILABLE_TIME) && !stopTheClock)
+                // if ((gameTime < GameManagerVariables.AVAILABLE_TIME) && !stopTheClock)
                 {
-                    timeNow = DateTime.Now - gameStart;
+                    timeNow = DateTime.Now - GameState.gameStart;
+                    // timeNow = DateTime.Now - gameStart;
 
                     int timeNowSeconds = timeNow.Minutes * 60 + timeNow.Seconds;
-                    if (timeNowSeconds != gameTime)
+                    if (timeNowSeconds != GameState.gameTime)
+                    // if (timeNowSeconds != gameTime)
                     {
-                        gameTime = timeNowSeconds;
+                        GameState.gameTime = timeNowSeconds;
+                        // gameTime = timeNowSeconds;
                         _spriteManager.UpdateTime(screen);
                     }
                 }
                 else
                 {
-                    if (!stopTheClock)
+                    if (!GameState.stopTheClock)
+                    // if (!stopTheClock)
                     {
-                        stopTheClock = true;
-                        solvePuzzle = true;
+                        GameState.stopTheClock = true;
+                        // stopTheClock = true;
+                        GameState.solvePuzzle = true;
+                        // solvePuzzle = true;
                     }
                 }
 
                 // Check messages
-                if (solvePuzzle)
+                if (GameState.solvePuzzle)
+                // if (solvePuzzle)
                 {
                     // Walk the list, setting everything to found
                     SolveIt(headNode);
                     ClearWord(letters);
                     Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
                     Answer = rootword;
-                    gamePaused = true;
-                    if (!stopTheClock) // not sure why there is this if statement
+                    GameState.gamePaused = true;
+                    // gamePaused = true;
+                    if (!GameState.stopTheClock) // not sure why there is this if statement
+                    // if (!stopTheClock) // not sure why there is this if statement
                     {
-                        stopTheClock = true;
+                        GameState.stopTheClock = true;
+                        // stopTheClock = true;
                     }
-                    solvePuzzle = false;
+                    GameState.solvePuzzle = false;
+                    // solvePuzzle = false;
                 }
 
                 // display all the little answers
-                if (updateAnswers)
+                if (GameState.updateAnswers)
+                // if (updateAnswers)
                 {
                     // move letters back down again
                     ClearWord(letters);
-                    updateAnswers = false;
+                    GameState.updateAnswers = false;
+                    // updateAnswers = false;
                 }
                 _spriteManager.DisplayAnswerBoxes(headNode, screen);
 
                 // start a new game
-                if (startNewGame)
+                if (GameState.startNewGame)
+                // if (startNewGame)
                 {
-                    if (!gotBigWord)  // not sure why this is here - probably for gamerzilla?
+                    if (!GameState.gotBigWord)  // not sure why this is here - probably for gamerzilla?
+                    // if (!gotBigWord)  // not sure why this is here - probably for gamerzilla?
                     {
-                        totalScore = 0;
+                        GameState.totalScore = 0;
+                        // totalScore = 0;
                     }
                     NewGame(ref headNode, dldHeadNode, screen, ref letters);
 
-                    startNewGame = false;
+                    GameState.startNewGame = false;
+                    // startNewGame = false;
                 }
 
-                if (shuffleRemaining)
+                if (GameState.shuffleRemaining)
+                // if (shuffleRemaining)
                 {
                     // AnagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
                     _anagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
-                    shuffleRemaining = false;
+                    GameState.shuffleRemaining = false;
+                    // shuffleRemaining = false;
                 }
 
-                if (updateTheScore)
+                if (GameState.updateTheScore)
+                // if (updateTheScore)
                 {
-                    updateTheScore = false;
+                    GameState.updateTheScore = false;
+                    // updateTheScore = false;
                     _spriteManager.UpdateScore(screen);
                 }
 
-                if (TickClock)
+                if (GameState.TickClock)
+                // if (TickClock)
                 {
                     // TODO: Fix using a proper queue system
                     // using (SoundManager sm = new SoundManager())
@@ -682,15 +804,18 @@ namespace AgOop
                     //     sm.PlaySound("clock-tick");
                     // }
                     _soundManager.PlaySound("clock-tick");
-                    TickClock = false;
+                    GameState.TickClock = false;
+                    // TickClock = false;
                 }
 
-                if (clearGuess)
+                if (GameState.clearGuess)
+                // if (clearGuess)
                 {
                     // clear the guess
                     if (ClearWord(letters) > 0)
                     {
-                        clearGuess = false;
+                        GameState.clearGuess = false;
+                        // clearGuess = false;
                         // TODO: Fix using a proper queue system
                         // SoundManager.PlaySound("clear");
                         // using (SoundManager sm = new SoundManager())
@@ -701,7 +826,8 @@ namespace AgOop
                     }
                 }
 
-                if (quitGame)
+                if (GameState.quitGame)
+                // if (quitGame)
                 {
                     done = true;
                 }
@@ -710,7 +836,8 @@ namespace AgOop
                 SDL.SDL_SetRenderDrawColor(screen, 0, 0, 0, 255);
                 SDL.SDL_RenderClear(screen);
                 // update the renderer
-                _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
+                _spriteManager.SDLScale_RenderCopy(screen, Sprites.backgroundTex, null, dest);
+                // _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
                 _spriteManager.DisplayAnswerBoxes(headNode, screen);
                 _spriteManager.MoveSprites(screen, letters, GameManagerVariables.letterSpeed);
                 // present the renderer
@@ -775,17 +902,17 @@ namespace AgOop
             var spriteManager = serviceProvider.GetRequiredService<SpriteManager>();
             var uiManager = serviceProvider.GetRequiredService<UIManager>();
             var wordsList = serviceProvider.GetRequiredService<WordsList>();
-            soundManager._gameManager = gameManager;
-            soundManager._localeManager = localeManager;
-            anagramsManager._localeManager = localeManager;
-            spriteManager._localeManager = localeManager;
+            // soundManager._gameManager = gameManager;
+            // soundManager._localeManager = localeManager;
+            // anagramsManager._localeManager = localeManager;
+            // spriteManager._localeManager = localeManager;
             spriteManager._gameManager = gameManager;
             uiManager._gameManager = gameManager;
             uiManager._soundManager = soundManager;
 
             WordsList.Dlb_node? dlbHeadNode = null;
             Anagrams.Node? headNode = null;
-            spriteManager.Initialise();
+            // spriteManager.Initialise();
             Sprite? letters = null;
             // {
 
