@@ -124,7 +124,8 @@ namespace AgOop
 
                     // ENTER key pressed: submit the ANSWER to be checked
                     case SDL.SDL_Keycode.SDLK_RETURN:
-                        _gameManager.CheckGuess(_gameManager.Answer, headNode);
+                        _gameManager.CheckGuess(GameState.Answer, headNode);
+                        // _gameManager.CheckGuess(_gameManager.Answer, headNode);
                         // _gameManager.CheckGuess(GameManager.Answer, headNode);
                         // GameManager.CheckGuess(GameManager.Answer, headNode);
                         break;
@@ -258,7 +259,8 @@ namespace AgOop
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
                 if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
                 {
-                    _gameManager.CheckGuess(_gameManager.Answer, headNode);
+                    _gameManager.CheckGuess(GameState.Answer, headNode);
+                    // _gameManager.CheckGuess(_gameManager.Answer, headNode);
                     // GameManager.CheckGuess(GameManager.Answer, headNode);
                 }
 
