@@ -15,14 +15,13 @@ namespace AgOop
         private readonly ILogger<UIManager> _logger;
 
         internal GameManager? _gameManager { get; set; }
-        internal SoundManager? _soundManager;
+        private readonly SoundManager _soundManager;
 
         // internal UIManager(SoundManager soundManager)
-        public UIManager(ILogger<UIManager> logger)
+        public UIManager(ILogger<UIManager> logger, SoundManager soundManager)
         {
             _logger = logger;
-            // _soundManager = soundManager;
-            // _gameManager = gameManager;
+            _soundManager = soundManager;
         }
 
 
