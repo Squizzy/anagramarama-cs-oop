@@ -5,14 +5,15 @@ namespace AgOop
 
     internal class ConfigurationManager
     {
-        private readonly LocaleManager _localeManager;
+        private readonly LocaleSettings _localeSettings;
         private string configFilePath;
 
-        internal ConfigurationManager(LocaleManager localeManager)
+        internal ConfigurationManager(LocaleSettings localeSettings)
         {
-            _localeManager = localeManager;
+            _localeSettings = localeSettings;
 
-            configFilePath = _localeManager.basePath + _localeManager.i18nPath + _localeManager.localePath;
+            // configFilePath = _localeManager.basePath + _localeManager.i18nPath + _localeManager.localePath;
+            configFilePath = _localeSettings.localePath;
             // string configFilePath = LocaleManager.basePath + LocaleManager.i18nPath + LocaleManager.localePath;
             LoadConfig(configFilePath + "config.ini");
         }

@@ -27,12 +27,12 @@ namespace AgOop
     {
         private readonly ILogger<AnagramsManager> _logger;
         // internal LocaleManager? _localeManager;
-        private readonly LocaleManager _localeManager;
+        private readonly LocaleSettings _localeSettings;
 
-        public AnagramsManager(ILogger<AnagramsManager> logger, LocaleManager localemanager)
+        public AnagramsManager(ILogger<AnagramsManager> logger, LocaleSettings localeSettings)
         {
             _logger = logger;
-            _localeManager = localemanager;
+            _localeSettings = localeSettings;
         }
 
         internal void AnagramsManagerExit(ref Sprite? letters, ref Anagrams.Node? headNode)
@@ -263,7 +263,8 @@ namespace AgOop
         /// <returns>Nothing as the result is passed by reference</returns>
         internal void GetRandomWord(ref string randomWord, int randomWordMinLength)
         {
-            string filename = _localeManager.language + "wordlist.txt";
+            // string filename = _localeManager.language + "wordlist.txt";
+            string filename = _localeSettings.wordslistPath;
 
             string[] lines = File.ReadAllLines(filename);
 

@@ -249,6 +249,7 @@ namespace AgOop
             //     );
 
             // NOTE: The constructors for the below must be public
+            services.AddSingleton<LocaleSettings>();
             services.AddSingleton<LocaleManager>();
             services.AddSingleton<AnagramsManager>();
             services.AddSingleton<GameManager>();

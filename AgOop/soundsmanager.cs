@@ -72,13 +72,17 @@ namespace AgOop
         private readonly ILogger<SoundManager> _logger;
         // internal GameManager? _gameManager { get; set; }
         // internal LocaleManager _localeManager;
-        private readonly LocaleManager _localeManager;
+
+        // private readonly LocaleManager _localeManager;
+        private readonly LocaleSettings _localeSettings;
 
         /// <summary>Constructor - initialises the sound setup </summary>
-        public SoundManager(ILogger<SoundManager> logger, LocaleManager localeManager)
+        public SoundManager(ILogger<SoundManager> logger, LocaleSettings localeSettings)
+        // public SoundManager(ILogger<SoundManager> logger, LocaleManager localeManager)
         {
             _logger = logger;
-            _localeManager = localeManager;
+            _localeSettings = localeSettings;
+            // _localeManager = localeManager;
             InitialiseSoundManager();
         }
 
@@ -239,13 +243,16 @@ namespace AgOop
             try
             {
                 // Determine the path to the sound file
-                string? soundPath = _localeManager.audioSubPath;
+                string soundPath = _localeSettings.audioPath;
+                // string? soundPath = _localeManager.audioSubPath;
                 if (string.IsNullOrEmpty(soundPath))
                 {
                     throw new InvalidOperationException("Path to audio files empty. LocaleManager may not be properly initialized.");
                 }
-                soundPath += !soundPath.EndsWith(_localeManager.DIR_SEP) ? _localeManager.DIR_SEP : "";
-                string soundFilename = soundPath + filename;
+                // soundPath += !soundPath.EndsWith(_localeManager.DIR_SEP) ? _localeManager.DIR_SEP : "";
+                // soundPath += !soundPath.EndsWith(_localeManager.DIR_SEP) ? _localeManager.DIR_SEP : "";
+                string soundFilename = Path.Join(soundPath, filename);
+                // string soundFilename = soundPath + filename;
 
                 // Load the sound audio data
                 IntPtr audioChunk = SDL_mixer.Mix_LoadWAV(soundFilename);

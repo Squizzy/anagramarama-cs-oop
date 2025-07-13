@@ -7,15 +7,24 @@ namespace AgOop
     {
         // private static readonly AgOopLogger logger = new("WordsList");
         private readonly ILogger<WordsList> _logger;
+        private readonly LocaleSettings _localeSettings;
 
         /// <summary>Constructor for the wordlist</summary
         // internal WordsList(ILogger<WordsList> logger, ref Dlb_node? dlbHeadNode, string wordlist)
-        public WordsList(ILogger<WordsList> logger)
+        public WordsList(ILogger<WordsList> logger, LocaleSettings localeSettings)
         {
             _logger = logger;
-
-
+            _localeSettings = localeSettings;
         }
+
+        // private Dlb_node _dictionary;
+
+        // private void LoadDictionary()
+        // {
+        //     string wordsListPath = _localeSettings.wordslistPath;
+        //     _dictionary = new Dlb_node('\0');
+
+        // }
 
         internal void GenerateWordsList(ref Dlb_node? dlbHeadNode, string wordlist)
         {
@@ -249,6 +258,8 @@ namespace AgOop
         /// <returns>Nothing</returns>
         internal bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
         {
+            _logger.LogDebug(filename);
+            
             int lineCount = File.ReadLines(filename).Count();
             string? currentWord;
             using StreamReader sr = new(filename);
