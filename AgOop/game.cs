@@ -921,7 +921,7 @@ namespace AgOop
             // spriteManager._localeManager = localeManager;
             // spriteManager._gameManager = gameManager;
             uiManager._gameManager = gameManager;
-            uiManager._soundManager = soundManager;
+            // uiManager._soundManager = soundManager;
 
             WordsList.Dlb_node? dlbHeadNode = null;
             Anagrams.Node? headNode = null;
