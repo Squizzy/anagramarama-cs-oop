@@ -76,14 +76,16 @@ namespace AgOop
     internal class SpriteManager
     {
         private readonly ILogger<SpriteManager> _logger;
-        private readonly LocaleManager _localeManager;
+        // private readonly LocaleManager _localeManager;
+        private readonly LocaleSettings _localeSettings;
 
         // internal LocaleManager? _localeManager;
         // internal GameManager? _gameManager;
         // private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
 
         /// <summary> Constructor </summary>
-        public SpriteManager(ILogger<SpriteManager> logger, LocaleManager localeManager)
+        public SpriteManager(ILogger<SpriteManager> logger, LocaleSettings localeSettings)
+        // public SpriteManager(ILogger<SpriteManager> logger, LocaleManager localeManager)
         {
             // TODO: 
             // initialise screen textures
@@ -91,7 +93,8 @@ namespace AgOop
 
             // Inject logger and localeManager 
             _logger = logger;
-            _localeManager = localeManager;
+            _localeSettings = localeSettings;
+            // _localeManager = localeManager;
 
             // _gameManager = gameManager;
 
@@ -183,16 +186,18 @@ namespace AgOop
             /* cache in-game graphics */
             // string imagesPath = LocaleManager.basePath + LocaleManager.i18nPath + _localeManager.localePath + _localeManager.imagesSubPath;
             // string imagesPath = _localeManager.language + _localeManager.imagesSubPath;
-            string imagesPath = _localeManager.imagesSubPath;
+            // string imagesPath = _localeSettings.imagesPath;
+            // string imagesPath = _localeManager.imagesSubPath;
 
-            if (!File.Exists(imagesPath + "background.png"))
+            string backgroundFileLocation = Path.Join(_localeSettings.imagesPath, "background.png");
+            if (!File.Exists(backgroundFileLocation))
             {
                 // Console.WriteLine("problem with background file");
-                _logger.LogError($"Background picture file not found at {imagesPath + "background.png"}");
+                _logger.LogError($"Background picture file not found at {backgroundFileLocation}");
                 // Console.ReadLine("Please press a key");
 
             }
-            IntPtr backgroundSurf = SDL_image.IMG_Load(imagesPath + "background.png");
+            IntPtr backgroundSurf = SDL_image.IMG_Load(Path.Join(backgroundFileLocation));
             if (backgroundSurf == IntPtr.Zero)
             {
                 // Console.WriteLine($"Error loading background image: {SDL.SDL_GetError()}");
@@ -207,36 +212,37 @@ namespace AgOop
             Sprites.backgroundTex = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, backgroundSurf);
             SDL.SDL_FreeSurface(backgroundSurf);
 
-
-            if (!File.Exists(imagesPath + "letterBank.png"))
+            string letterBankFileLocation = Path.Join(_localeSettings.imagesPath, "letterBank.png");
+            if (!File.Exists(letterBankFileLocation))
             {
                 // Console.WriteLine("problem with letterBank file");
-                _logger.LogError($"Letter bank picture file not found at {imagesPath + "letterBank.png"}");
+                _logger.LogError($"Letter bank picture file not found at {letterBankFileLocation}");
                 Console.ReadLine();
             }
-            IntPtr letterSurf = SDL_image.IMG_Load(imagesPath + "letterBank.png");
+            IntPtr letterSurf = SDL_image.IMG_Load(letterBankFileLocation);
             Sprites.letterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, letterSurf);
             SDL.SDL_FreeSurface(letterSurf);
 
-
-            if (!File.Exists(imagesPath + "smallLetterBank.png"))
+            string smallLetterBankFileLocation = Path.Join(_localeSettings.imagesPath, "smallLetterBank.png");
+            if (!File.Exists(smallLetterBankFileLocation))
             {
                 // Console.WriteLine("problem with smallLetterBank file");
-                _logger.LogError($"Small letter bank picture file not found at {imagesPath + "smallLetterBank.png"}");
+                _logger.LogError($"Small letter bank picture file not found at {smallLetterBankFileLocation}");
                 Console.ReadLine();
             }
-            IntPtr smallLetterSurf = SDL_image.IMG_Load(imagesPath + "smallLetterBank.png");
+            IntPtr smallLetterSurf = SDL_image.IMG_Load(smallLetterBankFileLocation);
             Sprites.smallLetterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, smallLetterSurf);
             SDL.SDL_FreeSurface(smallLetterSurf);
 
 
-            if (!File.Exists(imagesPath + "numberBank.png"))
+            string numberBankFileLocation = Path.Join(_localeSettings.imagesPath, "numberBank.png");
+            if (!File.Exists(numberBankFileLocation))
             {
                 // Console.WriteLine("problem with numberBank file");
-                _logger.LogError($"Number bank picture file not found at {imagesPath + "numberBank.png"}");
+                _logger.LogError($"Number bank picture file not found at {numberBankFileLocation}");
                 Console.ReadLine();
             }
-            IntPtr numberSurf = SDL_image.IMG_Load(imagesPath + "numberBank.png");
+            IntPtr numberSurf = SDL_image.IMG_Load(numberBankFileLocation);
             Sprites.numberBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, numberSurf);
             SDL.SDL_FreeSurface(numberSurf);
 
