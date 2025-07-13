@@ -149,8 +149,8 @@ namespace AgOop
             String consoleCallerLineNumber = "{LineNumber}"; // Line number of the instantiation of the logger?
             String consoleCallerColumnNumber = "{ColumnNumber}";
             String consoleCallerMethod = "{Method}";
-            String consoleCallerSourceFile = "{SourceFile}";
-            String consoleCallerNameSpace = "{Namespace}";
+            // String consoleCallerSourceFile = "{SourceFile}";
+            // String consoleCallerNameSpace = "{Namespace}";
 
             return
               $"[{consoleTime}] {consoleLevel} [{consoleSourceContext}>{consoleCallerMethod}:{consoleCallerLineNumber}.{consoleCallerColumnNumber}] {consoleMessage}{Environment.NewLine}{consoleException}";
