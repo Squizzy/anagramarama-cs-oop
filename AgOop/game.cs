@@ -111,7 +111,7 @@ namespace AgOop
         internal static bool updateAnswers = false;
 
 
-                // Game status flags
+        // Game status flags
         /// <summary>Flag to indicate need to start a new game</summary>
         internal static bool startNewGame = false;
 
@@ -126,6 +126,15 @@ namespace AgOop
 
         /// <summary>Flag to indicate the game was won</summary>
         internal static bool winGame = false;
+
+
+        // shuffle is an array that can be modified so it needs to have a field that is set and get
+        /// <summary>Represents a shuffled array of characters.</summary>
+        internal static string Shuffle = "";
+
+        // answer is an array that can be modified so it needs to have a field that is set and get
+        /// <summary>Represents an answer array of characters.</summary>
+        internal static string Answer = "";
 
     }
 
@@ -155,6 +164,9 @@ namespace AgOop
 
         /// <summary>The word from which the anagrams are created</summary>
         internal string rootword = "";
+
+        /// <summary>The length of the rootword</summary>
+        internal int bigWordLen = 0;
 
         // Game time inform
         // /// <summary>time at which the game was started</summary>
@@ -197,9 +209,6 @@ namespace AgOop
         // /// <summary>Flag repesenting that the rootword was found</summary>
         // internal bool gotBigWord = false;
 
-        /// <summary>The length of the rootword</summary>
-        internal int bigWordLen = 0;
-
         // /// <summary>Flag to indicate that a word guessed had already been discovered</summary>
         // internal bool foundDuplicate = false;
 
@@ -223,28 +232,28 @@ namespace AgOop
         // /// <summary>Flag to indicate the game was won</summary>
         // internal bool winGame = false;
 
-        // shuffle is an array that can be modified so it needs to have a field that is set and get
-        /// <summary>Represents a shuffled array of characters.</summary>
-        internal string Shuffle = "";
+        // // shuffle is an array that can be modified so it needs to have a field that is set and get
+        // /// <summary>Represents a shuffled array of characters.</summary>
+        // internal string Shuffle = "";
 
-        // answer is an array that can be modified so it needs to have a field that is set and get
-        /// <summary>Represents an answer array of characters.</summary>
-        internal string Answer = "";
+        // // answer is an array that can be modified so it needs to have a field that is set and get
+        // /// <summary>Represents an answer array of characters.</summary>
+        // internal string Answer = "";
 
 
-        /// <summary> Declare all the anagrams as found (but not necessarily guessed)</summary>
-        /// <param name="headNode">The head node of the anagrams list</param>
-        /// <returns>Nothing</returns>
-        internal void SolveIt(Anagrams.Node? headNode)
-        {
-            Anagrams.Node? current = headNode;
+        // /// <summary> Declare all the anagrams as found (but not necessarily guessed)</summary>
+        // /// <param name="headNode">The head node of the anagrams list</param>
+        // /// <returns>Nothing</returns>
+        // internal void SolveIt(Anagrams.Node? headNode)
+        // {
+        //     Anagrams.Node? current = headNode;
 
-            while (current != null)
-            {
-                current.found = true;
-                current = current.next;
-            }
-        }
+        //     while (current != null)
+        //     {
+        //         current.found = true;
+        //         current = current.next;
+        //     }
+        // }
 
 
         /// <summary> Check if the guess is a word that is to be found </summary>
@@ -385,7 +394,8 @@ namespace AgOop
                     // TODO: Handle this better?
                     for (i = 0; i < 7; i++)
                     {
-                        if (Answer.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        // if (Answer.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        if (GameState.Answer.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
                         {
                             break;
                         }
@@ -396,16 +406,19 @@ namespace AgOop
                     if (i < 7)
                     {
                         // Answer.ToCharArray()[i] = Shuffle[index];
-                        Answer = Answer[..i] + Shuffle[index] + Answer[(i + 1)..];
+                        GameState.Answer = GameState.Answer[..i] + GameState.Shuffle[index] + GameState.Answer[(i + 1)..];
+                        // Answer = Answer[..i] + Shuffle[index] + Answer[(i + 1)..];
                         // Shuffle.ToCharArray()[index] = AnagramsConstants.SPACE_CHAR;
-                        Shuffle = Shuffle[..index] + AnagramsConstants.SPACE_CHAR + Shuffle[(index + 1)..];
+                        GameState.Shuffle = GameState.Shuffle[..index] + AnagramsConstants.SPACE_CHAR + GameState.Shuffle[(index + 1)..];
+                        // Shuffle = Shuffle[..index] + AnagramsConstants.SPACE_CHAR + Shuffle[(index + 1)..];
                     }
                     break;
 
                 case BoxConstants.SHUFFLE:
                     for (i = 0; i < 7; i++)
                     {
-                        if (Shuffle.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        if (GameState.Shuffle.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        // if (Shuffle.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
                         {
                             break;
                         }
@@ -416,10 +429,12 @@ namespace AgOop
                     if (i < 7)
                     {
                         // Shuffle.ToCharArray()[i] = Answer[index];
-                        Shuffle = Shuffle[..i] + Answer[index] + Shuffle[(i + 1)..];
+                        GameState.Shuffle = GameState.Shuffle[..i] + GameState.Answer[index] + GameState.Shuffle[(i + 1)..];
+                        // Shuffle = Shuffle[..i] + Answer[index] + Shuffle[(i + 1)..];
 
                         // Answer.ToCharArray()[index] = AnagramsConstants.SPACE_CHAR;
-                        Answer = Answer[..index] + AnagramsConstants.SPACE_CHAR + Answer[(index + 1)..];
+                        GameState.Answer = GameState.Answer[..index] + AnagramsConstants.SPACE_CHAR + GameState.Answer[(index + 1)..];
+                        // Answer = Answer[..index] + AnagramsConstants.SPACE_CHAR + Answer[(index + 1)..];
                     }
                     break;
 
@@ -548,9 +563,11 @@ namespace AgOop
             char[] remainToShuffle = remain.ToCharArray();
             // AnagramsManager.ShuffleWord(ref remainToShuffle);
             _anagramsManager.ShuffleWord(ref remainToShuffle);
-            Shuffle = new string(remainToShuffle);
+            // Shuffle = new string(remainToShuffle);
+            GameState.Shuffle = new string(remainToShuffle);
 
-            Answer = AnagramsConstants.SPACE_FILLED_CHARS;
+            GameState.Answer = AnagramsConstants.SPACE_FILLED_CHARS;
+            // Answer = AnagramsConstants.SPACE_FILLED_CHARS;
 
             /* build up the letter sprites */
 
@@ -735,10 +752,13 @@ namespace AgOop
                 // if (solvePuzzle)
                 {
                     // Walk the list, setting everything to found
-                    SolveIt(headNode);
+                    _anagramsManager.SolveIt(headNode);
+                    // SolveIt(headNode);
                     ClearWord(letters);
-                    Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
-                    Answer = rootword;
+                    GameState.Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
+                    // Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
+                    GameState.Answer = rootword;
+                    // Answer = rootword;
                     GameState.gamePaused = true;
                     // gamePaused = true;
                     if (!GameState.stopTheClock) // not sure why there is this if statement
@@ -782,7 +802,8 @@ namespace AgOop
                 // if (shuffleRemaining)
                 {
                     // AnagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
-                    _anagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
+                    _anagramsManager.ShuffleAvailableLetters(ref GameState.Shuffle, ref letters);
+                    // _anagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
                     GameState.shuffleRemaining = false;
                     // shuffleRemaining = false;
                 }
