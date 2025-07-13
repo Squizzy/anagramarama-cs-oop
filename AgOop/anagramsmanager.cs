@@ -394,5 +394,19 @@ namespace AgOop
             }
         }
 
+        /// <summary> Declare all the anagrams as found (but not necessarily guessed)</summary>
+        /// <param name="headNode">The head node of the anagrams list</param>
+        /// <returns>Nothing</returns>
+        internal void SolveIt(Anagrams.Node? headNode)
+        {
+            Anagrams.Node? current = headNode;
+
+            while (current != null)
+            {
+                current.found = true;
+                current = current.next;
+            }
+        }
+
     }
 }
