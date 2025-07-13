@@ -435,16 +435,16 @@ namespace AgOop
         }
 
 
-        /// <summary> Returns a boolean indicating whether the click was inside a box </summary>
-        /// <param name="box"> The box </param>
-        /// <param name="x"> the x position clicked </param>
-        /// <param name="y">The y position clicked</param>
-        /// <returns>true if clicked inside the box, false otherwise</returns>
-        internal bool IsInside(Box box, int x, int y)
-        {
-            return (x > box.x) && (x < (box.x + box.width)) &&
-                    (y > box.y) && (y < (box.y + box.height));
-        }
+        // /// <summary> Returns a boolean indicating whether the click was inside a box </summary>
+        // /// <param name="box"> The box </param>
+        // /// <param name="x"> the x position clicked </param>
+        // /// <param name="y">The y position clicked</param>
+        // /// <returns>true if clicked inside the box, false otherwise</returns>
+        // internal bool IsInside(Box box, int x, int y)
+        // {
+        //     return (x > box.x) && (x < (box.x + box.width)) &&
+        //             (y > box.y) && (y < (box.y + box.height));
+        // }
 
 
         // TODO: Clarify what the return is - just for playing a sound should be a bool
