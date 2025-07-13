@@ -5,12 +5,12 @@ namespace AgOop
 {
 
     /// <summary> defines the SDL Audio configuration </summary>
-    internal class AudioConfig
+    internal static class AudioConfig
     {
-        internal int AudioRate {get; set;} = SDL_mixer.MIX_DEFAULT_FREQUENCY;
-        internal ushort AudioFormat {get; set;} = SDL.AUDIO_S16;
-        internal int AudioChannel {get; set;} = 1;
-        internal int AudioBuffers {get; set;} = 256;    
+        internal static int AudioRate {get; set;} = SDL_mixer.MIX_DEFAULT_FREQUENCY;
+        internal static ushort AudioFormat {get; set;} = SDL.AUDIO_S16;
+        internal static int AudioChannel {get; set;} = 1;
+        internal static int AudioBuffers {get; set;} = 256;    
     }
 
 
@@ -38,7 +38,7 @@ namespace AgOop
 
 
     /// <summary> The list of the sound files used in the game </summary>
-    internal class SoundsFiles
+    internal static class SoundsFiles
     {
         // TODO: This list could be loaded from the/a config file
         /// <summary> Dictionary of the sound name and their associated filename </summary>
@@ -79,10 +79,11 @@ namespace AgOop
         {
             _logger = logger;
             _localeManager = localeManager;
+            InitialiseSoundManager();
         }
 
         /// <summary>The object holding the SDL audio configuration </summary>
-        private AudioConfig? _audioConfig;
+        // private AudioConfig? _audioConfig;
         // TODO: This was changed to nullable and away from readonly - can it be changed back?
 
         /// <summary>The flag representing if the audio is enabled</summary>
@@ -133,16 +134,20 @@ namespace AgOop
         internal void InitialiseSoundManager()
         {
             // Console.WriteLine("SoundManager Constructor"); 
-        _logger.LogInformation("SoundManager Constructor");
+            _logger.LogInformation("SoundManager Constructor");
 
-            _audioConfig = new AudioConfig();
+            // _audioConfig = new AudioConfig();
 
             try
             {
-                int result = SDL_mixer.Mix_OpenAudio(_audioConfig.AudioRate,
-                                                     _audioConfig.AudioFormat,
-                                                     _audioConfig.AudioChannel,
-                                                     _audioConfig.AudioBuffers);
+                int result = SDL_mixer.Mix_OpenAudio(AudioConfig.AudioRate,
+                                                     AudioConfig.AudioFormat,
+                                                     AudioConfig.AudioChannel,
+                                                     AudioConfig.AudioBuffers);
+                // int result = SDL_mixer.Mix_OpenAudio(_audioConfig.AudioRate,
+                //                                      _audioConfig.AudioFormat,
+                //                                      _audioConfig.AudioChannel,
+                //                                      _audioConfig.AudioBuffers);
                 if (result == -1)
                 {
                     throw new InvalidOperationException($"Problem with audio initialisation {SDL.SDL_GetError()}");
@@ -406,6 +411,7 @@ namespace AgOop
         /// <exception cref="InvalidOperationException">Error related to acquiring, or playing the sound</exception>
         internal void PlaySound(string name)
         {
+            _logger.LogDebug("SoundManager PlaySound called for sound: {name}", name);
             if (!_audioEnabled)
             {
                 return;
