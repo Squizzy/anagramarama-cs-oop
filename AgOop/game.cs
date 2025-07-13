@@ -501,15 +501,16 @@ namespace AgOop
             // happy is true if we have < 67 anagrams and => 6
             bool happy = false;
 
-            SDL.SDL_Rect dest = new SDL.SDL_Rect
-            {
-                x = 0,
-                y = 0,
-                w = 800,
-                h = 600
-            };
-            // _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
-            _spriteManager.SDLScale_RenderCopy(screen, Sprites.backgroundTex, null, dest);
+            _spriteManager.ClearScreen();
+            // SDL.SDL_Rect dest = new SDL.SDL_Rect
+            // {
+            //     x = 0,
+            //     y = 0,
+            //     w = 800,
+            //     h = 600
+            // };
+            // // _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
+            // _spriteManager.SDLScale_RenderCopy(screen, Sprites.backgroundTex, null, dest);
 
             _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
