@@ -1051,5 +1051,17 @@ namespace AgOop
 
         }
 
+        internal void ClearScreen()
+        {
+            SDL.SDL_Rect dest = new SDL.SDL_Rect
+            {
+                x = 0,
+                y = 0,
+                w = 800,
+                h = 600
+            };
+            SDLScale_RenderCopy(GameManagerVariables.renderer, Sprites.backgroundTex, null, dest);
+        }
+
     }
 }
