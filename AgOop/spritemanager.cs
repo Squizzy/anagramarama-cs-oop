@@ -1076,5 +1076,133 @@ namespace AgOop
         {
             letters = null;
         }
+
+
+
+        // /// <summary> Returns a boolean indicating whether the click was inside a box </summary>
+        // /// <param name="box"> The box </param>
+        // /// <param name="x"> the x position clicked </param>
+        // /// <param name="y">The y position clicked</param>
+        // /// <returns>true if clicked inside the box, false otherwise</returns>
+        // internal bool IsInside(Box box, int x, int y)
+        // {
+        //     return (x > box.x) && (x < (box.x + box.width)) &&
+        //             (y > box.y) && (y < (box.y + box.height));
+        // }
+
+
+
+        /// <summary> determine the next blank space in a the Answers or Shuffle box 
+        /// blanks are indicated by pound not space.
+        /// When a blank is found, move the chosen letter from one box to the other.
+        /// i.e. If we're using the ANSWER box, 
+        ///   - move the chosen letter from the SHUFFLE box to the ANSWER box 
+        ///   - and move a SPACE back to the SHUFFLE box. 
+        /// and if we're using the SHUFFLE box 
+        ///  - move the chosen letter from ANSWER to SHUFFLE 
+        ///  - and move a SPACE into ANSWER.
+        /// </summary>
+        /// <param name="box">the ANSWER or SHUFFLE box</param>
+        /// <param name="index">pointer to the letter we're interested in</param>
+        /// <returns>the coords of the next blank position</returns>
+        internal int NextBlankPosition(int box, ref int index)
+        {
+            int i = 0;
+
+            switch (box)  // destination box for the letter
+            {
+                case BoxConstants.ANSWER:
+
+                    // TODO: Handle this better?
+                    for (i = 0; i < 7; i++)
+                    {
+                        // if (Answer.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        if (GameState.Answer.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        {
+                            break;
+                        }
+                    }
+                    // New: if no SPACE_CHAR found in Answer, 
+                    // i becomes 7 creating out of bound exception
+                    // not an issue is C due to the null char to end a string
+                    if (i < 7)
+                    {
+                        // Answer.ToCharArray()[i] = Shuffle[index];
+                        GameState.Answer = GameState.Answer[..i] + GameState.Shuffle[index] + GameState.Answer[(i + 1)..];
+                        // Answer = Answer[..i] + Shuffle[index] + Answer[(i + 1)..];
+                        // Shuffle.ToCharArray()[index] = AnagramsConstants.SPACE_CHAR;
+                        GameState.Shuffle = GameState.Shuffle[..index] + AnagramsConstants.SPACE_CHAR + GameState.Shuffle[(index + 1)..];
+                        // Shuffle = Shuffle[..index] + AnagramsConstants.SPACE_CHAR + Shuffle[(index + 1)..];
+                    }
+                    break;
+
+                case BoxConstants.SHUFFLE:
+                    for (i = 0; i < 7; i++)
+                    {
+                        if (GameState.Shuffle.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        // if (Shuffle.ToCharArray()[i] == AnagramsConstants.SPACE_CHAR)
+                        {
+                            break;
+                        }
+                    }
+                    // if no SPACE_CHAR found in Answer, 
+                    // i becomes 7 creating out of bound exception
+                    // not an issue is C due to the null char to end a string
+                    if (i < 7)
+                    {
+                        // Shuffle.ToCharArray()[i] = Answer[index];
+                        GameState.Shuffle = GameState.Shuffle[..i] + GameState.Answer[index] + GameState.Shuffle[(i + 1)..];
+                        // Shuffle = Shuffle[..i] + Answer[index] + Shuffle[(i + 1)..];
+
+                        // Answer.ToCharArray()[index] = AnagramsConstants.SPACE_CHAR;
+                        GameState.Answer = GameState.Answer[..index] + AnagramsConstants.SPACE_CHAR + GameState.Answer[(index + 1)..];
+                        // Answer = Answer[..index] + AnagramsConstants.SPACE_CHAR + Answer[(index + 1)..];
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            index = i;
+
+            // return the toX position in the target box of the letter returned
+            return i * (SpriteConstants.GAME_LETTER_WIDTH + SpriteConstants.GAME_LETTER_SPACE) + BoxConstants.BOX_START_X;
+        }
+
+
+        // TODO: Clarify what the return is - just for playing a sound should be a bool
+        /// <summary> move all letters from answer to shuffle </summary>
+        /// <param name="letters">the letter sprites</param>
+        /// <returns>the count of??? letters cleared, used to play a sound if not null??</returns>
+        internal int ClearWord(Sprite? letters)
+        {
+            Sprite? current = letters;
+            Sprite[] orderedLetters = new Sprite[7];
+            int count = 0;
+
+            while (current != null)
+            {
+                if (current.box == BoxConstants.ANSWER)
+                {
+                    count++;
+                    orderedLetters[current.index] = new Sprite(1);
+                    orderedLetters[current.index] = current;
+                    current.toY = BoxConstants.SHUFFLE_BOX_Y;
+                    current.box = BoxConstants.SHUFFLE;
+                }
+                current = current.next;
+            }
+
+            for (int i = 0; i < 7; i++)
+            {
+                if (orderedLetters[i] != null)
+                {
+                    orderedLetters[i].toX = NextBlankPosition(BoxConstants.SHUFFLE, ref orderedLetters[i].index);
+                }
+            }
+
+            return count;
+        }
     }
 }
