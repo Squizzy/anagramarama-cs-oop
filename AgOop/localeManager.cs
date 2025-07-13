@@ -4,42 +4,36 @@ using Microsoft.Extensions.Logging;
 namespace AgOop
 {
 
-    internal class LocaleManager
+    internal class LocaleSettings
     {
-
-        // private static readonly AgOopLogger logger;
-        // private static readonly AgOopLogger logger = new AgOopLogger("LocaleManager");
-        private readonly ILogger<LocaleManager> _logger;
-
-        /// <summary>Directory separator for the OS used </summary>
+        // <summary> separator for the OS used </summary>
         // internal static char DIR_SEP = Path.DirectorySeparatorChar;
-        internal char DIR_SEP;
+        // internal static string DIR_SEP;
         // internal static string DIR_SEP = "/"; //Path.DirectorySeparatorChar;
 
-        /// <summary> Resources path </summary>
-        internal string RESOURCES_PATH;
+        /// <summary> Path to the resources (icon, images, audio, wordslist) </summary>
+        internal string resourcesPath;
 
-        /// <summary> Audio data path</summary>
-        internal string audioSubPath;
+        /// <summary> Path to the audio files </summary>
+        /// TODO: Change to audioPath
+        internal string audioPath;
 
-        /// <summary> International content path</summary>
+        /// <summary> Path to the icon file(s) </summary>
+        internal string iconPath;
+
+        /// <summary> Path to international content (images, wordslist) </summary>
         internal string i18nPath;
 
         /// <summary> Path of a specified locale to use (dict, images) </summary>
         internal string localePath;
-        // internal string localePath = i18nPath + language;
 
         /// <value> Locale to be used when non-default language (where the worldlist.txt is)</value>
         internal string language;
 
-        /// <summary> A default value for the locale (language) </summary>
-        internal string defaultLocale;
-
         /// <summary> Images path </summary>
-        internal string imagesSubPath;
+        internal string imagesPath;
 
         /// <summary> Default locale (Dictionary and images) </summary>
-        // internal static string DEFAULT_LOCALE_PATH = i18nPath + "en-GB" + DIR_SEP;
         internal string DEFAULT_LOCALE_PATH;
 
         /// <summary>the path to the locale data to use for the game. 
@@ -47,64 +41,302 @@ namespace AgOop
         /// https://jimrich.sk/environment-specialfolder-on-windows-linux-and-os-x/
         internal string userPath;
 
-        /// <summary>the base path for the game. Used for Gamerzilla, which is not implemented here</summary>
+        /// <summary>the Gamerzilla base path for the game
+        /// which is not implemented here</summary>
         internal string basePath;
 
-        public LocaleManager(ILogger<LocaleManager> logger)
+        /// <summary> wordslist path </summary>
+        internal string wordslistPath;
+        
+        /// <summary> Path to the config.ini file </summary>
+        internal string configFilePath;
+
+
+        public LocaleSettings()
+        {
+
+            // TODO: Re-set the values if localePath changes
+
+            // generic paths
+            resourcesPath = Path.Join(LocaleConstants.ResourcesFolderName);
+
+            // AUDIO: audio (wav) files path (not language specific)
+            audioPath = Path.Join(resourcesPath, LocaleConstants.AudioFolderName);
+
+            // ICONS: path to the icon file(s)
+            iconPath = Path.Join(resourcesPath, LocaleConstants.IconFolderName);
+
+            // i18n paths
+            i18nPath = Path.Join(resourcesPath, LocaleConstants.I18nFolderName);
+
+            // by default, point to english dictionary
+            // TODO: Use the ini file and point to the last language used to play
+            language = Path.Join(LocaleConstants.DefaultLocale);
+
+            // Default locale path (eg "res/i18n/en-GB/") that will be used if no locale is specified
+            DEFAULT_LOCALE_PATH = Path.Join(i18nPath, LocaleConstants.DefaultLocale);
+
+            // locale folder (eg "res/i18n/en-GB/") that will be modified if the locale is changed
+            localePath = Path.Join(i18nPath, language);
+
+            // DICTIONARY: path to the dictionary file (it is called wordslist)
+            wordslistPath = Path.Join(localePath, LocaleConstants.WordslistFolderName, LocaleConstants.WordslistDefaultName);
+
+            // IMAGES: path to the images (background and letter banks)
+            imagesPath = Path.Join(localePath, LocaleConstants.ImagesFolderName);
+
+            // CONFIG.INI: path to the config.ini file
+            configFilePath = Path.Join(localePath, LocaleConstants.ConfigFileName);
+
+
+
+            // For Gamerzilla I think
+            userPath = "";
+            basePath = "";
+        }
+    }
+
+    internal static class LocaleConstants
+    {
+        /// <summary> A default values for locale and folders</summary>
+        internal const string ResourcesFolderName = "res";
+        internal const string AudioFolderName = "audio";
+        internal const string IconFolderName = "icons";
+        internal const string I18nFolderName = "i18n";
+        internal const string ImagesFolderName = "images";
+        internal const string WordslistFolderName = "";
+        internal const string DefaultLocale = "en-GB";
+        internal const string WordslistDefaultName = "wordlist.txt";
+        internal const string ConfigFileName = "config.ini";
+    }
+
+    internal class LocaleManager
+    {
+
+        private readonly ILogger<LocaleManager> _logger;
+        private LocaleSettings _localeSettings;
+
+        private string _commandLineLocale = "";
+
+        // /// <summary>Directory separator for the OS used </summary>
+        // // internal static char DIR_SEP = Path.DirectorySeparatorChar;
+        // internal char DIR_SEP;
+        // // internal static string DIR_SEP = "/"; //Path.DirectorySeparatorChar;
+
+        // /// <summary> Resources path </summary>
+        // internal string RESOURCES_PATH;
+
+        // /// <summary> Audio data path</summary>
+        // internal string audioSubPath;
+
+        // /// <summary> International content path</summary>
+        // internal string i18nPath;
+
+        // /// <summary> Path of a specified locale to use (dict, images) </summary>
+        // internal string localePath;
+        // // internal string localePath = i18nPath + language;
+
+        // /// <value> Locale to be used when non-default language (where the worldlist.txt is)</value>
+        // internal string language;
+
+        // /// <summary> A default value for the locale (language) </summary>
+        // internal string defaultLocale;
+
+        // /// <summary> Images path </summary>
+        // internal string imagesSubPath;
+
+        // /// <summary> Default locale (Dictionary and images) </summary>
+        // // internal static string DEFAULT_LOCALE_PATH = i18nPath + "en-GB" + DIR_SEP;
+        // internal string DEFAULT_LOCALE_PATH;
+
+        // /// <summary>the path to the locale data to use for the game. 
+        // /// Used for Gamerzilla, which is not implemented here</summary>
+        // /// https://jimrich.sk/environment-specialfolder-on-windows-linux-and-os-x/
+        // internal string userPath;
+
+        // /// <summary>the base path for the game. Used for Gamerzilla, which is not implemented here</summary>
+        // internal string basePath;
+
+        public LocaleManager(ILogger<LocaleManager> logger, LocaleSettings localeSettings)
         {
 
             _logger = logger;
             Console.WriteLine("LocaleManager Constructor");
             // _logger = LoggerFactory.CreateLogger<LocaleManager>();
-            DIR_SEP = Path.DirectorySeparatorChar;
-            RESOURCES_PATH = "res" + DIR_SEP;
 
-            audioSubPath = RESOURCES_PATH + "audio" + DIR_SEP;
+            _localeSettings = localeSettings;
 
-            i18nPath = RESOURCES_PATH + "i18n" + DIR_SEP;
-            defaultLocale = "en-GB" + DIR_SEP;
-            language = defaultLocale;
-            localePath = i18nPath + language;
-            imagesSubPath = localePath + "images" + DIR_SEP;
-            DEFAULT_LOCALE_PATH = i18nPath + defaultLocale;
+            // // generic paths
+            // // LocaleSettings.DIR_SEP = Path.DirectorySeparatorChar.ToString();
+            // _localeSettings.resourcesPath = Path.Join(LocaleConstants.ResourcesFolderName);
 
-            // For Gamerzilla I think
-            userPath = "";
-            basePath = "";
+            // // AUDIO: audio (wav) files path (not language specific)
+            // _localeSettings.audioPath = Path.Join(_localeSettings.resourcesPath, LocaleConstants.AudioFolderName);
 
-            _logger.LogDebug($"imagesSubPath: {imagesSubPath}");
+            // // ICONS: path to the icon file(s)
+            // _localeSettings.iconPath = Path.Join(_localeSettings.resourcesPath, LocaleConstants.IconFolderName);
+
+            // // i18n paths
+            // _localeSettings.i18nPath = Path.Join(_localeSettings.resourcesPath, LocaleConstants.I18nFolderName);
+
+            // // by default, point to english dictionary
+            // // TODO: Use the ini file and point to the last language used to play
+            // _localeSettings.language = Path.Join(LocaleConstants.defaultLocale);
+
+            // // Default locale path (eg "res/i18n/en-GB/") that will be used if no locale is specified
+            // _localeSettings.DEFAULT_LOCALE_PATH = Path.Join(_localeSettings.i18nPath + LocaleConstants.defaultLocale);
+
+            // // locale folder (eg "res/i18n/en-GB/") that will be modified if the locale is changed
+            // _localeSettings.localePath = Path.Join(_localeSettings.i18nPath, LocaleConstants.language);
+
+            // // DICTIONARY: path to the dictionary file
+            // _localeSettings.dictionaryPath = Path.Join(_localeSettings.localePath + LocaleConstants.wordslistFolderName);
+
+            // // IMAGES: path to the images (background and letter banks)
+            // _localeSettings.imagesPath = Path.Join(_localeSettings.localePath + LocaleConstants.ImagesFolderName);
+
+
+            // // For Gamerzilla I think
+            // _localeSettings.userPath = "";
+            // _localeSettings.basePath = "";
+
+            _logger.LogDebug($"imagesPath: {_localeSettings.imagesPath}");
         }
+
         internal void GetBasePathAndInitLocale(string[] args)
         {
 
+            // Get the base path for Gamerzilla (not use in this implementation)
             GetBasePath();
 
             InitLocale(args);
 
-            if (language[language.Length - 1] != DIR_SEP)
-            {
-                language += DIR_SEP;
-            }
+            // No longer needed as Path.Join is used
+            // if (LocaleSettings.language[LocaleSettings.language.Length - 1] != LocaleSettings.DIR_SEP)
+            // {
+            //     LocaleSettings.language += LocaleSettings.DIR_SEP;
+            // }
 
         }
 
 
-        /// <summary> not used.</summary>
-        /// <returns>Nothing</returns>
+        /// <summary> Sets the Gamerzilla specific basepath, per OS
+        /// The basepath is actually not used as Gamerzilla is not implemented</summary>
         internal void GetBasePath()
         {
+            // Get the based path for the application data (although this is not really portable)
             string? env = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             if (env == null)
             {
                 // env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/";
-                env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + DIR_SEP + ".local" + DIR_SEP + "share" + DIR_SEP;
+                // env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + DIR_SEP + ".local" + DIR_SEP + "share" + DIR_SEP;
+                env = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share");
             }
 
-            basePath = env + DIR_SEP + "anagramarama" + DIR_SEP;
+
+            _localeSettings.basePath = Path.Join(env, "anagramarama");
+        }
+
+        /// <summary>Parses the command line arguments and act on them. </summary>
+        /// <param name="args">the command line arguments, passed by Main</param>
+        internal void ParseCommandLine(string[] args)
+        {
+            if (args.Length > 0)
+            {
+                // preparing for potential multiple arguments
+                // currently this is not handled
+                // TODO: possibility to specify the wordslist filename
+                // TODO: possibility to specify the config.ini filename
+                for (int i = 0; i < args.Length; i++)
+                {
+                    switch (args[i].ToLower())
+                    {
+                        case "-h":
+                        case "--help":
+                            Console.WriteLine(GameConstants.HELP);
+                            // _logger.LogInformation(GameConstants.HELP);
+                            Environment.Exit(0);
+                            break;
+
+                        case "-v":
+                        case "--version":
+                            Console.WriteLine(GameConstants.VERSION);
+                            // _logger.LogInformation(GameConstants.VERSION);
+                            Environment.Exit(0);
+                            break;
+
+                        case "-l":
+                        case "--locale":
+                            // Console.WriteLine("here " +  args[i] + " " + args[i + 1]);
+                            _logger.LogInformation("locale selected: " + args[i] + " " + args[i + 1]);
+                            _commandLineLocale = args[i + 1];
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>process the locale provided by command line, if any </summary>
+        /// <param name="args"></param>
+        internal void InitLocaleFromCommandLine()
+        {
+            if (_commandLineLocale == "")
+            {
+                return;
+            }
+
+            if (GameConstants.AllowedLanguages.Contains(_commandLineLocale))
+            {
+                _localeSettings.localePath = Path.Join(_localeSettings.i18nPath, _commandLineLocale);
+                return;
+            }
+
+            Console.WriteLine($"The language code requested ({_commandLineLocale} is not registered in the app, checking if it exists");
+            // _logger.LogWarning($"The language code requested ({_commandLineLocale} is not registered in the app, checking if it exists");
+            // Environment.Exit(0);
+
+
+            // Check if the next argument is one of the available as defined in AllowedLanguages
+            // if (args[i + 1] != null && GameConstants.AllowedLanguages.Contains(args[i + 1]))
+            // {
+            //     _localeSettings.localePath = Path.Join(_localeSettings.i18nPath, args[i + 1]);
+            //     // _localeSettings.localePath = args[i + 1];
+            //     break;
+            // }
+            // else
+            // {
+            //     Console.WriteLine($"the language code requested ({args[i + 1]} is not available");
+            //     _logger.LogWarning($"the language code requested ({args[i + 1]} is not available");
+            //     Environment.Exit(0);
+            //     break;
+            // }
+            //             default:
+            //                 break;
+            //         }
+            //     }
+
+            // localePath = args[1].Trim();
+            // TODO: remove any trailing or leading directory separators and mode more checks in general
+            // NEW: no more need to reconstruct the path manually
+            // LocaleSettings.language += LocaleSettings.basePath + "i18n" + LocaleSettings.DIR_SEP + LocaleSettings.localePath + LocaleSettings.DIR_SEP;
+
+            // if a wordslist file exists at the given location, all good
+            if (SetLocalpathIfWordslistExists(_localeSettings.localePath))
+            // if (IsValidLocale(LocaleSettings.language))
+            {
+                return;
+            }
+
+            // otherwise call InitLocalePrefix
+            InitLocalePrefix("");
+
         }
 
 
-        /// <summary>set the language string using command line argument if available.
+        /// <summary> Parses the command line arguments if any set the language if available.
         ///  This is used to location the wordlist and other localized resources.
         ///  Sets the global variable 'language' if command line argument was valid.
         ///  otherwise calls the InitLocalPrefix
@@ -134,10 +366,11 @@ namespace AgOop
                         case "-l":
                         case "--locale":
                             // Console.WriteLine("here " +  args[i] + " " + args[i + 1]);
-                            _logger.LogInformation("here " +  args[i] + " " + args[i + 1]);
+                            _logger.LogInformation("here " + args[i] + " " + args[i + 1]);
                             if (args[i + 1] != null && GameConstants.AllowedLanguages.Contains(args[i + 1]))
                             {
-                                localePath = args[i + 1];
+                                _commandLineLocale = args[i + 1];
+                                // LocaleSettings.localePath = args[i + 1];
                                 break;
                             }
                             else
@@ -147,15 +380,17 @@ namespace AgOop
                                 Environment.Exit(0);
                                 break;
                             }
-                        default: 
+                        default:
                             break;
                     }
                 }
 
                 // localePath = args[1].Trim();
                 // TODO: remove any trailing or leading directory separators and mode more checks in general
-                language += basePath + "i18n" + DIR_SEP + localePath + DIR_SEP;
-                if (IsValidLocale(language))
+                _localeSettings.localePath = Path.Join(_localeSettings.basePath, _localeSettings.i18nPath, _localeSettings.language);
+                // LocaleSettings.language += LocaleSettings.basePath + "i18n" + LocaleSettings.DIR_SEP + LocaleSettings.localePath + LocaleSettings.DIR_SEP;
+                // if (IsWordslistAtLocale(LocaleSettings.language))
+                if (SetLocalpathIfWordslistExists(_localeSettings.localePath))
                 {
                     return;
                 }
@@ -165,81 +400,94 @@ namespace AgOop
         }
 
 
-        /// <summary>Get the current language string from the environment. 
-        ///  This is used to location the wordlist and other localized resources.
-        ///  Sets the global variable 'language' 
-        ///  defaults to the default value
-        /// </summary>
+        /// <summary> Attempt to get the locale language from the OS. 
+        ///  This is used to location the wordlist and other localized resources.</summary>
         /// <param name="prefix">a path prefix</param>
-        /// <returns>true if language was set to a value that had valid "wordslist.txt" else false</returns>
-        internal bool InitLocalePrefix(string prefix)
+        internal void InitLocalePrefix(string prefix)
         {
             // prefix is the local folder where the language specifics are stored (ie in addition to "i18n/")
+
+            // Extract the language from the OS
             CultureInfo currentCulture = CultureInfo.CurrentCulture;
             string culture = currentCulture.Name; // eg en-GB
-            localePath = culture + DIR_SEP;
 
-            language = prefix;
+            // No longer needed with Path.Join
+            // LocaleSettings.localePath = culture + LocaleSettings.DIR_SEP;
 
-            // language += basePath + "i18n" + DIR_SEP + culture;
-            language += i18nPath + DIR_SEP + culture;
-            if (IsValidLocale(language))
+            // LocaleSettings.language = prefix;
+
+            // // language += basePath + "i18n" + DIR_SEP + culture;
+            // LocaleSettings.language += LocaleSettings.i18nPath + LocaleSettings.DIR_SEP + culture;
+
+            _localeSettings.localePath = Path.Join(prefix, _localeSettings.i18nPath, culture);
+
+            // if (IsWordslistAtLocale(LocaleSettings.language))
+            if (SetLocalpathIfWordslistExists(_localeSettings.localePath))
             {
-                return true;
+                return;
             }
 
+            // Sometimes currentCulture.Name returns a culture with a dot, like "en-GB.UTF-8"
             int lastIndexOfDot = culture.LastIndexOf('.');
             if (lastIndexOfDot != -1)
             {
                 culture = culture[..lastIndexOfDot];
-                language += i18nPath + DIR_SEP + culture;
+                // LocaleSettings.language += LocaleSettings.i18nPath + LocaleSettings.DIR_SEP + culture;
+                _localeSettings.localePath = Path.Join(prefix, _localeSettings.i18nPath, culture);
                 // language += basePath + "i18n" + DIR_SEP + culture;
-                if (IsValidLocale(language))
+                if (SetLocalpathIfWordslistExists(_localeSettings.localePath))
+                // if (IsWordslistAtLocale(LocaleSettings.language))
                 {
-                    localePath = culture + DIR_SEP;
-                    return true;
+                    // LocaleSettings.localePath = culture + LocaleSettings.DIR_SEP;
+                    return;
                 }
             }
 
+            // Sometimes currentCulture.Name returns a culture with an underscore, like "en_GB"
             int lastIndexOfUnderscore = culture.LastIndexOf('_');
             if (lastIndexOfUnderscore != -1)
             {
                 culture = culture[..lastIndexOfUnderscore];
                 // language += basePath + "i18n" + DIR_SEP + culture;
-                language += i18nPath + DIR_SEP + culture;
-                if (IsValidLocale(language))
+                _localeSettings.localePath = Path.Join(prefix, _localeSettings.i18nPath, culture);
+                // LocaleSettings.language += LocaleSettings.i18nPath + LocaleSettings.DIR_SEP + culture;
+                // if (SetLocalpathIfWordslistExists(LocaleSettings.language))
+                if (SetLocalpathIfWordslistExists(_localeSettings.localePath))
                 {
-                    localePath = culture + DIR_SEP;
-                    return true;
+                    // LocaleSettings.localePath = culture + LocaleSettings.DIR_SEP;
+                    return;
                 }
             }
 
             // TODO: If there is a problem with windows, check the windows specific implementation in the original C app
 
             // last resort: use the default locale
-            language = prefix;
-            if (language == "")
-            {
-                // language += DIR_SEP;
-            }
-            else if ((language[0] != 0) && (language[language.Length - 1] != DIR_SEP))
-                {
-                    // TODO: check if this is the most portable way to do this
-                    // language += '/';
-                    language += DIR_SEP;
-                }
+            // NEW: no longer needed with Path.Join
+            // LocaleSettings.language = prefix;
+            // if (LocaleSettings.language == "")
+            // {
+            //     // language += DIR_SEP;
+            // }
+            // else if ((LocaleSettings.language[0] != 0) && (LocaleSettings.language[LocaleSettings.language.Length - 1] != LocaleSettings.DIR_SEP))
+            // {
+            //     // TODO: check if this is the most portable way to do this
+            //     // language += '/';
+            //     LocaleSettings.language += LocaleSettings.DIR_SEP;
+            // }
 
-            language += DEFAULT_LOCALE_PATH;
+            _localeSettings.localePath += _localeSettings.DEFAULT_LOCALE_PATH;
+            // LocaleSettings.language += LocaleSettings.DEFAULT_LOCALE_PATH;
 
-            if (!IsValidLocale(language))
+            if (!SetLocalpathIfWordslistExists(_localeSettings.localePath))
+            // if (!SetLocalpathIfWordslistExists(LocaleSettings.language))
             {
-                // Console.WriteLine($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
-                _logger.LogError($"InitLocalePrefix Error: could not find wordlist.txt at location {language}");
+                // Console.WriteLine($"InitLocalePrefix Error: could not find wordlist.txt at location {_localeSettings.localePath}");
+                _logger.LogError($"InitLocalePrefix Error: could not find wordlist.txt at location {_localeSettings.localePath}");
                 // TODO: Terminate better?
                 Environment.Exit(1);
             }
 
-            return IsValidLocale(language);
+            // return SetLocalpathIfWordslistExists(LocaleSettings.language);
         }
 
 
@@ -250,29 +498,40 @@ namespace AgOop
             string? env = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             if (env == null)
             {
-                env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + DIR_SEP + ".local" + DIR_SEP + "share" + DIR_SEP;
+                env = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share");
+                // env = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + LocaleSettings.DIR_SEP + ".local" + LocaleSettings.DIR_SEP + "share" + LocaleSettings.DIR_SEP;
             }
 
-            userPath = env + env + DIR_SEP + "anagramarama" + DIR_SEP;
+            // TODO: there seems to be a double "env" below, check if this is correct
+            _localeSettings.userPath = Path.Join(env, "anagramarama");
+            // LocaleSettings.userPath = env + env + LocaleSettings.DIR_SEP + "anagramarama" + LocaleSettings.DIR_SEP;
         }
 
 
-        /// <summary> Check that the dictionary in the local language exists </summary>
+        /// <summary> Check that the dictionary exists in the specified local language </summary>
         /// <param name="path">The path, including the locale, to the wordfile in the desired language</param>
         /// <returns>true if the file exists otherwise false</returns>
-        internal bool IsValidLocale(string path)
+        internal bool SetLocalpathIfWordslistExists(string path)
         {
-            string filePath = path;
-            if (filePath[filePath.Length - 1] != DIR_SEP)
-            {
-                filePath += DIR_SEP;
-            }
-            filePath += "wordlist.txt";
+            // No longer needed when using Path.Join
+            // string filePath = path;
+            // if (filePath[filePath.Length - 1] != LocaleSettings.DIR_SEP)
+            // {
+            //     filePath += LocaleSettings.DIR_SEP;
+            // }
+            // filePath += "wordlist.txt";
 
+            string filePath = Path.Join(path, LocaleConstants.WordslistFolderName, LocaleConstants.WordslistDefaultName);
+            if (File.Exists(filePath))
+            {
+                _localeSettings.wordslistPath = filePath;
+                // _logger.LogDebug($"wordslistPath set to: {_localeSettings.wordslistPath}");
+            }
+            else
+            {
+                // _logger.LogError($"wordslist.txt not found at {filePath}");
+            }
             return File.Exists(filePath);
         }
-
-
-
     }
 }
