@@ -14,7 +14,7 @@ namespace AgOop
 
         private readonly ILogger<UIManager> _logger;
 
-        internal GameManager? _gameManager {get; set; }
+        internal GameManager? _gameManager { get; set; }
         internal SoundManager? _soundManager;
 
         // internal UIManager(SoundManager soundManager)
@@ -248,7 +248,8 @@ namespace AgOop
 
                 // clear ANSWER box (red cross) clicked
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
-                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
+                if (IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
+                // if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxClear], x, y))
                 {
                     // GameManager.clearGuess = true;
                     GameState.clearGuess = true;
@@ -257,7 +258,8 @@ namespace AgOop
 
                 // check ANSWER box (green tick) clicked
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
-                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
+                if (IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
+                // if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxEnter], x, y))
                 {
                     _gameManager.CheckGuess(GameState.Answer, headNode);
                     // _gameManager.CheckGuess(_gameManager.Answer, headNode);
@@ -266,7 +268,8 @@ namespace AgOop
 
                 // Solve box area clicked
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
-                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
+                if (IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
+                // if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxSolve], x, y))
                 {
                     GameState.solvePuzzle = true;
                     // _gameManager.solvePuzzle = true;
@@ -274,7 +277,8 @@ namespace AgOop
 
                 // Shuffle SHUFFLE area clicked
                 // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
-                if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
+                if (IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
+                // if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxShuffle], x, y))
                 {
                     GameState.shuffleRemaining = true;
                     // _gameManager.shuffleRemaining = true;
@@ -290,7 +294,8 @@ namespace AgOop
 
             // start new game button clicked
             // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
-            if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
+            // if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
+            if (IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxNew], x, y))
             {
                 // GameManager.startNewGame = true;
                 // _gameManager.startNewGame = true;
@@ -299,12 +304,24 @@ namespace AgOop
 
             // quit game button clicked
             // if (GameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
-            if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
+            if (IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
+            // if (_gameManager.IsInside(HotBoxes.hotbox[(int)BoxConstants.HotBoxes.boxQuit], x, y))
             {
                 // GameManager.quitGame = true;
                 // _gameManager.quitGame = true;
                 GameState.quitGame = true;
             }
+        }
+
+        /// <summary> Returns a boolean indicating whether the click was inside a box </summary>
+        /// <param name="box"> The box </param>
+        /// <param name="x"> the x position clicked </param>
+        /// <param name="y">The y position clicked</param>
+        /// <returns>true if clicked inside the box, false otherwise</returns>
+        internal static bool IsInside(Box box, int x, int y)
+        {
+            return (x > box.x) && (x < (box.x + box.width)) &&
+                    (y > box.y) && (y < (box.y + box.height));
         }
 
     }
