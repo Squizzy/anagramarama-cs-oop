@@ -94,10 +94,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="loggermanager.cs" />
+    <!-- <Compile Remove="loggermanager.cs" />
     <Compile Remove="logger_serilog.cs" />
-    <Compile Remove="mslogger.cs" />
-    <Compile Remove="tools\**\*.cs" />
-    <Compile Remove="tools\obj\**\*.cs" />
+    <Compile Remove="mslogger.cs" /> -->
+    <Compile Remove="tools\**\*" />
+    <!-- <Compile Remove="tools\obj\**\*.cs" /> -->
+    <Compile Remove="ignore\**\*" />
+    <!-- <Content Remove="ignore\**\*" />
+    <None Remove="ignore\**\*" /> -->
   </ItemGroup>
 </Project>
