@@ -9,6 +9,7 @@ namespace AgOop
         private readonly ILogger<WordsList> _logger;
         private readonly LocaleSettings _localeSettings;
 
+
         /// <summary>Constructor for the wordlist</summary
         // internal WordsList(ILogger<WordsList> logger, ref Dlb_node? dlbHeadNode, string wordlist)
         public WordsList(ILogger<WordsList> logger, LocaleSettings localeSettings)
@@ -17,7 +18,26 @@ namespace AgOop
             _localeSettings = localeSettings;
         }
 
-        // private Dlb_node _dictionary;
+        /// <summary> Head node of the linked list containing all the possible words
+        /// of the dictionary loaded for the game </summary>
+        private static Dlb_node? _wordslistHeadNode;
+
+        /// <summary> Static constructor for the WordsList class. </summary>
+        static WordsList()
+        {
+            _wordslistHeadNode = null;
+        }
+
+        // internal Dlb_node? wordsListHeadNode
+        // {
+        //     get { return _wordslistHeadNode; }
+        //     set { _wordslistHeadNode = value; }
+        // }
+
+        internal Dlb_node? GetWordslist()
+        {
+            return _wordslistHeadNode;
+        }
 
         // private void LoadDictionary()
         // {
@@ -26,11 +46,13 @@ namespace AgOop
 
         // }
 
-        internal void GenerateWordsList(ref Dlb_node? dlbHeadNode, string wordlist)
+        internal void LoadWordslist(string wordlist)
+        // internal void GenerateWordsList(ref Dlb_node? dlbHeadNode, string wordlist)
         {
             // Console.WriteLine("loading dictionary: " + wordlist);
             _logger.LogInformation($"loading dictionary: {wordlist}");
-            if (!DlbCreate(ref dlbHeadNode, wordlist))
+            // if (!DlbCreate(ref dlbHeadNode, wordlist))
+            if (!DlbCreate(wordlist))
             {
                 // Console.WriteLine("error leading the dictionary");
                 _logger.LogError($"error leading the dictionary: {wordlist}");
@@ -38,14 +60,25 @@ namespace AgOop
             }
         }
 
-        internal void WordsListExit(ref Dlb_node? dlbHeadNode)
+
+        ~WordsList()
+        {
+            // Console.WriteLine("WordsList Destructor called");
+            _logger.LogInformation("WordsList PROPER Destructor called");
+            // DlbFree(ref _wordslistHeadNode);
+            DlbFree();
+        }
+
+        internal void WordsListExit()
+        // internal void WordsListExit(ref Dlb_node? dlbHeadNode)
         {
             // Console.WriteLine("WordsList Destructor");
             _logger.LogInformation("WordsList Destructor called");
-            DlbFree(ref dlbHeadNode);
+            DlbFree();
+            // DlbFree(ref dlbHeadNode);
         }
 
-        #region overview of Dlb (de la Briandais Trie) information
+        //region overview of Dlb (de la Briandais Trie) information
         /*
         dbl_node contains the key building blocks ("node") for the dictionary that is loaded from the text file provided. 
         
@@ -79,7 +112,7 @@ namespace AgOop
                                 
                 -> sibling 'b' -> start of words starting with 'b'         
         */
-        #endregion
+        //endregion
 
         /// <summary> Node for the linkedlist containing all the possible words of the dictionary loaded for the game </summary>
         internal class Dlb_node
@@ -112,7 +145,7 @@ namespace AgOop
         /// </summary>
         /// <param name="node">The Dlb_node to operate on.</param>
         /// <returns>Nothing</returns>
-        public delegate void Dlb_node_operation(Dlb_node node);
+        public delegate void Dlb_node_operation(Dlb_node? node);
 
 
         /// <summary>Constructor for Dlb_node node (as per C file)
@@ -173,9 +206,11 @@ namespace AgOop
         /// </summary>
         /// <param name="headNode">The headnode of the dictionary to clear</param>
         /// <returns>Nothing</returns>
-        internal static void DlbFree(ref Dlb_node? headNode)
+        internal static void DlbFree()
+        // internal static void DlbFree(ref Dlb_node? headNode)
         {
-            DlbWalk(ref headNode, DlbFreeNode);
+            DlbWalk(ref _wordslistHeadNode, DlbFreeNode);
+            // DlbWalk(ref headNode, DlbFreeNode);
         }
 
         
@@ -185,14 +220,17 @@ namespace AgOop
         /// <param name="dlbHeadNode">The head node of the dictionary</param>
         /// <param name="word">The word to insert in the linked list</param>
         /// <returns>Nothing</returns>
-        internal static void DlbPush(ref Dlb_node? dlbHeadNode, string word)
+        internal static void DlbPush(string word)
+        // internal static void DlbPush(ref Dlb_node? dlbHeadNode, string word)
         {
-            Dlb_node? current = dlbHeadNode;
-            Dlb_node previous = new Dlb_node('\0');
+            // Dlb_node? current = dlbHeadNode;
+            Dlb_node? current = _wordslistHeadNode;
+            Dlb_node? previous = null;
             string p = word;
             bool child = false;
             bool sibling = false;
-            bool newHead = dlbHeadNode == null;
+            // bool newHead = dlbHeadNode == null;
+            bool newHead = _wordslistHeadNode == null;
 
             while (p.Length > 0)
             {
@@ -207,16 +245,20 @@ namespace AgOop
                     current = new Dlb_node(letter);
                     if (newHead)
                     {
-                        dlbHeadNode = current;
+                        _wordslistHeadNode = current;
+                        // dlbHeadNode = current;
                         newHead = false;
                     }
-                    if (child)
+                    if (previous != null)
                     {
-                        previous.child = current;
-                    }
-                    if (sibling)
-                    {
-                        previous.sibling = current;
+                        if (child)
+                        {
+                            previous.child = current;
+                        }
+                        if (sibling)
+                        {
+                            previous.sibling = current;
+                        }
                     }
 
                 }
@@ -246,7 +288,10 @@ namespace AgOop
                     current = previous.sibling;
                 }
             }
-            previous.valid = true;
+            if (previous != null)
+            {
+                previous.valid = true;
+            }
         }
 
 
@@ -254,15 +299,16 @@ namespace AgOop
         /// It reads each line of the file, adds the words to the dictionary, and sets the necessary links between nodes. 
         /// </summary>
         /// <param name="dlbHeadNode">The head node of the dictionary.</param>
-        /// <param name="filename">The name of the file containing the dictionary words.</param>
+        /// <param name="wordslistFilePath">The name of the file containing the dictionary words.</param>
         /// <returns>Nothing</returns>
-        internal bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
+        internal bool DlbCreate(string wordslistFilePath)
+        // internal bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
         {
-            _logger.LogDebug(filename);
+            _logger.LogDebug(wordslistFilePath);
             
-            int lineCount = File.ReadLines(filename).Count();
+            int lineCount = File.ReadLines(wordslistFilePath).Count();
             string? currentWord;
-            using StreamReader sr = new(filename);
+            using StreamReader sr = new(wordslistFilePath);
 
             try
             {
@@ -272,7 +318,8 @@ namespace AgOop
                     // currentWord.ic();
                     if (currentWord != null)
                     {
-                        DlbPush(ref dlbHeadNode, currentWord);
+                        // DlbPush(ref dlbHeadNode, currentWord);
+                        DlbPush(currentWord);
                     }
                 }
             }
@@ -298,9 +345,11 @@ namespace AgOop
         /// <param name="dlbHeadNode">the dictionary linked list</param>
         /// <param name="word">the word to find</param>
         /// <returns> return true if the word is in the dictionary else return false </returns>
-        internal static bool DlbLookup(Dlb_node? dlbHeadNode, string word)
+        internal static bool DlbLookup(string word)
+        // internal static bool DlbLookup(Dlb_node? dlbHeadNode, string word)
         {
-            Dlb_node? current = dlbHeadNode;
+            Dlb_node? current = _wordslistHeadNode;
+            // Dlb_node? current = dlbHeadNode;
             Dlb_node previous = new Dlb_node('\0');
             string p = word;
             char letter;
