@@ -418,7 +418,7 @@ namespace AgOop
         /// <exception cref="InvalidOperationException">Error related to acquiring, or playing the sound</exception>
         internal void PlaySound(string name)
         {
-            _logger.LogDebug("SoundManager PlaySound called for sound: {name}", name);
+            // _logger.LogDebug("SoundManager PlaySound called for sound: {name}", name);
             if (!_audioEnabled)
             {
                 return;
