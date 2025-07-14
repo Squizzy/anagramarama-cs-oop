@@ -497,7 +497,9 @@ namespace AgOop
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <param name="letters">first node in the letter sprites (in/out)</param>
         /// <returns>Nothing</returns>
-        internal void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
+        internal void NewGame(IntPtr screen, ref Sprite? letters)
+        // internal void NewGame(ref Anagrams.Node? headNode, IntPtr screen, ref Sprite? letters)
+        // internal void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
         {
             // string guess;
             // string remain = "";
@@ -520,8 +522,12 @@ namespace AgOop
             // _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
 
-            _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode, dlbHeadNode);
+            _logger.LogDebug("NewGame initialisation step 1");
+            _anagramsManager.GetNewRootWordAndAnagramsList();
+            // _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode);
+            // _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode, dlbHeadNode);
 
+            _logger.LogDebug("NewGame initialisation step 2");
             // while (!happy)
             // {
             //     // changed this max size from original game
@@ -567,10 +573,12 @@ namespace AgOop
             // GameState.Shuffle = new string(remainToShuffle);
 
             GameState.Shuffle = _anagramsManager.GetInitialShuffle();
+            _logger.LogDebug("NewGame initialisation step 3");
 
             GameState.Answer = AnagramsConstants.SPACE_FILLED_CHARS;
             // Answer = AnagramsConstants.SPACE_FILLED_CHARS;
 
+            _logger.LogDebug("NewGame initialisation step 4");
             /* build up the letter sprites */
 
             _spriteManager.BuildLetters(ref letters, screen);
@@ -578,7 +586,8 @@ namespace AgOop
             _spriteManager.AddScore(ref letters, screen);
 
             /* display all answer boxes */
-            _spriteManager.DisplayAnswerBoxes(headNode, screen);
+            // _spriteManager.DisplayAnswerBoxes(headNode, screen);
+            _spriteManager.DisplayAnswerBoxes(_anagramsManager.AnagramsList, screen);
 
             GameState.gotBigWord = false;
             // gotBigWord = false;
@@ -657,7 +666,9 @@ namespace AgOop
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <param name="letters">first node in the letter sprites (in/out)</param>
         /// <returns>Nothing</returns>
-        public void GameLoop(ref Anagrams.Node? headNode, WordsList.Dlb_node? dldHeadNode, IntPtr screen, ref Sprite? letters)
+        public void GameLoop(IntPtr screen, ref Sprite? letters)
+        // public void GameLoop(ref Anagrams.Node? headNode, IntPtr screen, ref Sprite? letters)
+        // public void GameLoop(ref Anagrams.Node? headNode, WordsList.Dlb_node? dldHeadNode, IntPtr screen, ref Sprite? letters)
         {
             _logger.LogWarning("GameLoop started");
             bool done = false;
@@ -686,12 +697,14 @@ namespace AgOop
                     {
                         case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
                             _spriteManager.SDLScale_MouseEvent(ref sdlEvent);
-                            _uiManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, headNode, letters);
+                            _uiManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, _anagramsManager.AnagramsList, letters);
+                            // _uiManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, headNode, letters);
                             // UIManager.ClickDetect(sdlEvent.button.button, sdlEvent.button.x, sdlEvent.button.y, screen, headNode, letters);
                             break;
 
                         case SDL.SDL_EventType.SDL_KEYUP:
-                            _uiManager.HandleKeyboardEvent(sdlEvent, headNode, letters);
+                            _uiManager.HandleKeyboardEvent(sdlEvent, _anagramsManager.AnagramsList, letters);
+                            // _uiManager.HandleKeyboardEvent(sdlEvent, headNode, letters);
                             // UIManager.HandleKeyboardEvent(sdlEvent, headNode, letters);
                             break;
 
@@ -754,7 +767,8 @@ namespace AgOop
                 // if (solvePuzzle)
                 {
                     // Walk the list, setting everything to found
-                    _anagramsManager.SolveIt(headNode);
+                    _anagramsManager.SolveIt(_anagramsManager.AnagramsList);
+                    // _anagramsManager.SolveIt(headNode);
                     // SolveIt(headNode);
                     _spriteManager.ClearWord(letters);
                     GameState.Shuffle = AnagramsConstants.SPACE_FILLED_STRING;
@@ -783,7 +797,8 @@ namespace AgOop
                     GameState.updateAnswers = false;
                     // updateAnswers = false;
                 }
-                _spriteManager.DisplayAnswerBoxes(headNode, screen);
+                _spriteManager.DisplayAnswerBoxes(_anagramsManager.AnagramsList, screen);
+                // _spriteManager.DisplayAnswerBoxes(headNode, screen);
 
                 // start a new game
                 if (GameState.startNewGame)
@@ -795,7 +810,9 @@ namespace AgOop
                         GameState.totalScore = 0;
                         // totalScore = 0;
                     }
-                    NewGame(ref headNode, dldHeadNode, screen, ref letters);
+                    NewGame(screen, ref letters);
+                    // NewGame(ref headNode, screen, ref letters);
+                    // NewGame(ref headNode, dldHeadNode, screen, ref letters);
 
                     GameState.startNewGame = false;
                     // startNewGame = false;
@@ -805,7 +822,7 @@ namespace AgOop
                 // if (shuffleRemaining)
                 {
                     // AnagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
-                    _anagramsManager.ShuffleAvailableLetters(ref GameState.Shuffle, ref letters);
+                    _spriteManager.ShuffleAvailableLetters(ref GameState.Shuffle, ref letters);
                     // _anagramsManager.ShuffleAvailableLetters(ref Shuffle, ref letters);
                     GameState.shuffleRemaining = false;
                     // shuffleRemaining = false;
@@ -838,7 +855,8 @@ namespace AgOop
                     // by typing enter or clicking the tick button
                     {
                         // check the guess
-                        CheckGuess(GameState.Answer, headNode);
+                        // CheckGuess(GameState.Answer, headNode);
+                        CheckGuess(GameState.Answer, _anagramsManager.AnagramsList);
                         // CheckGuess(GameState.Answer, headNode);
                         GameState.checkGuess = false;
                         // checkGuess = false;
@@ -876,7 +894,8 @@ namespace AgOop
                 // update the renderer
                 _spriteManager.SDLScale_RenderCopy(screen, Sprites.backgroundTex, null, dest);
                 // _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
-                _spriteManager.DisplayAnswerBoxes(headNode, screen);
+                _spriteManager.DisplayAnswerBoxes(_anagramsManager.AnagramsList, screen);
+                // _spriteManager.DisplayAnswerBoxes(headNode, screen);
                 _spriteManager.MoveSprites(screen, letters, GameManagerVariables.letterSpeed);
                 // present the renderer
                 SDL.SDL_RenderPresent(screen);
@@ -938,8 +957,12 @@ namespace AgOop
             // uiManager._gameManager = gameManager;
             // uiManager._soundManager = soundManager;
 
-            WordsList.Dlb_node? dlbHeadNode = null;
-            Anagrams.Node? headNode = null;
+                // WordsList.Dlb_node? dlbHeadNode = null;
+
+            // Anagrams.Node? headNode = null;
+            // Anagrams.Node? headNode = anagramsManager._anagramsList;
+                // Anagrams.Node? headNode = anagramsManager.AnagramsList;
+
             // spriteManager.Initialise();
             Sprite? letters = null;
             // {
@@ -955,11 +978,15 @@ namespace AgOop
 
             // create the word list from the dictionary file in the locale language
             // string wordlist = LocaleSettings.language + "wordlist.txt";
-            string wordlist = localeSettings.wordslistPath;
-            Console.WriteLine($"Wordlist path: {wordlist}");
+            // string wordlist = localeSettings.wordslistPath;
+            // Console.WriteLine($"Wordlist path: {wordlist}");
             // new WordsList(ref dlbHeadNode, wordlist);
             // new WordsList(ref dlbHeadNode, wordlist);
-            wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
+            wordsList.LoadWordslist(localeSettings.wordslistPath);
+
+                // dlbHeadNode = wordsList.GetWordslist();
+            // wordsList.LoadWordslist(wordlist);
+            // wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
 
             // load the hotboxes positions and sizes from the Config.ini if available
             // new ConfigurationManager(localeManager);
@@ -972,18 +999,26 @@ namespace AgOop
             // new SoundManager();
 
             // Initialise the game
-            gameManager.NewGame(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            Console.WriteLine("NewGame initialisation");
+            gameManager.NewGame(GameManagerVariables.renderer, ref letters);
+            // gameManager.NewGame(ref headNode, GameManagerVariables.renderer, ref letters);
+            // gameManager.NewGame(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+
+            Console.WriteLine("NewGame initialised");
 
             // Run the main loop until the game is quit.
-            gameManager.GameLoop(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            // gameManager.GameLoop(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            // gameManager.GameLoop(ref headNode, GameManagerVariables.renderer, ref letters);
+            gameManager.GameLoop(GameManagerVariables.renderer, ref letters);
 
             /* tidy up and exit */
 
             // As we don't know if the garbace collector will run the destructors, do this manually.
             // not really needed but done for the sake of keeping with the original code
             // SoundManager.SoundManagerExit();
-            wordsList.WordsListExit(ref dlbHeadNode);
-            anagramsManager.AnagramsManagerExit(ref letters, ref headNode);
+            // wordsList.WordsListExit(ref dlbHeadNode);
+            wordsList.WordsListExit();
+            anagramsManager.AnagramsManagerExit();
             spriteManager.SpriteManagerExit();
 
             return 0;
