@@ -1210,5 +1210,68 @@ namespace AgOop
 
             return count;
         }
+
+
+        /// <summary>Returns the index of first occurrence of a specific letter in a string.</summary>
+        /// <param name="word">The word to check</param>
+        /// <param name="letter">The char to find in the word</param>
+        /// <returns>The position of the letter if it is found or -1 if not</returns>
+        internal int WhereInString(string word, char letter)
+        {
+            int pos = word.IndexOf(letter);
+            return pos == -1 ? 0 : pos;
+        }
+
+
+        /// <summary> shuffle the anagram letter nodes from the available letters in the LETTER box </summary>
+        /// <param name="word">The word to shuffle</param>
+        /// <param name="letters">The sprite letters to shuffle at the same time</param>
+        /// <returns>Nothing as passed by reference</returns>
+        internal void ShuffleAvailableLetters(ref string word, ref Sprite? letters)
+        {
+            Sprite? thisLetter = letters;
+            Random random = new Random();
+            int from, to;
+
+            /// <summary> Switches two chars in a string </summary>
+            void CharsSwap(ref string charsSeq, int from, int to)
+            {
+                // make sure from is the lowest value
+                if (from > to) (from, to) = (to, from);
+                if (to != from)
+                {
+                    string tempString = "";
+                    tempString = charsSeq[0..from] + charsSeq[to] + charsSeq[(from + 1)..to] + charsSeq[from] + charsSeq[(to + 1)..];
+                    charsSeq = tempString;
+                }
+            }
+
+            char[] shuffleCharArray = word.ToCharArray();
+            string shuffleChars = new string(shuffleCharArray);
+            string shufflePos = "0123456";
+            int numSwaps = random.Next(20, 30);
+
+            for (int i = 0; i < numSwaps; i++)
+            {
+                from = random.Next(0, 6);
+                to = random.Next(0, 6);
+
+                CharsSwap(ref shuffleChars, from, to);
+                CharsSwap(ref shufflePos, from, to);
+            }
+
+            while (thisLetter != null)
+            {
+                if (thisLetter.box == BoxConstants.SHUFFLE)
+                {
+                    int positionInString = WhereInString(new string(shufflePos), (char)(thisLetter.index + SpriteConstants.NUM_TO_CHAR));
+                    thisLetter.toX = positionInString * (SpriteConstants.GAME_LETTER_WIDTH + SpriteConstants.GAME_LETTER_SPACE)
+                                     + BoxConstants.BOX_START_X;
+                    thisLetter.index = positionInString;
+                }
+                thisLetter = thisLetter.next;
+            }
+            word = new string(shuffleChars);
+        }
     }
 }
