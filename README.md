@@ -1,21 +1,22 @@
 # What is this
+
 The anagram game Anagramarama.  
 Works with Windows, MacOS (only intel CPU tested so far), linux  
 
 The original Anagramarama (v0.7/0.8), but rewritten in C# (.net8.0+) and object oriented  
 Released under GPL2 as the original authors of the application in C did  
 
-Added more comprehensive __command line__ switches:  
-```
--h/--help: help (eg shortcut keys) 
--v/--version: version number
--l/--locale <locale-code>: for specifying a language 
-    (as long as the dictionary is there) 
-    (locale-code such as en-GB or fr-FR)
-```
+### __command line__ switches:  
+
+> -h/--help: help (eg shortcut keys)  
+> -v/--version: version number  
+> -l/--locale <locale-code>: specify the language (locale-code such as "en-GB" or "fr-FR")
+> > If the language is not a language registered in the application, the application will attempt to check if the language wordslist is present is in the 'i18n/locale-code' folder. If not, it will default to back to UK English (gb-GB)  
 
 Keyboard usage:  
+
 ```
+
 LETTER A to Z: Move Available Letter to the Guess
 BACKSPACE: remove the rightmost letter from the Guess
 ESCAPE: remove all the letters from the Guess
@@ -26,6 +27,7 @@ F1: switch between full screen or windowed
 Some keys I added:
 F2: start a new game
 F5: quit the game (not available yet in release v1.0.0)
+
 ```
 
 # Just run it?
