@@ -3,6 +3,8 @@
 The anagram game Anagramarama.  
 Works with Windows, MacOS (only intel CPU tested so far), linux  
 
+![Anagramama-cs-oop in linux](AgOop/res/Anagramama-cs-oop-linux.png)
+
 The original Anagramarama (v0.7/0.8), but rewritten in C# (.net8.0+) and object oriented  
 Released under GPL2 as the original authors of the application in C did  
 
