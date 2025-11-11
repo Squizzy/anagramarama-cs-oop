@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
 
 namespace WordslistAnalyser
 {
@@ -19,15 +20,15 @@ namespace WordslistAnalyser
         /// <summary> Returns word frequency data, downloading and caching if necessary. </summary>
         /// <param name="cache_dir">location of the cache file</param>
         /// <returns>A dictionary of the words and their frequencies in that language</returns>
-        public static Dictionary<string, float> LoadFrequencyData(string cache_dir)
+        public static async Task<Dictionary<string, float>> LoadFrequencyDataAsync(string cache_dir)
         {
             string cache_file = Path.Join(cache_dir, CACHE_FILENAME);
 
-            if (!Path.Exists(cache_path))
-                DownloadFrequenciesToCache(cache_path);
+            if (!Path.Exists(cache_file))
+                await DownloadFrequenciesToCacheAsync(cache_file).ConfigureAwait(false);
 
-            if (File.Exists(cache_path))
-                return LoadFrequenciesFromCache(cache_path);
+            if (File.Exists(cache_file))
+                return LoadFrequenciesFromCache(cache_file);
             else
                 Console.WriteLine("Error: No frequency data available");
             return new Dictionary<string, float>();
@@ -63,31 +64,33 @@ namespace WordslistAnalyser
 
         /// <summary> Downloads word frequency data from a URL and saves it to a cache file. </summary>
         /// <param name="cache_path">The cache file to save to</param>
-        static async void DownloadFrequenciesToCache(string cache_path)
+        static async Task DownloadFrequenciesToCacheAsync(string cache_path)
         {
             string response;
             HttpClient client = new HttpClient();
             try
             {
-                response = await client.GetStringAsync(FREQUENCY_URL);
+                response = await client.GetStringAsync(FREQUENCY_URL).ConfigureAwait(false);
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error {e} trying to download the words frequencies from the URL");
                 return;
             }
-
-            using StreamWriter sw = new(cache_path);
+            
+          
+            // using StreamWriter sw = new(cache_path);
             try
             {
-                sw.Write(response);
+                // sw.Write(response);
+                await File.WriteAllTextAsync(cache_path, response).ConfigureAwait(false);
 
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Error {e} trying to write the words frequencies to the cache file");
-                return;
             }
+            
         }
 
     }
@@ -187,11 +190,11 @@ namespace WordslistAnalyser
 
     internal static class WordslistAnalyser
     {
-        internal static int Main()
+        internal static async Task<int> Main()
         {
             Dictionary<string, float> wordsFrequencyData = [];
-            WordFrequencyLoader wfl = new();
-            wordsFrequencyData = WordFrequencyLoader.LoadFrequencyData(".");
+            // WordFrequenciesLoader wfl = new();
+            wordsFrequencyData = await WordFrequenciesLoader.LoadFrequencyDataAsync(".");
 
             foreach ((string word, float frequency) in wordsFrequencyData)
             {
