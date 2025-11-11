@@ -11,17 +11,17 @@ namespace WordslistAnalyser
 {
 
     /// <summary> Handles loading and managing word frequency data. </summary>
-    public class WordFrequencyLoader
+    public class WordFrequenciesLoader
     {
         const string FREQUENCY_URL = "https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/fr/fr_50k.txt";
-        static string CACHE_FILE = "french_frequency.txt";
+        static string CACHE_FILENAME = "french_frequency.txt";
 
         /// <summary> Returns word frequency data, downloading and caching if necessary. </summary>
         /// <param name="cache_dir">location of the cache file</param>
         /// <returns>A dictionary of the words and their frequencies in that language</returns>
         public static Dictionary<string, float> LoadFrequencyData(string cache_dir)
         {
-            string cache_path = Path.Join(cache_dir, CACHE_FILE);
+            string cache_file = Path.Join(cache_dir, CACHE_FILENAME);
 
             if (!Path.Exists(cache_path))
                 DownloadFrequenciesToCache(cache_path);
