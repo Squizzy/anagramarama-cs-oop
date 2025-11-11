@@ -143,7 +143,9 @@ namespace WordslistAnalyser
         /// <returns> true if contains only letters </returns>
         public static bool ContainsOnlyLetters(string word)
         {
-            return word.All(char.IsAsciiLetter);
+            if (string.IsNullOrEmpty(word)) return false;
+
+            return word.All(char.IsLetter);
         }
 
         /// <summary> Re-create the words list ensuring words of only letters, lower case, no accent (if desired) </summary>
