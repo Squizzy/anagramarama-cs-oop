@@ -106,10 +106,17 @@ namespace WordslistAnalyser
         /// <returns> the word without the accents </returns>
         public static string RemoveAccents(string word)
         {
-            byte[] tempBytes;
-            tempBytes = System.Text.Encoding.GetEncoding("ISO-8859-8").GetBytes(word);
-            string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
-            return asciiStr;
+            if (string.IsNullOrEmpty(word)) return word;
+
+            return new string(word
+                                .Normalize(NormalizationForm.FormD)
+                                .Where(c => CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                                .ToArray());
+            
+            // byte[] tempBytes;
+            // tempBytes = System.Text.Encoding.UTF32.GetBytes(word);
+            // string asciiStr = System.Text.Encoding.UTF8.GetString(tempBytes);
+            // return asciiStr;
         }
 
         /// <summary> Return the word in lower case.
