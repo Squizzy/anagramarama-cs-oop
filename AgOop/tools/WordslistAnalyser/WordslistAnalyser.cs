@@ -7,7 +7,7 @@ using System.Net;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
 
-namespace WordslistAnalyzer
+namespace WordslistAnalyser
 {
 
     /// <summary> Handles loading and managing word frequency data. </summary>
@@ -19,7 +19,7 @@ namespace WordslistAnalyzer
         /// <summary> Returns word frequency data, downloading and caching if necessary. </summary>
         /// <param name="cache_dir">location of the cache file</param>
         /// <returns>A dictionary of the words and their frequencies in that language</returns>
-        static Dictionary<string, float> LoadFrequencyData(string cache_dir)
+        public static Dictionary<string, float> LoadFrequencyData(string cache_dir)
         {
             string cache_path = Path.Join(cache_dir, CACHE_FILE);
 
