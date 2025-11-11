@@ -181,7 +181,24 @@ namespace WordslistAnalyser
             return new string(characters);
         }
 
+
+
     }
 
+    internal static class WordslistAnalyser
+    {
+        internal static int Main()
+        {
+            Dictionary<string, float> wordsFrequencyData = [];
+            WordFrequencyLoader wfl = new();
+            wordsFrequencyData = WordFrequencyLoader.LoadFrequencyData(".");
+
+            foreach ((string word, float frequency) in wordsFrequencyData)
+            {
+                Console.WriteLine($"{word}: {frequency}");
+            }
+            return 0;
+        }        
+    }
 
 }
