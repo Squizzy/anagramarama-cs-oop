@@ -210,13 +210,21 @@ namespace WordslistAnalyser
         internal static async Task<int> Main()
         {
             Dictionary<string, float> wordsFrequencyData = [];
+            Dictionary<string, float> gameProcessedData = [];
+
             // WordFrequenciesLoader wfl = new();
             wordsFrequencyData = await WordFrequenciesLoader.LoadFrequencyDataAsync(".");
+            Console.WriteLine($"{wordsFrequencyData.Count}");
 
-            foreach ((string word, float frequency) in wordsFrequencyData)
-            {
-                Console.WriteLine($"{word}: {frequency}");
-            }
+
+            gameProcessedData = WordsAnalyser.NormaliseWordsList(wordsFrequencyData);
+            Console.WriteLine($"{gameProcessedData.Count}");
+            WordsAnalyser.StoreWordsList(gameProcessedData);
+
+            // foreach ((string word, float frequency) in wordsFrequencyData)
+            // {
+            //     Console.WriteLine($"{word}: {frequency}");
+            // }
             return 0;
         }        
     }
