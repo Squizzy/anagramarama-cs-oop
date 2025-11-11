@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgOop", "AgOop\AgOop.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AgOop", "AgOop", "{AFEA31FA-1158-4391-BB7B-B22BBE526BA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgDictCleaner", "AgOop\tools\AgDictCleaner.csproj", "{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgDictCleaner", "AgOop\tools\DictionaryCleaner\AgDictCleaner.csproj", "{BCAABEA2-B64A-42BF-A45A-B45271A45DB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
