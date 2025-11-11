@@ -78,12 +78,9 @@ namespace WordslistAnalyser
                 Console.WriteLine($"Error {e} trying to download the words frequencies from the URL");
                 return;
             }
-            
-          
-            // using StreamWriter sw = new(cache_path);
+                      
             try
             {
-                // sw.Write(response);
                 await File.WriteAllTextAsync(cache_path, response).ConfigureAwait(false);
 
             }
