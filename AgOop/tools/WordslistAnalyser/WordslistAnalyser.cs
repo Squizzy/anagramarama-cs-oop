@@ -51,6 +51,7 @@ namespace WordslistAnalyser
                 {
                     string[] cwf = currentWordFrequency.Trim().Split(" ");
                     frequencies.Add(cwf[0], float.Parse(cwf[1]));
+                    currentWordFrequency = sr.ReadLine();
                 }
             }
             catch (Exception e)
