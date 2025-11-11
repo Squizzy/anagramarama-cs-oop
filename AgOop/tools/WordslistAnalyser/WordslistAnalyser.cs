@@ -191,7 +191,17 @@ namespace WordslistAnalyser
             return new string(characters);
         }
 
-
+        public static void StoreWordsList(Dictionary<string, float> updatedWordsList)
+        {
+            
+            FileStream stream = new FileStream("./uwl.txt", FileMode.Create);
+            using StreamWriter sw = new StreamWriter(stream, encoding:Encoding.UTF8);
+            
+            foreach ((string word, float frequency) in updatedWordsList )
+            {
+                sw.WriteLine($"{word} {frequency}");
+            }
+        }
 
     }
 
