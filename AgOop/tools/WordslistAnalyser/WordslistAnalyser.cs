@@ -203,6 +203,50 @@ namespace WordslistAnalyser
             }
         }
 
+        public static void DisplayStatistics(Dictionary<string, int> wordsList)
+        {
+            List<int> wordsLengthCount = [0, 0, 0, 0, 0];
+            int lowest_frequency = -1;
+            int highest_frequency = -1;
+            Dictionary<int, int> frequenciesList = [];
+
+            foreach ((string word, int frequency) in wordsList)
+            {
+                wordsLengthCount[word.Length - 3] += 1;
+                lowest_frequency = (lowest_frequency == -1)
+                                        ? frequency
+                                        : (frequency < lowest_frequency)
+                                            ? frequency
+                                            : lowest_frequency;
+                highest_frequency = (highest_frequency == -1)
+                                        ? frequency
+                                        : (frequency > highest_frequency)
+                                            ? frequency
+                                            : highest_frequency;
+                int frequencyThousands = Math.Abs(frequency / 1000);
+                if (frequenciesList.ContainsKey(frequencyThousands))
+                {
+                    frequenciesList[frequencyThousands] += 1;
+                }
+                else
+                {
+                    frequenciesList.Add(frequencyThousands, 1);
+                }
+            }
+            Console.WriteLine($"Words Length Count: 3: {wordsLengthCount[0]}, 4: {wordsLengthCount[1]}, 5: {wordsLengthCount[2]}, 6: {wordsLengthCount[3]}, 7: {wordsLengthCount[4]}");
+            Console.WriteLine($"Lowest Freq: {lowest_frequency}, Highest Freq: {highest_frequency}");
+            Console.WriteLine($"Number of frequencies:  {frequenciesList.Count}");
+
+            FileStream stream = new FileStream("./frequenciesList.csv", FileMode.Create);
+            using StreamWriter sw = new StreamWriter(stream, encoding: Encoding.UTF8);
+
+            sw.WriteLine("\"frequency\",\"count\"");
+            foreach ((int frequency, int count) in frequenciesList)
+            {
+                sw.WriteLine($"{frequency},{count}");
+            }
+        }
+
     }
 
     internal static class WordslistAnalyser
