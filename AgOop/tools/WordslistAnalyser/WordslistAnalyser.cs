@@ -20,7 +20,7 @@ namespace WordslistAnalyser
         /// <summary> Returns word frequency data, downloading and caching if necessary. </summary>
         /// <param name="cache_dir">location of the cache file</param>
         /// <returns>A dictionary of the words and their frequencies in that language</returns>
-        public static async Task<Dictionary<string, float>> LoadFrequencyDataAsync(string cache_dir)
+        public static async Task<Dictionary<string, int>> LoadFrequencyDataAsync(string cache_dir)
         {
             string cache_file = Path.Join(cache_dir, CACHE_FILENAME);
 
@@ -31,15 +31,15 @@ namespace WordslistAnalyser
                 return LoadFrequenciesFromCache(cache_file);
             else
                 Console.WriteLine("Error: No frequency data available");
-            return new Dictionary<string, float>();
+            return new Dictionary<string, int>();
         }
 
         /// <summary> Returns words frequency data from a cached file </summary>
         /// <param name="cache_path"> location of the cache file </param>
         /// <returns>A dictionary of the words and their frequencies in that language</returns>
-        static Dictionary<string, float> LoadFrequenciesFromCache(string cache_path)
+        static Dictionary<string, int> LoadFrequenciesFromCache(string cache_path)
         {
-            Dictionary<string, float> frequencies = [];
+            Dictionary<string, int> frequencies = [];
             using StreamReader sr = new(cache_path);
             if (sr == null)
                 return frequencies;
@@ -50,7 +50,7 @@ namespace WordslistAnalyser
                 while (currentWordFrequency != null)
                 {
                     string[] cwf = currentWordFrequency.Trim().Split(" ");
-                    frequencies.Add(cwf[0], float.Parse(cwf[1]));
+                    frequencies.Add(cwf[0], int.Parse(cwf[1]));
                     currentWordFrequency = sr.ReadLine();
                 }
             }
@@ -151,12 +151,12 @@ namespace WordslistAnalyser
         /// <summary> Re-create the words list ensuring words of only letters, lower case, no accent (if desired) </summary>
         /// <param name="raw_wordslist"> The originally loaded list </param>
         /// <returns> The list to be used </returns>
-        public static Dictionary<string, float> NormaliseWordsList(Dictionary<string, float> raw_wordslist)
+        public static Dictionary<string, int> NormaliseWordsList(Dictionary<string, int> raw_wordslist)
         {
-            Dictionary<String, float> normalisedWordslist = [];
+            Dictionary<string, int> normalisedWordslist = [];
             string this_word;
 
-            foreach ((string word, float frequency) in raw_wordslist)
+            foreach ((string word, int frequency) in raw_wordslist)
             {
                 if (!ContainsOnlyLetters(word)) continue;
                 if (!HasValidLength(word)) continue;
@@ -191,13 +191,13 @@ namespace WordslistAnalyser
             return new string(characters);
         }
 
-        public static void StoreWordsList(Dictionary<string, float> updatedWordsList)
+        public static void StoreWordsList(Dictionary<string, int> updatedWordsList)
         {
             
             FileStream stream = new FileStream("./uwl.txt", FileMode.Create);
-            using StreamWriter sw = new StreamWriter(stream, encoding:Encoding.UTF8);
-            
-            foreach ((string word, float frequency) in updatedWordsList )
+            using StreamWriter sw = new StreamWriter(stream, encoding: Encoding.UTF8);
+
+            foreach ((string word, int frequency) in updatedWordsList)
             {
                 sw.WriteLine($"{word} {frequency}");
             }
@@ -209,8 +209,8 @@ namespace WordslistAnalyser
     {
         internal static async Task<int> Main()
         {
-            Dictionary<string, float> wordsFrequencyData = [];
-            Dictionary<string, float> gameProcessedData = [];
+            Dictionary<string, int> wordsFrequencyData = [];
+            Dictionary<string, int> gameProcessedData = [];
 
             // WordFrequenciesLoader wfl = new();
             wordsFrequencyData = await WordFrequenciesLoader.LoadFrequencyDataAsync(".");
@@ -221,7 +221,9 @@ namespace WordslistAnalyser
             Console.WriteLine($"{gameProcessedData.Count}");
             WordsAnalyser.StoreWordsList(gameProcessedData);
 
-            // foreach ((string word, float frequency) in wordsFrequencyData)
+            WordsAnalyser.DisplayStatistics(gameProcessedData);
+
+            // foreach ((string word, int frequency) in wordsFrequencyData)
             // {
             //     Console.WriteLine($"{word}: {frequency}");
             // }
