@@ -7,6 +7,10 @@ using System.Net;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
+using System.IO.IsolatedStorage;
+using System.Net.WebSockets;
+using System.Text.Unicode;
+using System.Globalization;
 
 namespace WordslistAnalyser
 {
