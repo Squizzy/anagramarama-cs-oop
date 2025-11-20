@@ -522,12 +522,10 @@ namespace AgOop
             // _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
 
-            _logger.LogDebug("NewGame initialisation step 1");
             _anagramsManager.GetNewRootWordAndAnagramsList();
             // _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode);
             // _anagramsManager.GetNewRootWordAndAnagramsList(ref headNode, dlbHeadNode);
 
-            _logger.LogDebug("NewGame initialisation step 2");
             // while (!happy)
             // {
             //     // changed this max size from original game
@@ -573,12 +571,10 @@ namespace AgOop
             // GameState.Shuffle = new string(remainToShuffle);
 
             GameState.Shuffle = _anagramsManager.GetInitialShuffle();
-            _logger.LogDebug("NewGame initialisation step 3");
 
             GameState.Answer = AnagramsConstants.SPACE_FILLED_CHARS;
             // Answer = AnagramsConstants.SPACE_FILLED_CHARS;
 
-            _logger.LogDebug("NewGame initialisation step 4");
             /* build up the letter sprites */
 
             _spriteManager.BuildLetters(ref letters, screen);
