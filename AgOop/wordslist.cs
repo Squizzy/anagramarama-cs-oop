@@ -133,7 +133,7 @@ namespace AgOop
         /// </summary>
         /// <param name="c">The character for the new node.</param>
         /// <returns>The newly created Dlb_node</returns>
-        internal static Dlb_node DlbNodeCreateNode(char c)
+        internal Dlb_node DlbNodeCreateNode(char c)
         {
             Dlb_node newNode = new(c)
             {
@@ -151,7 +151,7 @@ namespace AgOop
         /// </summary>
         /// <param name="dlbHeadNode">The node to be cleared</param>
         /// <returns>Nothing</returns>
-        internal static void DlbFreeNode(Dlb_node? dlbHeadNode)
+        internal void DlbFreeNode(Dlb_node? dlbHeadNode)
         {
             dlbHeadNode = null;
         }
@@ -165,14 +165,16 @@ namespace AgOop
         /// <param name="dlbHeadNode">The node to be freed</param>
         /// <param name="op">The method to be called to be applied to the node (in this app: free the memory)</param>
         /// <returns>Nothing</returns>
-        internal static void DlbWalk(ref Dlb_node? dlbHeadNode, Dlb_node_operation op)
+        // internal void DlbWalk(ref Dlb_node? dlbHeadNode, Dlb_node_operation op)
+        internal void DlbWalk(Dlb_node? dlbHeadNode, Dlb_node_operation op)
         {
             while (dlbHeadNode != null)
             {
                 Dlb_node tempNode = dlbHeadNode;
                 if (dlbHeadNode.child != null)
                 {
-                    DlbWalk(ref dlbHeadNode.child, op);
+                    // DlbWalk(ref dlbHeadNode.child, op);
+                    DlbWalk(dlbHeadNode.child, op);
                 }
                 dlbHeadNode = dlbHeadNode.sibling;
                 op(tempNode);
@@ -185,11 +187,20 @@ namespace AgOop
         /// </summary>
         /// <param name="headNode">The headnode of the dictionary to clear</param>
         /// <returns>Nothing</returns>
-        internal static void DlbFree(ref Dlb_node? headNode)
+        // internal void DlbFree(ref Dlb_node? headNode)
+        internal void DlbFree()
         {
-            DlbWalk(ref headNode, DlbFreeNode);
+            // dlbHeadNode now kept internally in wordslist class, 
+            // but it needs to be passed to dlbwalk for the starting point
+            // however it does no longer need to be passed by ref
+
+            // DlbWalk(ref headNode, DlbFreeNode);
+
+            DlbWalk(dlbHeadNode, DlbFreeNode);
         }
 
+
+        // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
         
         /// <summary>add a new word to words dicionary linked list
         /// load a new word into the dictionary link list, taking into account children and siblings possibilities.
@@ -197,7 +208,8 @@ namespace AgOop
         /// <param name="dlbHeadNode">The head node of the dictionary</param>
         /// <param name="word">The word to insert in the linked list</param>
         /// <returns>Nothing</returns>
-        internal static void DlbPush(ref Dlb_node? dlbHeadNode, string word)
+        // internal static void DlbPush(ref Dlb_node? dlbHeadNode, string word)
+        internal void DlbPush(string word)
         {
             Dlb_node? current = dlbHeadNode;
             Dlb_node previous = new Dlb_node('\0');
@@ -313,7 +325,7 @@ namespace AgOop
         /// <param name="dlbHeadNode">the dictionary linked list</param>
         /// <param name="word">the word to find</param>
         /// <returns> return true if the word is in the dictionary else return false </returns>
-        internal static bool DlbLookup(Dlb_node? dlbHeadNode, string word)
+        internal bool DlbLookup(Dlb_node? dlbHeadNode, string word)
         {
             Dlb_node? current = dlbHeadNode;
             Dlb_node previous = new Dlb_node('\0');
