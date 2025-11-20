@@ -35,6 +35,14 @@ namespace AgOop
     internal static class Sprites
     {
         // SDL summarys
+        // - SDL Window
+        /// <summary>the SDL window</summary>
+        /// <remarks>SDL window is created in the SpriteManager constructor</remarks>
+        internal static IntPtr window = IntPtr.Zero;
+
+        // - SDL Renderer
+        /// <summary> the SDL renderer </summary>
+        internal static IntPtr game_letter_space = IntPtr.Zero;
 
         // - SDL Textures    
         /// <summary>the SDL texture containing the background image</summary>
@@ -56,7 +64,6 @@ namespace AgOop
 
         /// <summary>answerBoxKnown</summary>
         internal static IntPtr answerBoxKnown = IntPtr.Zero;
-
 
         // The clock and score sprite representations
         /// <summary>The list of sprites containing the graphical time representation</summary>
@@ -84,6 +91,10 @@ namespace AgOop
         // internal GameManager? _gameManager;
         // private static readonly AgOopLogger logger = new AgOopLogger("SpriteManager");
 
+        private Sprite? _letters;
+        private IntPtr _window;
+        private IntPtr _renderer;
+
         /// <summary> Constructor </summary>
         public SpriteManager(ILogger<SpriteManager> logger, LocaleSettings localeSettings)
         // public SpriteManager(ILogger<SpriteManager> logger, LocaleManager localeManager)
@@ -101,6 +112,12 @@ namespace AgOop
 
             // load and initialise textures
             Initialise();
+        }
+
+        internal Sprite? Letters
+        {
+            get => _letters;
+            set => _letters = value;
         }
 
 
@@ -149,6 +166,7 @@ namespace AgOop
 
             _logger.LogInformation("SpriteManager Constructor");
 
+            // Initialise SDL for Audio, Video and Timer
             if (SDL.SDL_Init(SDL.SDL_INIT_AUDIO | SDL.SDL_INIT_VIDEO | SDL.SDL_INIT_TIMER) < 0)
             {
                 // Console.WriteLine($"Unable to unit SDL: {SDL.SDL_GetError()}");
@@ -156,6 +174,8 @@ namespace AgOop
                 Console.ReadLine();
             }
 
+            // Create the SDL window, 800x600 by default
+            // TODO: Create window using last setting if exists
             GameManagerVariables.window = SDL.SDL_CreateWindow("Anagramarama",
                                                                 SDL.SDL_WINDOWPOS_UNDEFINED,
                                                                 SDL.SDL_WINDOWPOS_UNDEFINED,
@@ -169,10 +189,13 @@ namespace AgOop
                 Console.ReadLine();
             }
 
-            GameManagerVariables.renderer = SDL.SDL_CreateRenderer(GameManagerVariables.window,
-                                              -1,
-                                              SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
-                                              SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
+            // create the renderer area
+            GameManagerVariables.renderer = SDL.SDL_CreateRenderer(
+                                            GameManagerVariables.window,
+                                            -1,
+                                            SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
+                                            SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
+
             if (GameManagerVariables.renderer == IntPtr.Zero)
             {
                 // Console.WriteLine($"Error creating the renderer: {SDL.SDL_GetError()}");
