@@ -1,4 +1,6 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image # type: ignore
+from PIL import ImageDraw # type: ignore
+from PIL import ImageFont # type: ignore
 import math
 from pathlib import Path
 
@@ -22,7 +24,8 @@ BG_WHITE = "white"
 # This seems to be the originally used font (Blue Highway - althought more probably Blue Highway Deluxe)
 # https://www.dafont.com/blue-highway.font
 # licensed under GPL/OFL
-font_name = "./Blue_Highway_Rg.otf"
+# font_name = "./Blue_Highway_Rg.otf"
+font_name = "./GeistMonoNerdFontPropo-SemiBold.otf"
 
 # Some more open source fonts that this script was tested with:
 # https://www.nerdfonts.com/font-downloads
@@ -211,19 +214,19 @@ def get_desired_font_size(font_name: str, target_height: int) -> int:
     This is used to calculate the required font size for a character to fit in the character box.
     """
     # Test size to get the metrics
-    test_font_size = 120
+    test_font_size:int = 120
     
     # With the test size, get the actual resulting metric
-    test_font_height_actual_value = ImageFont.truetype(font_name, test_font_size).getmetrics()[0]
+    test_font_height_actual_value:int  = ImageFont.truetype(font_name, test_font_size).getmetrics()[0]
     
     # Calculate the font size needed to achieve the target height
     # if test_font_Size gives real_test_font_height
     # what is x when we want font_height (glyph height really)
     # test_font_size = > font_size
     # test_font_height_actual_value => target_height
-    font_size = math.floor((test_font_size * target_height) / test_font_height_actual_value)
+    font_size:int = math.floor((test_font_size * target_height) / test_font_height_actual_value)
     
-    test_font_height_actual_value_2 = ImageFont.truetype(font_name, font_size).getmetrics()[0]
+    test_font_height_actual_value_2:int = ImageFont.truetype(font_name, font_size).getmetrics()[0]
     
     if debug:
         print("==== Starting new font processing - font size ====")
@@ -235,11 +238,11 @@ def get_desired_font_size(font_name: str, target_height: int) -> int:
     return int(font_size)
 
 # Not used
-def draw_font_ascent_and_descent(letterBank_drawing: ImageDraw.ImageDraw, font: ImageFont.FreeTypeFont, current_box_horizontal_position: int, next_box_horizontal_position, from_bank: CharacterBank):
+def draw_font_ascent_and_descent(letterBank_drawing: ImageDraw.ImageDraw, font: ImageFont.FreeTypeFont, current_box_horizontal_position: int, next_box_horizontal_position: int, from_bank: CharacterBank):
     # Font ascent and descent are different from character ascender_height, descender_height in that
     # the font-level ascent and descent need to support all chars in that font
-    font_ascent: int
-    font_descent: int
+    font_ascent:int
+    font_descent:int
     
     font_ascent, font_descent = font.getmetrics()
     print(f"{font_ascent=} = {font_descent=}")
@@ -789,7 +792,7 @@ def get_max_ascender_and_descender_heights(font_name: str, font_size:int, from_B
     for char in from_Bank.characters_set:
         
         # Get the bounding_box for this letter at the desired placement
-        bounding_box: tuple[float, float, float, float] = test_draw.textbbox((test_img.width/2, test_baseline), char, font=char_font, anchor=anchor)
+        bounding_box:tuple[float, float, float, float] = test_draw.textbbox((test_img.width/2, test_baseline), char, font=char_font, anchor=anchor)
         
         # Calculate the ascending and descending heights for this character
         ascender_height:float = test_baseline - bounding_box[1]
@@ -933,7 +936,7 @@ def draw_character_box_position(letterBank_drawing: ImageDraw.ImageDraw, num_of_
             next_box_horizontal_position += from_bank.box_width
 
 # for debug
-def draw_reduced_bounding_box(letterBank_drawing, position_of_anchor_on_pic: tuple[int, int], char: str, font, anchor: str) -> None:
+def draw_reduced_bounding_box(letterBank_drawing: ImageDraw.ImageDraw, position_of_anchor_on_pic: tuple[int, int], char: str, font:ImageFont.FreeTypeFont, anchor: str) -> None:
     """ Draw a bounding box around the letter box
     reduced as the bounding box will cover the first pixel but be outside of the last pixel
     in h and w
@@ -1068,7 +1071,7 @@ def generate_letterBank_image(font: str, from_bank: CharacterBank) -> Image.Imag
 
 
 if __name__ == "__main__":
-    outputPath: str = Path("characterBank") / font_name[:-4]
+    outputPath: Path = Path("characterBank") / font_name[:-4]
     outputPath.mkdir(parents=True, exist_ok=True)
 
     generate_letterBank_image(font_name, large_letters_bank).save(Path(outputPath) / "letterBank.png")
