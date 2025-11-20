@@ -8,20 +8,34 @@ namespace AgOop
         // private static readonly AgOopLogger logger = new("WordsList");
         private readonly ILogger<WordsList> _logger;
 
+        // keep the anagramslist internally
+        private Dlb_node _wordsDictionary;
+
+        // share externally with a variable of the same as the original name
+        internal Dlb_node dlbHeadNode
+        {
+            get { return _wordsDictionary; }
+            set { _wordsDictionary = value; }
+        }
+
         /// <summary>Constructor for the wordlist</summary
         // internal WordsList(ILogger<WordsList> logger, ref Dlb_node? dlbHeadNode, string wordlist)
         public WordsList(ILogger<WordsList> logger)
         {
             _logger = logger;
-
-
+            _wordsDictionary = new Dlb_node('\0');
         }
 
-        internal void GenerateWordsList(ref Dlb_node? dlbHeadNode, string wordlist)
+        // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
+        // internal void GenerateWordsList(ref Dlb_node? dlbHeadNode, string wordlist)
+        internal void GenerateWordsList(string wordlist)
         {
             // Console.WriteLine("loading dictionary: " + wordlist);
             _logger.LogInformation($"loading dictionary: {wordlist}");
-            if (!DlbCreate(ref dlbHeadNode, wordlist))
+            
+            // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
+            // if (!DlbCreate(ref dlbHeadNode, wordlist))
+            if (!DlbCreate(wordlist))
             {
                 // Console.WriteLine("error leading the dictionary");
                 _logger.LogError($"error leading the dictionary: {wordlist}");
@@ -29,11 +43,18 @@ namespace AgOop
             }
         }
 
-        internal void WordsListExit(ref Dlb_node? dlbHeadNode)
+
+        // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
+
+        // internal void WordsListExit(ref Dlb_node? dlbHeadNode)
+        internal void WordsListExit()
         {
             // Console.WriteLine("WordsList Destructor");
             _logger.LogInformation("WordsList Destructor called");
-            DlbFree(ref dlbHeadNode);
+
+            // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
+            // DlbFree(ref dlbHeadNode);
+            DlbFree();
         }
 
         #region overview of Dlb (de la Briandais Trie) information
@@ -241,13 +262,16 @@ namespace AgOop
         }
 
 
+        // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
+
         /// <summary>create a dictionary linked list from a file. 
         /// It reads each line of the file, adds the words to the dictionary, and sets the necessary links between nodes. 
         /// </summary>
         /// <param name="dlbHeadNode">The head node of the dictionary.</param>
         /// <param name="filename">The name of the file containing the dictionary words.</param>
         /// <returns>Nothing</returns>
-        internal bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
+        // internal bool DlbCreate(ref Dlb_node? dlbHeadNode, string filename)
+        internal bool DlbCreate(string filename)
         {
             int lineCount = File.ReadLines(filename).Count();
             string? currentWord;
@@ -261,7 +285,9 @@ namespace AgOop
                     // currentWord.ic();
                     if (currentWord != null)
                     {
-                        DlbPush(ref dlbHeadNode, currentWord);
+                        // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
+                        // DlbPush(ref dlbHeadNode, currentWord);
+                        DlbPush(currentWord);
                     }
                 }
             }

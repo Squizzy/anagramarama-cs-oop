@@ -28,14 +28,15 @@ namespace AgOop
     {
         // private readonly AgOopLogger _logger;
         private readonly ILogger<AnagramsManager> _logger;
-        internal LocaleManager? _localeManager;
+        internal LocaleManager _localeManager;
+        internal WordsList _wordsList;
 
-        public AnagramsManager(ILogger<AnagramsManager> logger)
+        public AnagramsManager(ILogger<AnagramsManager> logger, LocaleManager localeManager, WordsList wordsList)
         {
             _logger = logger;
-            // logger = new AgOopLogger("AnagramsManager");
-            // _logger = SerilogLoggerFactory.CreateLogger<AnagramsManager>();
-            // _logger = SerilogLoggerFactory.CreateLogger<AnagramsManager>();
+            _localeManager = localeManager;
+            _wordsList = wordsList;
+
         }
 
         internal void AnagramsManagerExit(ref Sprite? letters, ref Anagrams.Node? headNode)
@@ -240,7 +241,7 @@ namespace AgOop
                 string shiftLeftKilledString = ShitfLeftKill(newGuess);
 
                 // If this is a word in the dictionary, add it to the anagrams linkedlist
-                if (WordsList.DlbLookup(dlbHeadNode, shiftLeftKilledString))
+                if (_wordsList.DlbLookup(dlbHeadNode, shiftLeftKilledString))
                 {
                     Push(ref headNode, shiftLeftKilledString);
                 }

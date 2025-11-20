@@ -69,9 +69,15 @@ namespace AgOop
         private readonly UIManager _uiManager;
         private readonly SpriteManager _spriteManager;
 
+        private readonly WordsList _wordsList;
 
         /// <summary> Constructor - Initialises the game
-        public GameManager(ILogger<GameManager> logger, AnagramsManager anagramsManager, SoundManager soundManager, UIManager uiManager, SpriteManager spriteManager)
+        public GameManager(ILogger<GameManager> logger, 
+                        AnagramsManager anagramsManager,
+                        SoundManager soundManager,
+                        UIManager uiManager,
+                        SpriteManager spriteManager,
+                        WordsList wordsList)
         {
             _logger = logger;
             _soundManager = soundManager;
@@ -79,6 +85,8 @@ namespace AgOop
             _uiManager = uiManager;
             _spriteManager = spriteManager;
             // TODO: should probably use this to clean up even more, but haven't done yet. And a pseudo destructor too
+
+            _wordsList = wordsList;
         }
 
 
@@ -399,6 +407,8 @@ namespace AgOop
         }
 
 
+        //[ ]: as the anagrams list is now maintained by WordsList, there is no need to pass it as argument
+
         /// <summary> Do all of the initialisation for a new game:
         /// build the screen
         /// get a random word and generate anagrams
@@ -410,7 +420,8 @@ namespace AgOop
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <param name="letters">first node in the letter sprites (in/out)</param>
         /// <returns>Nothing</returns>
-        internal void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
+        // internal void NewGame(ref Anagrams.Node? headNode, WordsList.Dlb_node? dlbHeadNode, IntPtr screen, ref Sprite? letters)
+        internal void NewGame(ref Anagrams.Node? headNode, IntPtr screen, ref Sprite? letters)
         {
             string guess;
             string remain = "";
@@ -427,8 +438,12 @@ namespace AgOop
             };
             _spriteManager.SDLScale_RenderCopy(screen, _spriteManager.backgroundTex, null, dest);
 
+
+
             _anagramsManager.DestroyLetters(ref letters);
             // AnagramsManager.DestroyLetters(ref letters);
+
+            // TODO: move the creation of the wordslist into wordslist...
 
             while (!happy)
             {
@@ -443,7 +458,7 @@ namespace AgOop
                 _anagramsManager.DestroyAnswers(ref headNode);
 
                 // AnagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
-                _anagramsManager.Ag(ref headNode, dlbHeadNode, guess, remain);
+                _anagramsManager.Ag(ref headNode, _wordsList.dlbHeadNode, guess, remain);
 
                 // answersSought = AnagramsManager.Length(headNode);
                 answersSought = _anagramsManager.Length(headNode);
@@ -517,6 +532,8 @@ namespace AgOop
         }
 
 
+        //[ ]: as the anagrams list is now maintained by WordsList, there is no need to pass it as argument
+
         /// <summary>
         /// a big while loop that runs the full length of the game, 
         /// checks the game events and responds accordingly
@@ -544,7 +561,7 @@ namespace AgOop
         /// <param name="screen">SDL_Surface to display the image</param>
         /// <param name="letters">first node in the letter sprites (in/out)</param>
         /// <returns>Nothing</returns>
-        public void GameLoop(ref Anagrams.Node? headNode, WordsList.Dlb_node? dldHeadNode, IntPtr screen, ref Sprite? letters)
+        public void GameLoop(ref Anagrams.Node? headNode, IntPtr screen, ref Sprite? letters)
         {
             _logger.LogWarning("GameLoop started");
             bool done = false;
@@ -656,7 +673,10 @@ namespace AgOop
                     {
                         totalScore = 0;
                     }
-                    NewGame(ref headNode, dldHeadNode, screen, ref letters);
+
+                    //[ ]: dlbHeadNode is now handled by WordsList, no need to pass it as reference
+                    // NewGame(ref headNode, dldHeadNode, screen, ref letters);
+                    NewGame(ref headNode,  screen, ref letters);
 
                     startNewGame = false;
                 }
@@ -783,7 +803,9 @@ namespace AgOop
             uiManager._gameManager = gameManager;
             uiManager._soundManager = soundManager;
 
-            WordsList.Dlb_node? dlbHeadNode = null;
+            // now initialised in WordsList
+            // WordsList.Dlb_node? dlbHeadNode = null;
+            
             Anagrams.Node? headNode = null;
             spriteManager.Initialise();
             Sprite? letters = null;
@@ -798,8 +820,10 @@ namespace AgOop
             // create the word list from the dictionary file in the locale language
             string wordlist = localeManager.language + "wordlist.txt";
             // new WordsList(ref dlbHeadNode, wordlist);
-            // new WordsList(ref dlbHeadNode, wordlist);
-            wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
+
+            // as the headnode is now maintained by wordslist, no need to pass it as argument
+            // wordsList.GenerateWordsList(ref dlbHeadNode, wordlist);
+            wordsList.GenerateWordsList(wordlist);
 
             // load the hotboxes positions and sizes from the Config.ini if available
             new ConfigurationManager(localeManager);
@@ -810,18 +834,26 @@ namespace AgOop
             // Initiate the SDL sounds system if possible
             // new SoundManager();
 
+
+            // [ ]: as the anagrams list is now maintained by wordslist, we do not need to pass it to NewGame and GameLoop
             // Initialise the game
-            gameManager.NewGame(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            // gameManager.NewGame(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            gameManager.NewGame(ref headNode, GameManagerVariables.renderer, ref letters);
 
             // Run the main loop until the game is quit.
-            gameManager.GameLoop(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            // gameManager.GameLoop(ref headNode, dlbHeadNode, GameManagerVariables.renderer, ref letters);
+            gameManager.GameLoop(ref headNode, GameManagerVariables.renderer, ref letters);
 
             /* tidy up and exit */
 
             // As we don't know if the garbace collector will run the destructors, do this manually.
             // not really needed but done for the sake of keeping with the original code
             // SoundManager.SoundManagerExit();
-            wordsList.WordsListExit(ref dlbHeadNode);
+    
+            // [ ]: as the anagrams list is now maintained by wordslist, we do not need to pass it to NewGame and GameLoop
+            // wordsList.WordsListExit(ref dlbHeadNode);
+            wordsList.WordsListExit();
+
             anagramsManager.AnagramsManagerExit(ref letters, ref headNode);
             spriteManager.SpriteManagerExit();
 
