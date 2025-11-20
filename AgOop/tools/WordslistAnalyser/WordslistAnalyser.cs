@@ -71,6 +71,8 @@ namespace WordslistAnalyser
         /// <param name="cache_path">The cache file to save to</param>
         static async Task DownloadFrequenciesToCacheAsync(string cache_path)
         {
+            Console.WriteLine("Please wait, downloading the data file");
+            
             string response;
             HttpClient client = new HttpClient();
             try
@@ -197,7 +199,7 @@ namespace WordslistAnalyser
 
         public static void StoreWordsList(Dictionary<string, int> updatedWordsList)
         {
-            
+
             FileStream stream = new FileStream("./uwl.txt", FileMode.Create);
             using StreamWriter sw = new StreamWriter(stream, encoding: Encoding.UTF8);
 
@@ -262,14 +264,18 @@ namespace WordslistAnalyser
 
             // WordFrequenciesLoader wfl = new();
             wordsFrequencyData = await WordFrequenciesLoader.LoadFrequencyDataAsync(".");
-            Console.WriteLine($"{wordsFrequencyData.Count}");
+            Console.WriteLine($"Number of words in the original dictionary:  {wordsFrequencyData.Count}");
 
 
             gameProcessedData = WordsAnalyser.NormaliseWordsList(wordsFrequencyData);
-            Console.WriteLine($"{gameProcessedData.Count}");
+            Console.WriteLine($"Number of words in the sanitized dictionary: {gameProcessedData.Count}");
             WordsAnalyser.StoreWordsList(gameProcessedData);
 
             WordsAnalyser.DisplayStatistics(gameProcessedData);
+
+            // TODO: Extract relevant words from the dictionary based on frequency.
+            // TODO: Remove first names, place names ?
+            // TODO: Find better source of dictionaries
 
             // foreach ((string word, int frequency) in wordsFrequencyData)
             // {
