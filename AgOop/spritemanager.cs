@@ -64,6 +64,7 @@ namespace AgOop
 
         /// <summary>The list of sprites containing the graphical score representation</summary>
         internal static Sprite scoreSprite = new Sprite(5);
+
     }
 
     internal abstract class ISpriteManager
@@ -217,7 +218,7 @@ namespace AgOop
             {
                 // Console.WriteLine("problem with letterBank file");
                 _logger.LogError($"Letter bank picture file not found at {letterBankFileLocation}");
-                Console.ReadLine();
+                // Console.ReadLine();
             }
             IntPtr letterSurf = SDL_image.IMG_Load(letterBankFileLocation);
             Sprites.letterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, letterSurf);
@@ -228,7 +229,7 @@ namespace AgOop
             {
                 // Console.WriteLine("problem with smallLetterBank file");
                 _logger.LogError($"Small letter bank picture file not found at {smallLetterBankFileLocation}");
-                Console.ReadLine();
+                // Console.ReadLine();
             }
             IntPtr smallLetterSurf = SDL_image.IMG_Load(smallLetterBankFileLocation);
             Sprites.smallLetterBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, smallLetterSurf);
@@ -240,7 +241,7 @@ namespace AgOop
             {
                 // Console.WriteLine("problem with numberBank file");
                 _logger.LogError($"Number bank picture file not found at {numberBankFileLocation}");
-                Console.ReadLine();
+                // Console.ReadLine();
             }
             IntPtr numberSurf = SDL_image.IMG_Load(numberBankFileLocation);
             Sprites.numberBank = SDL.SDL_CreateTextureFromSurface(GameManagerVariables.renderer, numberSurf);
@@ -452,7 +453,7 @@ namespace AgOop
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 1");
                         _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 1");
-                        Console.ReadLine();
+                        // Console.ReadLine();
                     }
                 }
                 else
@@ -462,7 +463,7 @@ namespace AgOop
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 2 ");
                         _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 2");
-                        Console.ReadLine();
+                        // Console.ReadLine();
                     }
                 }
             }
@@ -479,7 +480,7 @@ namespace AgOop
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 3 ");
                         _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 3");
-                        Console.ReadLine();
+                        // Console.ReadLine();
                     }
                 }
                 else
@@ -489,7 +490,7 @@ namespace AgOop
                     {
                         // Console.WriteLine("Problem with RenderCopy in SDLScale_RenderCopy 4 ");
                         _logger.LogError("Problem with RenderCopy in SDLScale_RenderCopy 4");
-                        Console.ReadLine();
+                        // Console.ReadLine();
                     }
                 }
             }
