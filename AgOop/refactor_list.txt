@@ -36,3 +36,11 @@ Properties: anagram, found, guessed, length, next, etc.
 Properties: sprite, numSpr, letter, x, y, w, h, toX, toY, next, box, index, etc.
 
 By organizing the code into these classes, you can achieve better encapsulation, modularity, and maintainability. Each class would be responsible for a specific aspect of the game, making it easier to manage and extend the codebase.
+
+
+On screen resize, rescale all the sprite surfaces.
+Original dimensions:
+Background: 800x600
+Letterbank: 1260x90
+SmallLetterBank: 260x16
+Numberbank: 216x32
