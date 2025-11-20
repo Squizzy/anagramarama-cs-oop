@@ -57,7 +57,7 @@ namespace AgOop
             DlbFree();
         }
 
-        #region overview of Dlb (de la Briandais Trie) information
+        //region overview of Dlb (de la Briandais Trie) information
         /*
         dbl_node contains the key building blocks ("node") for the dictionary that is loaded from the text file provided. 
         
@@ -91,13 +91,14 @@ namespace AgOop
                                 
                 -> sibling 'b' -> start of words starting with 'b'         
         */
-        #endregion
+        //endregion
 
-        /// <summary> Node for the linkedlist containing all the possible words of the dictionary loaded for the game </summary>
+        /// <summary> Node for the linkedlist containing all the possible words
+        /// of the dictionary loaded for the game </summary>
         internal class Dlb_node
         {
             /// <summary> The letter in the word </summary>
-            internal char letter { get; set; } = '\0';
+            internal char letter;
 
             /// <summary> end of a valid word composed from the previous nodes </summary>
             internal bool valid { get; set; } = false;
@@ -157,6 +158,9 @@ namespace AgOop
         }
 
 
+        // now using dlbHeadNode from internal, no longer need to pass by reference
+
+
         /// <summary> Walk through the whole of the dictionary linkedlist and perform the op delegate on the node
         /// In this particular application, op is called to free the node
         /// This method just walks the whole linkedlist and clears all the nodes.
@@ -181,6 +185,8 @@ namespace AgOop
             }
         }
 
+
+        // dlbHeadNode now kept internally in wordslist class, no need to pass it as argument from the main game
 
         /// <summary> Frees memory of all Dlb_node node of the words dictionary linked list
         /// Not really needed in c# but kept for sake of keeping...
